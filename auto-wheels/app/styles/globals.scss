@@ -1,0 +1,21 @@
+$primary       :#E90808;
+$enable-shadows:true;
+
+
+@import "../../node_modules/bootstrap/scss/bootstrap.scss";
+
+// Import Component Styles
+@import "./components/footer";
+@import "./components/header";
+
+
+// Import Section Styles
+@import "./sections//hero";
+
+.theme-header {
+  border-bottom: 2px solid #f8f9fa;
+}
+
+footer ul>li a {
+  color: #EBEBEB;
+}
