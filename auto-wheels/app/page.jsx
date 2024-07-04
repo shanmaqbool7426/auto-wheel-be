@@ -1,5 +1,13 @@
 import Hero from "./sections/Hero";
+import BrowseByCategory from "./sections/BrowseByCategory";
+import BrowseByType from "./sections/BrowseByType";
 
 export default function Home() {
-  return <Hero />;
+  return (
+    <>
+      <Hero />
+      <BrowseByCategory />
+      <BrowseByType />
+    </>
+  );
 }

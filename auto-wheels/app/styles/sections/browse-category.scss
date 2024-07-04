@@ -1,0 +1,17 @@
+.browse-cats-section {
+    background-color: #F3F3F3;
+
+    .single-brand-item {
+        text-align   : center;
+        margin-bottom: 1rem;
+    }
+
+    a {
+        font-size: 1.125rem;
+        color    : #333;
+
+        &:hover {
+            color: $primary;
+        }
+    }
+}
