@@ -6,7 +6,7 @@ import { FaLocationDot, FaCalendarDays, FaClock } from "react-icons/fa6";
 
 const BrowseByType = () => {
   return (
-    <div className="browse-type-section py-5">
+    <section className="browse-type-section py-5">
       <div className="container">
         <div className="row">
           <div className="col">
@@ -126,7 +126,7 @@ const BrowseByType = () => {
           </div>
         </div>
       </div>
-    </div>
+    </section>
   );
 };
 

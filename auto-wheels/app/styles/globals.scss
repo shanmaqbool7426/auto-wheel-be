@@ -10,9 +10,10 @@ $enable-shadows:true;
 
 
 // Import Section Styles
-@import "./sections//hero";
-@import "./sections//browse-category";
-@import "./sections//browse-type";
+@import "./sections/hero";
+@import "./sections/browse-category";
+@import "./sections/browse-type";
+@import "./sections/comparison";
 
 .theme-header {
   border-bottom: 2px solid #f8f9fa;

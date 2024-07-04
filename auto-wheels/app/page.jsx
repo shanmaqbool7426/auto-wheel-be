@@ -1,6 +1,7 @@
 import Hero from "./sections/Hero";
 import BrowseByCategory from "./sections/BrowseByCategory";
 import BrowseByType from "./sections/BrowseByType";
+import ComparisonProducts from "./sections/ComparisonProducts";
 
 export default function Home() {
   return (
@@ -8,6 +9,7 @@ export default function Home() {
       <Hero />
       <BrowseByCategory />
       <BrowseByType />
+      <ComparisonProducts />
     </>
   );
 }
