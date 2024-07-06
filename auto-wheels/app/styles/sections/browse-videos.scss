@@ -1,0 +1,50 @@
+.browse-videos {
+    background-color: #F3F3F3;
+
+    .video-thumbnail {
+        position       : relative;
+        text-decoration: none;
+
+        .play-button {
+            position: absolute;
+            top     : 30%;
+            left    : 44%;
+
+            svg {
+                width : auto;
+                height: 80px;
+            }
+        }
+
+        img {
+            border-radius: 5px;
+            object-fit   : cover;
+        }
+
+        .larger-thumb {
+            img {
+                min-height: 387px;
+
+            }
+        }
+
+        .title {
+            color: #111111;
+
+            &:hover {
+                color: $primary;
+            }
+        }
+
+        &.small-thumb {
+            .video-placeholder {
+                display: block;
+            }
+
+            svg {
+                width : auto;
+                height: auto;
+            }
+        }
+    }
+}
