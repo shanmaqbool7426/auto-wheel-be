@@ -1,0 +1,41 @@
+.blogs {
+    .article-vertical {
+        .image-text-placeholder {
+            position: relative;
+
+            img {
+                border-radius: 5px;
+            }
+
+            .text-placeholder {
+                position: absolute;
+                bottom  : 30px;
+                left    : 30px;
+            }
+        }
+    }
+
+    .article-inline {
+        display        : flex;
+        justify-content: space-between;
+        align-items    : center;
+
+        .published-date,
+        .content {
+            color: #999;
+        }
+
+        .article-title {
+            font-weight: 600;
+            color      : #111;
+
+            &:hover {
+                color: $primary;
+            }
+        }
+
+        img {
+            border-radius: 5px;
+        }
+    }
+}

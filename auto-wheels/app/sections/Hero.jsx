@@ -1,7 +1,12 @@
 import React from "react";
 import HeroTabs from "@/components/hero-tabs";
 import { BsArrowRight } from "react-icons/bs";
+import { Poppins } from "next/font/google";
 
+const poppin = Poppins({
+  subsets: ["latin"],
+  weight: ["100", "200", "300", "400", "500", "600", "700", "800", "900"],
+});
 const Hero = () => {
   return (
     <div className="hero-banner py-5">
@@ -20,7 +25,9 @@ const Hero = () => {
           <div className="col-lg-8">
             <div className="hero-content">
               <div>
-                <div className="hero-title fw-semibold mb-4">
+                <div
+                  className={`${poppin.className} hero-title fw-bold mb-4`}
+                >
                   Hyundai Car Price in <br /> Pakistan 2023
                 </div>
                 <button className="btn btn-primary btn-lg px-4 rounded-2 hero-btn">

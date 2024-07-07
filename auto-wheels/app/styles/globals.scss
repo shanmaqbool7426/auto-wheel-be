@@ -14,6 +14,9 @@ $enable-shadows:true;
 @import "./sections/browse-category";
 @import "./sections/browse-type";
 @import "./sections/comparison";
+@import "./sections/search-locations";
+@import "./sections/browse-videos";
+@import "./sections/browse-blogs";
 
 .theme-header {
   border-bottom: 2px solid #f8f9fa;
