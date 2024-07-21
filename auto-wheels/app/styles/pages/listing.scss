@@ -79,5 +79,193 @@
         display        : flex;
         justify-content: space-between;
         align-items    : center;
+        padding-bottom : 3rem;
+        margin-bottom  : 2rem;
+        border-bottom  : 1px solid #CCCCCC;
+
+        .toolbox-right {
+            display    : flex;
+            align-items: center;
+
+            .select-filter-listing {
+                display    : flex;
+                align-items: center;
+                gap        : 1rem;
+
+                label {
+                    color    : #878787;
+                    font-size: 0.85rem;
+                }
+
+                select {
+                    box-shadow: none;
+                }
+            }
+
+            .grid-sort-btns {
+                margin-left: .5rem;
+
+                button {
+                    background: none;
+                    border    : none;
+                    color     : #cccccc;
+
+                    &.active {
+                        color: $dark;
+                    }
+                }
+            }
+        }
+    }
+
+
+    .title-section {
+        display        : flex;
+        justify-content: space-between;
+        align-items    : center;
+        border-bottom  : 2px solid $primary;
+    }
+
+    .cat-title {
+        background-color: $primary;
+        color           : $white;
+        font-weight     : 600;
+        clip-path       : polygon(0 0, 80% 0, 100% 100%, 0% 100%);
+        padding         : .7rem 3.2rem .7rem .8rem;
+        margin-bottom   : 1.5rem;
+    }
+
+
+    // Product List Styling
+    .product-list {
+        margin-block  : 1.5rem;
+        padding-bottom: 1.5rem;
+        border-bottom : 2px solid #CCCCCC;
+
+        &:has(.featured-badge){
+            border-bottom-color: $primary;
+        }
+
+        .featured-badge {
+            position        : absolute;
+            background-color: $primary;
+            padding         : .7rem;
+            width           : 100%;
+            color           : $white;
+            font-weight     : 600;
+            text-align      : center;
+            transform       : rotate(45deg);
+            right           : -145px;
+            top             : 20px;
+            text-transform  : uppercase;
+        }
+
+        .image-counter {
+            position       : absolute;
+            color          : $white;
+            top            : 15px;
+            left           : 15px;
+            display        : flex;
+            justify-content: center;
+            align-items    : center;
+            gap            : 0.2rem;
+
+            svg {
+                width : 20px;
+                height: 20px;
+            }
+
+            span {
+                line-height: 20px;
+            }
+        }
+
+        .progress-bars {
+            display        : flex;
+            justify-content: space-between;
+            align-items    : center;
+            gap            : 0.3rem;
+            margin-block   : 0.2rem;
+
+            .single-bar {
+                width           : 100%;
+                height          : 4px;
+                background-color: #D9D9D9;
+
+                &.active {
+                    background-color: $primary;
+                }
+            }
+
+        }
+
+        .product-image {
+            border-radius: 5px;
+            width        : 100%;
+            height       : 100%;
+        }
+
+        .product-title {
+            color          : $dark;
+            text-decoration: none;
+            margin-top     : .5rem;
+            display        : block;
+
+            &:hover {
+                color: $primary;
+            }
+        }
+
+        .product-price {
+            background-color: $primary;
+            color           : $white;
+            font-weight     : 600;
+            clip-path       : polygon(24% 0, 100% 0, 100% 100%, 0% 100%);
+            padding         : 0.7rem 0.7rem 0.7rem 4rem;
+            width           : 12rem;
+            margin-left     : auto;
+            display         : flex;
+            justify-content : flex-end;
+            align-items     : center;
+            text-align      : right;
+            padding-right   : 1rem;
+        }
+
+        .vehicle-info {
+
+            svg {}
+        }
+
+        .product-actions {
+            button {
+                border        : 1px solid #CCCCCC;
+                text-transform: uppercase;
+                border-radius : 10px;
+                font-weight   : 500;
+                font-size     : 0.85rem;
+                box-shadow    : none;
+                padding-block : .7rem;
+                margin-right  : 1rem;
+                min-width     : 10rem;
+
+                svg {
+                    margin-right: .4rem;
+                }
+            }
+
+            .btn-stock {
+                background-color: #F1EFEF;
+                color           : #878787;
+                border          : none;
+            }
+
+            .btn-compare,
+            .btn-share {
+                &:hover {
+                    color       : $primary;
+                    border-color: $primary;
+                }
+            }
+        }
     }
 }
