@@ -24,7 +24,7 @@ const BrowseByCategory = () => {
             </div>
             <div className="cat-by-brand">
               <div className="row mt-5">
-                <div className="col-lg-3">
+                <div className="col-sm-3">
                   <div className="d-flex flex-column single-brand-item">
                     <Image
                       width={100}
@@ -35,7 +35,7 @@ const BrowseByCategory = () => {
                     <Link href={"#"}>Acura</Link>
                   </div>
                 </div>
-                <div className="col-lg-3">
+                <div className="col-sm-3">
                   <div className="d-flex flex-column single-brand-item">
                     <Image
                       width={100}
@@ -46,7 +46,7 @@ const BrowseByCategory = () => {
                     <Link href={"#"}>Bentley</Link>
                   </div>
                 </div>
-                <div className="col-lg-3">
+                <div className="col-sm-3">
                   <div className="d-flex flex-column single-brand-item">
                     <Image
                       width={100}
@@ -57,7 +57,7 @@ const BrowseByCategory = () => {
                     <Link href={"#"}>BMW</Link>
                   </div>
                 </div>
-                <div className="col-lg-3">
+                <div className="col-sm-3">
                   <div className="d-flex flex-column single-brand-item">
                     <Image
                       width={100}
@@ -69,7 +69,7 @@ const BrowseByCategory = () => {
                   </div>
                 </div>
 
-                <div className="col-lg-3">
+                <div className="col-sm-3">
                   <div className="d-flex flex-column single-brand-item">
                     <Image
                       width={100}
@@ -80,7 +80,7 @@ const BrowseByCategory = () => {
                     <Link href={"#"}>Ford</Link>
                   </div>
                 </div>
-                <div className="col-lg-3">
+                <div className="col-sm-3">
                   <div className="d-flex flex-column single-brand-item">
                     <Image
                       width={70}
@@ -91,7 +91,7 @@ const BrowseByCategory = () => {
                     <Link href={"#"}>Honda</Link>
                   </div>
                 </div>
-                <div className="col-lg-3">
+                <div className="col-sm-3">
                   <div className="d-flex flex-column single-brand-item">
                     <Image
                       width={80}
@@ -102,7 +102,7 @@ const BrowseByCategory = () => {
                     <Link href={"#"}>Hyundai</Link>
                   </div>
                 </div>
-                <div className="col-lg-3">
+                <div className="col-sm-3">
                   <div className="d-flex flex-column single-brand-item">
                     <Image
                       width={100}
@@ -133,7 +133,7 @@ const BrowseByCategory = () => {
             </div>
             <div className="cat-by-brand cat-by-body">
               <div className="row mt-5">
-                <div className="col-lg-3">
+                <div className="col-sm-3">
                   <div className="d-flex flex-column single-brand-item">
                     <Image
                       width={100}
@@ -144,7 +144,7 @@ const BrowseByCategory = () => {
                     <Link href={"#"}>Convertible</Link>
                   </div>
                 </div>
-                <div className="col-lg-3">
+                <div className="col-sm-3">
                   <div className="d-flex flex-column single-brand-item">
                     <Image
                       width={100}
@@ -155,7 +155,7 @@ const BrowseByCategory = () => {
                     <Link href={"#"}>Coupe</Link>
                   </div>
                 </div>
-                <div className="col-lg-3">
+                <div className="col-sm-3">
                   <div className="d-flex flex-column single-brand-item">
                     <Image
                       width={100}
@@ -166,7 +166,7 @@ const BrowseByCategory = () => {
                     <Link href={"#"}>Hatchback</Link>
                   </div>
                 </div>
-                <div className="col-lg-3">
+                <div className="col-sm-3">
                   <div className="d-flex flex-column single-brand-item">
                     <Image
                       width={100}
@@ -177,7 +177,7 @@ const BrowseByCategory = () => {
                     <Link href={"#"}>Minivan</Link>
                   </div>
                 </div>
-                <div className="col-lg-3">
+                <div className="col-sm-3">
                   <div className="d-flex flex-column single-brand-item">
                     <Image
                       width={100}
@@ -188,7 +188,7 @@ const BrowseByCategory = () => {
                     <Link href={"#"}>Pickups</Link>
                   </div>
                 </div>
-                <div className="col-lg-3">
+                <div className="col-sm-3">
                   <div className="d-flex flex-column single-brand-item">
                     <Image
                       width={100}
@@ -199,7 +199,7 @@ const BrowseByCategory = () => {
                     <Link href={"#"}>Sedan</Link>
                   </div>
                 </div>
-                <div className="col-lg-3">
+                <div className="col-sm-3">
                   <div className="d-flex flex-column single-brand-item">
                     <Image
                       width={100}
@@ -210,7 +210,7 @@ const BrowseByCategory = () => {
                     <Link href={"#"}>Sport Cars</Link>
                   </div>
                 </div>
-                <div className="col-lg-3">
+                <div className="col-sm-3">
                   <div className="d-flex flex-column single-brand-item">
                     <Image
                       width={100}

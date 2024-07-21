@@ -2,6 +2,12 @@ $primary       :#E90808;
 $enable-shadows:true;
 
 
+html,
+body {
+  overflow  : auto !important;
+  max-height: 100% !important;
+}
+
 @import "../../node_modules/bootstrap/scss/bootstrap.scss";
 
 // Import Component Styles
@@ -17,6 +23,9 @@ $enable-shadows:true;
 @import "./sections/search-locations";
 @import "./sections/browse-videos";
 @import "./sections/browse-blogs";
+
+// Pages
+@import "./pages/listing";
 
 .theme-header {
   border-bottom: 2px solid #f8f9fa;
