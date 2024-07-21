@@ -1,38 +1,12 @@
-// $primary       :#E90808;
-// $enable-shadows:true;
+$primary       :#E90808;
+$enable-shadows:true;
 
 
-// @import "../../node_modules/bootstrap/scss/bootstrap.scss";
-
-// // Import Component Styles
-// @import "./components/footer";
-// @import "./components/header";
-
-
-// // Import Section Styles
-// @import "./sections/hero";
-// @import "./sections/browse-category";
-// @import "./sections/browse-type";
-// @import "./sections/comparison";
-// @import "./sections/search-locations";
-// @import "./sections/browse-videos";
-// @import "./sections/browse-blogs";
-
-// .theme-header {
-//   border-bottom: 2px solid #f8f9fa;
-// }
-
-// footer ul>li a {
-//   color: #EBEBEB;
-// }
-
-
-
-
-
-
-$primary: #E90808;
-$enable-shadows: true;
+html,
+body {
+  overflow  : auto !important;
+  max-height: 100% !important;
+}
 
 @import "../../node_modules/bootstrap/scss/bootstrap.scss";
 
@@ -181,6 +155,9 @@ img {
 @import "./sections/search-locations";
 @import "./sections/browse-videos";
 @import "./sections/browse-blogs";
+
+// Pages
+@import "./pages/listing";
 
 .theme-header {
   border-bottom: 2px solid #f8f9fa;

@@ -1,4 +1,4 @@
-import { Poppins, Roboto } from "next/font/google";
+import { Inter, Poppins, Roboto } from "next/font/google";
 import "./styles/globals.scss";
 import { ColorSchemeScript, MantineProvider } from '@mantine/core';
 import '@mantine/core/styles.css';
@@ -10,6 +10,10 @@ const theme = {
 };
 import Script from "next/script";
 const poppins = Poppins({
+  subsets: ["latin"],
+  weight: ["100", "200", "300", "400", "500", "600", "700", "800", "900"],
+});
+const inter = Inter({
   subsets: ["latin"],
   weight: ["100", "200", "300", "400", "500", "600", "700", "800", "900"],
 });
