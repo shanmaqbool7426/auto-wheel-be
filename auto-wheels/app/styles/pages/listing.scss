@@ -1,20 +1,83 @@
 .product-listing {
 
     .filter-card {
-        background-color: #333333;
-        color           : $white;
-        box-shadow      : 4px 4px 20px 0px #00000014;
-        border          : none;
+        color     : $dark;
+        box-shadow: 4px 4px 20px 0px #00000014;
+        border    : none;
 
         .card-header {
-            padding: 1.5rem;
+            padding         : 1.5rem;
+            background-color: #333333;
+            color           : $white;
         }
 
         .card-title {
-            margin-bottom: 0;
-            display      : flex;
-            align-items  : center;
-            gap          : .5rem;
+            margin-bottom  : 0;
+            display        : flex;
+            align-items    : center;
+            gap            : .5rem;
+            justify-content: center;
         }
+
+        .card-body {
+            .input-with-icon {
+                position: relative;
+                color   : #878787;
+
+                .location-input {
+                    border       : 1px solid #24272C26;
+                    box-shadow   : 0px 1px 2px 0px #24272C26;
+                    border-radius: 5px;
+                    height       : 48px;
+                    width        : 100%;
+                    padding-left : 2.5rem;
+                }
+
+                .icon {
+                    position : absolute;
+                    left     : 15px;
+                    top      : 12px;
+                    font-size: 0.8rem;
+                }
+            }
+
+        }
+
+        .form-select {
+            border-color: #E3E3E3;
+            box-shadow  : none;
+        }
+
+        .range-slider {
+            margin-block: 2rem;
+        }
+
+        .checkbox-group-filters {
+            margin-top: 2rem;
+
+            .form-check {
+                margin-block : .5rem;
+                position     : relative;
+                padding-right: 4rem;
+
+                .count {
+                    position     : absolute;
+                    border       : 1px solid #CCCCCC;
+                    right        : 0;
+                    top          : 0;
+                    font-size    : 0.8rem;
+                    border-radius: 2rem;
+                    padding      : 0.1rem 0.4rem;
+                    min-width    : 4rem;
+                    text-align   : center;
+                }
+            }
+        }
+    }
+
+    .toolbox {
+        display        : flex;
+        justify-content: space-between;
+        align-items    : center;
     }
 }
