@@ -1,8 +1,14 @@
 import { Poppins, Roboto } from "next/font/google";
 import "./styles/globals.scss";
+import { ColorSchemeScript, MantineProvider } from '@mantine/core';
+import '@mantine/core/styles.css';
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 
+const theme = {
+  /** Put your mantine theme override here */
+};
+import Script from "next/script";
 const poppins = Poppins({
   subsets: ["latin"],
   weight: ["100", "200", "300", "400", "500", "600", "700", "800", "900"],
@@ -18,12 +24,25 @@ export const metadata = {
 };
 
 export default function RootLayout({ children }) {
+  const theme = {
+    /** Put your mantine theme override here */
+  };
+
   return (
     <html lang="en">
-      <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+      <head>
+        <ColorSchemeScript />
+        <ColorSchemeScript defaultColorScheme="auto" />
+
+        <Script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" strategy="beforeInteractive" />
+      </head>
       <body className={roboto.className}>
         <Header />
-        {children}
+        <MantineProvider theme={theme}>
+          {children}
+        </MantineProvider>
+        {/* <MantineProvider>{children}</MantineProvider> */}
+
         <Footer />
       </body>
     </html>
