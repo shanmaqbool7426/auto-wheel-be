@@ -1,0 +1,20 @@
+.account-type {
+    width: 511px;
+    padding: 30px;
+    margin-bottom: 41px !important;
+}
+
+.personal_account {
+    height: 143px;
+    width: 213px;
+    border: 1px solid  silver;
+    border-radius: $border-radius-sm
+}
+
+.personal_account_isActive {
+    height: 143px;
+    width: 213px;
+    border: 2px dotted #ff8f8f;
+    background: #ff000014;
+    border-radius: $border-radius-sm
+}
