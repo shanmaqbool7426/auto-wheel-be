@@ -142,7 +142,7 @@
         padding-bottom: 1.5rem;
         border-bottom : 2px solid #CCCCCC;
 
-        &:has(.featured-badge){
+        &:has(.featured-badge) {
             border-bottom-color: $primary;
         }
 

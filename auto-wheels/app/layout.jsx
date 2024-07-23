@@ -1,4 +1,4 @@
-import { Inter, Poppins, Roboto } from "next/font/google";
+import { Inter, Poppins, Roboto,DM_Sans } from "next/font/google";
 import "./styles/globals.scss";
 import { ColorSchemeScript, MantineProvider } from '@mantine/core';
 import '@mantine/core/styles.css';
@@ -15,6 +15,10 @@ const poppins = Poppins({
 });
 
 const roboto = Roboto({
+  subsets: ["latin"],
+  weight: ["400", "500", "700"],
+});
+const inter = Inter({
   subsets: ["latin"],
   weight: ["400", "500", "700"],
 });
@@ -37,7 +41,7 @@ export default function RootLayout({ children }) {
 
         <Script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" strategy="beforeInteractive" />
       </head>
-      <body className={roboto.className}>
+      <body className={poppins.className}>
         <Header />
         <MantineProvider theme={theme}>
           {children}
