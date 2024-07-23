@@ -18,3 +18,25 @@
     background: #ff000014;
     border-radius: $border-radius-sm
 }
+
+
+
+
+.social-login-main {
+  width: 100%;
+  padding: 50px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+// social logins
+.login-buttons {
+  display: flex;
+  flex-direction: column;
+  width: 400px ;
+padding: 50px
+}
+
+.socials-btns{
+  height: 47px !important;
+}

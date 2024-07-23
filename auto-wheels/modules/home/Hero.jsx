@@ -4,13 +4,15 @@ import HeroTabs from "@/components/hero-tabs";
 import { BsArrowRight } from "react-icons/bs";
 import { Poppins } from "next/font/google";
 import AccountTypeModal from "../auth/AccountType.jsx"
-import { Button } from '@mantine/core';
+import SocialsLogin from "../auth/SocialsLogins.jsx"
+import { useMantineColorScheme, Button, Group } from '@mantine/core';
 
 const poppin = Poppins({
   subsets: ["latin"],
   weight: ["100", "200", "300", "400", "500", "600", "700", "800", "900"],
 });
 const Hero = () => {
+  const { setColorScheme, clearColorScheme } = useMantineColorScheme();
 
   const [modalOpened, setModalOpened] = useState(false);
 
@@ -54,8 +56,10 @@ const Hero = () => {
       </div>
     </div>
     <Button onClick={() => setModalOpened(true)}>Open Modal</Button>
+    <Button onClick={() => setColorScheme('dark')}>Dark</Button>
+    <Button onClick={() => setColorScheme('light')}>light</Button>
 
-    <AccountTypeModal
+    <SocialsLogin 
         opened={modalOpened}
         onClose={() => setModalOpened(false)}
       />

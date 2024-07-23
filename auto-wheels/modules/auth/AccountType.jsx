@@ -2,6 +2,7 @@ import React from 'react';
 import { Flex, Grid, Modal } from '@mantine/core';
 import Image from 'next/image'
 import personal from "../../public/auth/personal.svg"
+import dealer_icon from "../../public/auth/dealer_icon.svg"
 const AccountTypeModal = ({ opened, onClose }) => {
   return (
     <Modal
@@ -14,36 +15,35 @@ const AccountTypeModal = ({ opened, onClose }) => {
       overlayBlur={3}
     >
 
-      <div className='account-type'>
-        <div className='border w-100'>
+      <h1 className='m-4'>Choose Account Type</h1>
+      <div className='account-type fa'>
 
-          <div className='fa'>
-            <Image
-              src={personal}
-              width={50}
-              height={50}
-              alt="Picture of the author"
-            />
-            <div>
-              <h3>Personal Account</h3>
-              <p>If you work  individual or Want to Brows Listings</p>
-            </div>
+        <div className='fa  personal_account_isActive' >
+          <Image
+            src={personal}
+            width={30}
+            height={30}
+            alt="Picture of the author"
+            className='m-3'
+          />
+          <div>
+            <h3>Personal Account</h3>
+            <p>If you work  individual or Want to Brows Listings</p>
           </div>
-
         </div>
 
-        <div className='border'>
+
+        <div className='fa  personal_account' >
+          <Image
+            src={dealer_icon}
+            width={30}
+            height={30}
+            alt="Picture of the author"
+            className='m-2'
+          />
           <div>
-            <Image
-              src={personal}
-              width={50}
-              height={50}
-              alt="Picture of the author"
-            />
-            <div>
-              <h3>Personal Account</h3>
-              <p>If you work  individual or Want to Brows Listings</p>
-            </div>
+            <h3>Personal Account</h3>
+            <p>If you work  individual or Want to Brows Listings</p>
           </div>
         </div>
 
