@@ -119,13 +119,98 @@
     }
 
     .summary-section {
+        padding-bottom: 2rem;
+        margin-bottom : 2rem;
+        border-bottom : 2px solid #cccccc;
+
         ul li {
-            margin-bottom: .5rem;
+            margin-bottom : .8rem;
+            padding-block : 0.8rem;
+            padding-inline: .5rem;
+            border-bottom : 1px solid #CCCCCC;
+
+            .icon {
+                display     : inline-block;
+                margin-right: .5rem;
+                width       : 18px;
+            }
+
+            span:last-child {
+                float: right;
+            }
 
             .summary-info {
-                width      : 8ch;
-                display    : inline-block;
+                display: inline-block;
+            }
+
+            &:last-child {
+                border-bottom: none;
             }
         }
     }
+
+    .featured-section {
+        padding-bottom: 2rem;
+        margin-bottom : 2rem;
+        border-bottom : 2px solid #cccccc;
+
+        ul {
+            margin-bottom: 0;
+
+            li {
+                width        : calc(calc(100% / 4) - 1%);
+                margin-bottom: 0.8rem;
+            }
+        }
+    }
+
+    .seller-section {
+        padding-bottom: 2rem;
+        margin-bottom : 2rem;
+        border-bottom : 2px solid #cccccc;
+
+        .calc-container {
+            .card {
+                box-shadow: 0px 4px 20px 0px #00000014;
+
+                .card-body {
+                    padding       : 1.5rem;
+                    flex-direction: column;
+                    gap           : 0;
+                }
+
+                .heading {}
+            }
+
+            .duration-wrapper {
+                .duration-btn {
+                    background-color: $white;
+                    border          : 1px solid #3338461A;
+                    font-weight     : 600;
+                    width           : 48px;
+                    height          : 48px;
+                    border-radius   : 48px;
+                    text-align      : center;
+                    box-shadow      : none;
+
+                    &.active {
+                        background-color: $primary;
+                        color           : $white;
+                    }
+                }
+            }
+
+            .emi-card {
+                box-shadow: 0px 4px 20px 0px #00000014;
+                border    : none;
+                margin-top: 1rem;
+
+                .card-body {
+                    padding: 1rem;
+                }
+            }
+
+        }
+    }
+
 }

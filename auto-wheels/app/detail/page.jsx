@@ -1,31 +1,55 @@
 "use client";
 
 import {
+  CalendarIcon,
+  CarKey,
+  ClipboardIcon,
   ClockIcon,
   DocumentSquareIcon,
   DollarIcon,
   FeaturedCrownIcon,
+  FuelIcon,
   FuelTank,
+  GearIcon,
+  HistoryIcon,
   LocationPinIcon,
   MessageIcon,
   MeterSquareIcon,
+  PaintIcon,
   PhoneIcon,
   RanchIcon,
   RatingIcon,
   ReportFlag,
+  RoadIcon,
   SearchIcon,
   ShareSquareIcon,
+  SmallCarIcon,
   SteeringIcon,
+  TransmissionIcon,
   TrustCar,
   VerifiedUser,
   WhatsappIcon,
 } from "@/components/Icons";
 import { BsStarFill, BsStar } from "react-icons/bs";
-import { Card, Image, Text, Title } from "@mantine/core";
+import {
+  Badge,
+  Box,
+  Button,
+  Card,
+  Group,
+  Image,
+  Slider,
+  Text,
+  Title,
+} from "@mantine/core";
 import Link from "next/link";
+import { FaCheckCircle } from "react-icons/fa";
+import { useState } from "react";
 // import Image from "next/image";
 
 export default function ProductDetail() {
+  const [value, setValue] = useState(50);
+  const [endValue, setEndValue] = useState(50);
   return (
     <>
       <section className="product-detail py-5">
@@ -146,21 +170,304 @@ export default function ProductDetail() {
                         <span className="text-muted summary-info">
                           Stock id
                         </span>
-                        <span className="text-dark">143</span>
+                        <span className="text-dark fw-semibold">143</span>
                       </li>
                       <li>
                         <span className="fs-6 text-primary icon">
                           <FuelTank />
                         </span>
                         <span className="text-muted summary-info">Engine</span>
-                        <span className="text-dark">1.6 L</span>
+                        <span className="text-dark fw-semibold">1.6L</span>
+                      </li>
+                      <li>
+                        <span className="fs-6 text-primary icon">
+                          <GearIcon />
+                        </span>
+                        <span className="text-muted summary-info">Drive</span>
+                        <span className="text-dark fw-semibold">FWD</span>
+                      </li>
+                      <li>
+                        <span className="fs-6 text-primary icon">
+                          <CarKey />
+                        </span>
+                        <span className="text-muted summary-info">
+                          Rego Expire
+                        </span>
+                        <span className="text-dark fw-semibold">10/2023</span>
                       </li>
                     </ul>
                   </div>
-                  <div className="col-md-4">2</div>
-                  <div className="col-md-4">3</div>
+                  <div className="col-md-4">
+                    <ul className="list-unstyled">
+                      <li>
+                        <span className="fs-6 text-primary fw-bold icon">
+                          <SmallCarIcon />
+                        </span>
+                        <span className="text-muted summary-info">Body</span>
+                        <span className="text-dark fw-semibold">Sedan</span>
+                      </li>
+                      <li>
+                        <span className="fs-6 text-primary icon">
+                          <RoadIcon />
+                        </span>
+                        <span className="text-muted summary-info">Mileage</span>
+                        <span className="text-dark fw-semibold">48743Km</span>
+                      </li>
+                      <li>
+                        <span className="fs-6 text-primary icon">
+                          <CalendarIcon />
+                        </span>
+                        <span className="text-muted summary-info">Year</span>
+                        <span className="text-dark fw-semibold">2020</span>
+                      </li>
+                      <li>
+                        <span className="fs-6 text-primary icon">
+                          <PaintIcon />
+                        </span>
+                        <span className="text-muted summary-info">
+                          Exterior
+                        </span>
+                        <span className="text-dark fw-semibold">Gray</span>
+                      </li>
+                    </ul>
+                  </div>
+                  <div className="col-md-4">
+                    <ul className="list-unstyled">
+                      <li>
+                        <span className="fs-6 text-primary fw-bold icon">
+                          <FuelIcon />
+                        </span>
+                        <span className="text-muted summary-info">
+                          Fuel Type
+                        </span>
+                        <span className="text-dark fw-semibold">Gasoline</span>
+                      </li>
+                      <li>
+                        <span className="fs-6 text-primary icon">
+                          <TransmissionIcon />
+                        </span>
+                        <span className="text-muted summary-info">
+                          Transmission
+                        </span>
+                        <span className="text-dark fw-semibold">Manual</span>
+                      </li>
+                      <li>
+                        <span className="fs-6 text-primary icon">
+                          <HistoryIcon />
+                        </span>
+                        <span className="text-muted summary-info">History</span>
+                        <span className="text-dark fw-semibold">Coupe</span>
+                      </li>
+                      <li>
+                        <span className="fs-6 text-primary icon">
+                          <ClipboardIcon />
+                        </span>
+                        <span className="text-muted summary-info">
+                          VIN: 15JUHF7HC6HBT
+                        </span>
+                        <span className="text-dark fw-semibold"></span>
+                      </li>
+                    </ul>
+                  </div>
                 </div>
               </section>
+              {/* Summary Section */}
+
+              {/* Featured Section */}
+              <section className="featured-section">
+                <h4 className="section-title fw-semibold mb-4">Feature</h4>
+                <ul className="list-unstyled list-inline">
+                  <li className="list-inline-item">
+                    <span className="icon text-primary me-2 fs-6">
+                      <FaCheckCircle />
+                    </span>
+                    ABS
+                  </li>
+                  <li className="list-inline-item">
+                    <span className="icon text-primary me-2 fs-6">
+                      <FaCheckCircle />
+                    </span>
+                    Alloy wheels
+                  </li>
+                  <li className="list-inline-item">
+                    <span className="icon text-primary me-2 fs-6">
+                      <FaCheckCircle />
+                    </span>
+                    Auxiliary heating
+                  </li>
+                  <li className="list-inline-item">
+                    <span className="icon text-primary me-2 fs-6">
+                      <FaCheckCircle />
+                    </span>
+                    Bluetooth
+                  </li>
+                  <li className="list-inline-item">
+                    <span className="icon text-primary me-2 fs-6">
+                      <FaCheckCircle />
+                    </span>
+                    CD player
+                  </li>
+                  <li className="list-inline-item">
+                    <span className="icon text-primary me-2 fs-6">
+                      <FaCheckCircle />
+                    </span>
+                    Central locking
+                  </li>
+                  <li className="list-inline-item">
+                    <span className="icon text-primary me-2 fs-6">
+                      <FaCheckCircle />
+                    </span>
+                    Launch Control
+                  </li>
+                  <li className="list-inline-item">
+                    <span className="icon text-primary me-2 fs-6">
+                      <FaCheckCircle />
+                    </span>
+                    MP3 player
+                  </li>
+                  <li className="list-inline-item">
+                    <span className="icon text-primary me-2 fs-6">
+                      <FaCheckCircle />
+                    </span>
+                    Software autoupdate
+                  </li>
+                </ul>
+              </section>
+              {/* Featured Section */}
+
+              {/* Seller Section */}
+              <section className="seller-section">
+                <h4 className="section-title fw-semibold mb-4">
+                  Sellers Notes
+                </h4>
+                <p>
+                  Fusce viverra, ligula quis pellentesque interdum, leo felis
+                  congue dui, ac accumsan sem nulla id lorem. Praesent ut
+                  tristique dui, nec condimentum lacus. Maecenas lobortis ante
+                  id egestas placerat. Nullam at ultricies lacus. Nam in nulla
+                  consectetur, suscipit mauris eu, fringilla augue. Phasellus
+                  gravida, dui quis dignissim tempus, tortor orci tristique leo,
+                  ut congue diam ipsum at massa. Pellentesque ut vestibulum
+                  erat. Donec a felis eget tellus laoreet ultrices.
+                </p>
+                <div className="calc-container mt-4">
+                  <div className="card border-0">
+                    <div className="row">
+                      <div className="col-md-7">
+                        <div className="card-body">
+                          <h4 className="heading fw-bold">
+                            EMI calculator
+                            <p className="mt-2 text-muted fw-normal fs-6">
+                              Avail upto 100% of the car value in finance at
+                              attractive interest rates
+                            </p>
+                          </h4>
+                          <div className="slider-wrapper">
+                            <Group
+                              justify="space-between"
+                              align="center"
+                              mb="lg"
+                            >
+                              <Title order={3}>Loan Amount</Title>
+                              <Badge color="#EB2321" size="xl" radius="sm">
+                                Rs 230,000
+                              </Badge>
+                            </Group>
+
+                            <Slider
+                              thumbSize={25}
+                              size="xs"
+                              color="#EB2321"
+                              value={value}
+                              onChange={setValue}
+                              onChangeEnd={setEndValue}
+                            />
+                            <Group justify="space-between" align="center">
+                              <Text mt="xs" size="lg" fw={600}>
+                                Rs {value}
+                              </Text>
+                              <Text mt="xs" size="lg" fw={600}>
+                                Rs {endValue}
+                              </Text>
+                            </Group>
+                          </div>
+                          <div className="slider-wrapper">
+                            <Group
+                              justify="space-between"
+                              align="center"
+                              my="lg"
+                            >
+                              <Title order={3}>Rate of Interest</Title>
+                              <Badge color="#EB2321" size="xl" radius="sm">
+                                18%
+                              </Badge>
+                            </Group>
+
+                            <Slider
+                              thumbSize={25}
+                              size="xs"
+                              color="#EB2321"
+                              value={value}
+                              onChange={setValue}
+                              onChangeEnd={setEndValue}
+                            />
+                            <Group justify="space-between" align="center">
+                              <Text mt="xs" size="lg" fw={600}>
+                                {value}%
+                              </Text>
+                              <Text mt="xs" size="lg" fw={600}>
+                                {endValue}%
+                              </Text>
+                            </Group>
+                          </div>
+                          <div className="duration-wrapper mt-3">
+                            <Title order={3}>
+                              Duration
+                              <Text span fw="normal" ml={5}>
+                                in years
+                              </Text>
+                            </Title>
+                            <Group mt="md" align="center">
+                              <button className="duration-btn">1</button>
+                              <button className="duration-btn">2</button>
+                              <button className="duration-btn active">3</button>
+                              <button className="duration-btn">4</button>
+                              <button className="duration-btn">5</button>
+                              <button className="duration-btn">6</button>
+                              <button className="duration-btn">7</button>
+                            </Group>
+                            <div className="card emi-card">
+                              <div className="card-body align-items-center flex-row justify-content-between">
+                                <div className="left-area">
+                                  <Text size="md">Your Monthly EMI</Text>
+                                  <Title fw={600} order={2}>
+                                    Rs 10,475
+                                  </Title>
+                                </div>
+                                <div className="right">
+                                  <Button
+                                    variant="transparent"
+                                    color="#E90808"
+                                    size="md"
+                                  >
+                                    View Breakup
+                                  </Button>
+                                </div>
+                              </div>
+                            </div>
+                            <Text c="#878787" mt="sm"> 
+                              *Interest rate and loan amount offered may vary
+                              subject to customer risk profile
+                            </Text>
+                          </div>
+                        </div>
+                      </div>
+                      <div className="col-md-5"></div>
+                    </div>
+                  </div>
+                </div>
+              </section>
+              {/* Seller Section */}
             </div>
             <div className="col-md-4">
               <div className="seller-info">

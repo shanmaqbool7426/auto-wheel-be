@@ -1,7 +1,7 @@
-import { Inter, Poppins, Roboto,DM_Sans } from "next/font/google";
+import { Inter, Poppins, Roboto } from "next/font/google";
 import "./styles/globals.scss";
-import { ColorSchemeScript, MantineProvider } from '@mantine/core';
-import '@mantine/core/styles.css';
+import { ColorSchemeScript, MantineProvider } from "@mantine/core";
+import "@mantine/core/styles.css";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 
@@ -30,6 +30,11 @@ export const metadata = {
 
 export default function RootLayout({ children }) {
   const theme = {
+    // fontFamily: inter.style.fontFamily,
+    fontSmoothing: true,
+    // headings: {
+    //   fontFamily: poppins.style.fontFamily,
+    // },
     /** Put your mantine theme override here */
   };
 
@@ -39,13 +44,14 @@ export default function RootLayout({ children }) {
         <ColorSchemeScript />
         <ColorSchemeScript defaultColorScheme="auto" />
 
-        <Script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" strategy="beforeInteractive" />
+        <Script
+          src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
+          strategy="beforeInteractive"
+        />
       </head>
       <body className={poppins.className}>
         <Header />
-        <MantineProvider theme={theme}>
-          {children}
-        </MantineProvider>
+        <MantineProvider theme={theme}>{children}</MantineProvider>
         {/* <MantineProvider>{children}</MantineProvider> */}
 
         <Footer />
