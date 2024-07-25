@@ -11,6 +11,7 @@ import {
   FuelIcon,
   FuelTank,
   GearIcon,
+  GearsHandle,
   HistoryIcon,
   LocationPinIcon,
   MessageIcon,
@@ -33,19 +34,22 @@ import {
 import { BsStarFill, BsStar } from "react-icons/bs";
 import {
   Badge,
-  Box,
   Button,
   Card,
+  Checkbox,
   Group,
   Image,
   Slider,
   Text,
+  Textarea,
+  TextInput,
   Title,
 } from "@mantine/core";
 import Link from "next/link";
 import { FaCheckCircle } from "react-icons/fa";
 import { useState } from "react";
-// import Image from "next/image";
+import NextImage from "next/image";
+import { FaCalendarDays, FaClock, FaLocationDot } from "react-icons/fa6";
 
 export default function ProductDetail() {
   const [value, setValue] = useState(50);
@@ -455,14 +459,30 @@ export default function ProductDetail() {
                                 </div>
                               </div>
                             </div>
-                            <Text c="#878787" mt="sm"> 
+                            <Text c="#878787" mt="sm">
                               *Interest rate and loan amount offered may vary
                               subject to customer risk profile
                             </Text>
+                            <Button
+                              variant="filled"
+                              fullWidth
+                              color="#E90808"
+                              size="lg"
+                              my="md"
+                            >
+                              Interested in Loan
+                            </Button>
+                            <Text>550+ customers availed the facility</Text>
                           </div>
                         </div>
                       </div>
-                      <div className="col-md-5"></div>
+                      <div className="col-md-5">
+                        <Image
+                          alt="My image"
+                          src="/calc-placeholder.svg"
+                          className="image-placeholder"
+                        />
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -476,6 +496,7 @@ export default function ProductDetail() {
                 </h4>
                 <span className="text-muted">Private dealer</span>
                 <div className="row mt-3 mb-4">
+                  z
                   <div className="col">
                     <Card padding="xs" radius="sm" withBorder>
                       <Image
@@ -604,6 +625,229 @@ export default function ProductDetail() {
                 </div>
               </div>
             </div>
+          </div>
+        </div>
+      </section>
+      <section className="contact-seller">
+        <div className="container">
+          <div className="row">
+            <div className="col-md-4">
+              <div className="card border-0 shadow-none contact-seller-info">
+                <div className="card-body card-border">
+                  <div className="seller-info">
+                    <h4 className="fw-semibold mb-1">
+                      Native Americans <VerifiedUser />
+                    </h4>
+                    <span className="text-muted">Private dealer</span>
+                    <div className="row mt-3 mb-4">
+                      <div className="col">
+                        <Card padding="xs" radius="sm" withBorder>
+                          <Image
+                            src="/detail/seller-company.png"
+                            height={160}
+                            alt="Norway"
+                          />
+                        </Card>
+                      </div>
+                      <div className="col">
+                        <div className="rating">
+                          <div className="fs-5 text-warning d-flex align-items-center justify-content-center">
+                            <span>
+                              <BsStarFill />
+                            </span>
+                            <span>
+                              <BsStarFill />
+                            </span>
+                            <span>
+                              <BsStarFill />
+                            </span>
+                            <span>
+                              <BsStar />
+                            </span>
+                            <span>
+                              <BsStar />
+                            </span>
+                            <span className="text-dark ms-2 fs-6">(3/5)</span>
+                          </div>
+                          <span className="d-block text-muted mt-2">
+                            (Review 15)
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+                    <div className="col-12">
+                      <div className="card seller-phone-card mb-3">
+                        <div className="card-body gap-2">
+                          <PhoneIcon />
+                          <h5 className="fw-bold mb-0">(71*******)</h5>
+                          <span className="text-decoration-underline text-muted">
+                            Show Number
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+                    <div className="col-12">
+                      <div className="card whatsapp-icon mb-3">
+                        <div className="card-body gap-2 align-items-center">
+                          <WhatsappIcon />
+                          <h5 className="fw-bold mb-0">CHAT VIA WHATSAPP</h5>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="col-12">
+                      <div className="card address-card mb-3">
+                        <div className="card-body gap-2 align-items-center text-primary">
+                          <LocationPinIcon />
+                          <div className="text-muted address-info">
+                            Gare Du Nord, Rue de Maubeuge, Paris, France
+                            <ul className="list-unstyled mb-0 text-muted mt-2">
+                              <li>
+                                Mon to Fri
+                                <span className="ms-5">
+                                  Timings: 9AM to 9PM
+                                </span>
+                              </li>
+                              <li>
+                                Sat & Sun
+                                <span className="ms-5">
+                                  Timings: 11AM to 6PM{" "}
+                                </span>
+                              </li>
+                            </ul>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div className="col-md-7">
+              <div className="contact-form">
+                <form>
+                  <div className="row">
+                    <div className="col-md-12">
+                      <Text
+                        size="xl"
+                        mb="md"
+                        fw={600}
+                        className="text-uppercase"
+                      >
+                        Message to Seller
+                      </Text>
+                      <Textarea size="md" autosize minRows={10} maxRows={10} />
+                    </div>
+                    <div className="col-md-4">
+                      <TextInput
+                        size="md"
+                        label="Name"
+                        my="md"
+                        placeholder="John Doe"
+                      />
+                    </div>
+                    <div className="col-md-4">
+                      <TextInput
+                        my="md"
+                        size="md"
+                        label="Email"
+                        placeholder="your@email.com"
+                      />
+                    </div>
+                    <div className="col-md-4">
+                      <TextInput
+                        my="md"
+                        size="md"
+                        label="Phone"
+                        placeholder="+91 321 674 9854"
+                      />
+                    </div>
+                    <div className="col-md-12">
+                      <Group gap="md" align="center" mb="md">
+                        <Checkbox />
+                        <Text>
+                          I accept the{" "}
+                          <Link href="#" className="text-decoration-none">
+                            Privacy Policy
+                          </Link>
+                        </Text>
+                      </Group>
+                    </div>
+                    <div className="col-md-12">
+                      <Button type="submit" size="lg" color="#EB2321">
+                        Send Message
+                      </Button>
+                    </div>
+                  </div>
+                </form>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+      <section className="similar-product py-5">
+        <div className="container">
+          <div className="row">
+            <div className="col-md-12">
+              <Title order={2} mb="lg">
+                Similar Results
+              </Title>
+            </div>
+            {[1, 2, 3, 4].map((_, index) => {
+              return (
+                <div className="col-md-3" key={index}>
+                  <div className="card product-card">
+                    <div className="product-image position-relative">
+                      <div className="featured-badge">Special</div>
+                      <div className="product-price">Rs 7,400,000</div>
+                      <NextImage
+                        src="/products/product-placeholder.png"
+                        className="card-img-top object-fit-cover img-fluid"
+                        alt="..."
+                        width={270}
+                        height={160}
+                      />
+                    </div>
+                    <div className="progress-bars">
+                      <span className="single-bar active"></span>
+                      <span className="single-bar"></span>
+                      <span className="single-bar"></span>
+                    </div>
+                    <div class="card-body">
+                      <div className="product-content">
+                        <Link
+                          href={"#"}
+                          className="d-inline-block product-title"
+                        >
+                          Used 3.0 L 2016 Mazda CX-30
+                        </Link>
+                      </div>
+                      <div className="product-meta">
+                        <div className="meta-info d-flex justify-content-between align-items-center">
+                          <span className="text-muted d-flex align-items-center gap-1">
+                            <RoadIcon /> 2500km
+                          </span>
+                          <span className="text-muted d-flex align-items-center gap-1">
+                            <FuelTank /> 2.4 L
+                          </span>
+                          <span className="text-muted d-flex align-items-center gap-1">
+                            <LocationPinIcon /> Lahore
+                          </span>
+                        </div>
+                        <div className="stock-info d-flex justify-content-between align-items-center mt-2">
+                          <span>
+                            <span className="text-muted">stock#</span> 324
+                          </span>
+                          <span className="text-muted">
+                            <FaClock /> (Updated 1 month ago)
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              );
+            })}
           </div>
         </div>
       </section>
