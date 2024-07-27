@@ -1,46 +1,62 @@
-import React from "react";
-import { Flex, Grid, Modal } from "@mantine/core";
+import React, { useState } from "react";
+import { Modal, Text } from "@mantine/core";
 import Image from "next/image";
 import personal from "../../public/auth/personal.svg";
 import dealer_icon from "../../public/auth/dealer_icon.svg";
+
 const AccountTypeModal = ({ opened, onClose }) => {
+  const [activeType, setActiveType] = useState(null);
+
+  const handleAccountTypeClick = (type) => {
+    setActiveType(type);
+  };
+
   return (
     <Modal
       opened={opened}
       onClose={onClose}
+      withCloseButton={false}
       title=""
       centered
       size="auto"
       overlayOpacity={0.55}
       overlayBlur={3}
     >
-      <h1 className="m-4">Choose Account Type</h1>
-      <div className="account-type fa">
-        <div className="fa  personal_account_isActive">
+      <h5 className="m-4 ms-4">Choose Account Type</h5>
+      {/* <Text fw={700} size="sm">Choose Account Type</Text> */}
+
+      <div className="account-type-container">
+        <div
+          className={`account-type-box ${activeType === 'personal' ? 'active' : ''}`}
+          onClick={() => handleAccountTypeClick('personal')}
+        >
           <Image
             src={personal}
             width={30}
             height={30}
-            alt="Picture of the author"
-            className="m-3"
+            alt="Personal Account"
+            className="account-type-icon"
           />
           <div>
-            <h3>Personal Account</h3>
-            <p>If you work individual or Want to Brows Listings</p>
+            <Text fw={700} size="sm">Personal Account</Text>
+            <Text size="sm">If you work individual or Want to Browse Listings</Text>
           </div>
         </div>
 
-        <div className="fa  personal_account">
+        <div
+          className={`account-type-box ${activeType === 'dealer' ? 'active' : ''}`}
+          onClick={() => handleAccountTypeClick('dealer')}
+        >
           <Image
             src={dealer_icon}
             width={30}
             height={30}
-            alt="Picture of the author"
-            className="m-2"
+            alt="Dealer Account"
+            className="account-type-icon"
           />
           <div>
-            <h3>Personal Account</h3>
-            <p>If you work individual or Want to Brows Listings</p>
+            <Text fw={700} size="sm">Dealer Account</Text>
+            <Text size="sm">For Official or Private Dealers who have bulk Listings</Text>
           </div>
         </div>
       </div>

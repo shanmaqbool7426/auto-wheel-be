@@ -185,3 +185,25 @@ footer ul>li a {
   justify-content: space-evenly;
   align-items    : center;
 }
+
+.model-height {
+  height: 550px;
+  width: 500px;
+  overflow-y: hidden; /* Hide vertical scrollbar */
+  overflow-x: hidden; /* Hide horizontal scrollbar */
+}
+.mantine-Carousel-viewport {
+  height: 210px !important;
+}
+.root {
+  &[data-variant='danger'] {
+    background-color: var(--mantine-color-red-9);
+    color: var(--mantine-color-red-0);
+  }
+
+  &[data-variant='primary'] {
+    background: linear-gradient(45deg, #4b6cb7 10%, #253b67 90%);
+    color: var(--mantine-color-white);
+    border-width: 0;
+  }
+}
