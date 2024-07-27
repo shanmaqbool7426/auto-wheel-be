@@ -5,6 +5,9 @@ import { BsArrowRight } from "react-icons/bs";
 import { Poppins } from "next/font/google";
 import AccountTypeModal from "../auth/AccountType.jsx"
 import SocialsLogin from "../auth/SocialsLogins.jsx"
+// import SignIn from "../auth/SignIn.tsx"
+import SignUp from "../auth/SignUp.jsx"
+import Otp from "../auth/Otp.jsx"
 import { useMantineColorScheme, Button, Group } from '@mantine/core';
 
 const poppin = Poppins({
@@ -59,10 +62,15 @@ const Hero = () => {
     <Button onClick={() => setColorScheme('dark')}>Dark</Button>
     <Button onClick={() => setColorScheme('light')}>light</Button>
 
-    <SocialsLogin 
+    {/* <SocialsLogin 
+        opened={modalOpened}
+        onClose={() => setModalOpened(false)}
+      /> */}
+    <AccountTypeModal 
         opened={modalOpened}
         onClose={() => setModalOpened(false)}
       />
+
     </>
   );
 };

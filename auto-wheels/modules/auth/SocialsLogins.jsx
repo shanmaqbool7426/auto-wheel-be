@@ -21,35 +21,57 @@ const SocialsLogin = ({ opened, onClose }) => {
       overlayOpacity={0.55}
       overlayBlur={3}
     >
+<div className='model-height'>
 
-      <h1 className='m-4'>Choose Account Type</h1>
+      {/* <h1 className='m-4'>Choose Account Type</h1> */}
       <Carousel
         height={180}
         nextControlIcon={<IconArrowRight style={{ width: rem(16), height: rem(16) }} />}
         previousControlIcon={<IconArrowLeft style={{ width: rem(16), height: rem(16) }} />}
       >
         <Carousel.Slide>
-          <div className='d-flex justify-content-center'>
-            <Image width={120}
-              height={120} src={car} alt="Google" />
-              {/* <h1>New Car Alert</h1>
-              <p>Create alerts quickly and get notified when new car available</p> */}
+          <div>
+            <div className='d-flex justify-content-center'>
+              <Image width={120}
+                height={120} src={car} alt="Google" />
+
+            </div>
+            <div className='text-center'>
+            <h5>New Car Alert</h5>
+            <p className='px-3'>Create alerts quickly and get notified when new car available</p>
+            </div>
           </div>
+
+        </Carousel.Slide>
+
+        <Carousel.Slide>
+          <div>
+            <div className='d-flex justify-content-center'>
+              <Image width={120}
+                height={120} src={car} alt="Google" />
+
+            </div>
+            <div className='text-center'>
+            <h5>New Car Alert</h5>
+            <p className='px-3'>Create alerts quickly and get notified when new car available</p>
+            </div>
+          </div>
+
         </Carousel.Slide>
         <Carousel.Slide>
-          <div className='d-flex justify-content-center'>
-            <Image width={120}
-              height={120} src={car} alt="Google" />
-                {/* <h1>New Car Alert</h1>
-                <p>Create alerts quickly and get notified when new car available</p> */}
-          </div></Carousel.Slide>
-        <Carousel.Slide>
-          <div className='d-flex justify-content-center'>
-            <Image width={120}
-              height={120} src={car} alt="Google" />
-                {/* <h1>New Car Alert</h1>
-                <p>Create alerts quickly and get notified when new car available</p> */}
-          </div></Carousel.Slide>
+          <div>
+            <div className='d-flex justify-content-center'>
+              <Image width={120}
+                height={120} src={car} alt="Google" />
+
+            </div>
+            <div className='text-center'>
+              <h5>New Car Alert</h5>
+              <p className='px-3'>Create alerts quickly and get notified when new car available</p>
+            </div>
+          </div>
+
+        </Carousel.Slide>
         {/* ...other slides */}
       </Carousel>
       <div className="login-buttons">
@@ -70,6 +92,9 @@ const SocialsLogin = ({ opened, onClose }) => {
             height={30} src={email_icon} alt="Email" /> Continue with Email
         </Button>
       </div>
+      </div>
+
+      <p className='text-center my-1'>Don't have am account ? <b> Sign Up</b> </p>
 
     </Modal>
   );

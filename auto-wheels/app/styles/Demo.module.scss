@@ -1,0 +1,21 @@
+.root {
+    &[data-variant='danger'] {
+      background-color: var(--mantine-color-red-9);
+      color: var(--mantine-color-red-0);
+    }
+  
+    &[data-variant='primary'] {
+      background: #E90808;
+      color: var(--mantine-color-white);
+      border-width: 0;
+    }
+  }
+
+  .input {
+    transition: none;
+    &:focus-within {
+      outline: 1px solid #E90808;
+      border-color: transparent;
+    }
+  }
+  

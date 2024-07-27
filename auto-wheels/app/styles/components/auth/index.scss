@@ -1,25 +1,44 @@
-.account-type {
-    width        : 511px;
-    padding      : 30px;
-    margin-bottom: 41px !important;
+.account-type-container {
+  display: flex;
+  justify-content: space-between;
+  width: 511px;
+  padding: 30px;
+  margin-bottom: 41px !important;
+}
+.account-type-container {
+  display: flex;
+  justify-content: space-between;
+  width: 511px;
+  padding: 30px;
+  margin-bottom: 41px !important;
 }
 
-.personal_account {
-    height       : 143px;
-    width        : 213px;
-    border       : 1px solid silver;
-    border-radius: $border-radius-sm
+.account-type-box {
+  display: flex;
+  align-items: center;
+  padding: 10px;
+  height: 103px;
+  width: 213px;
+  border: 1px solid silver;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: border-color 0.3s ease, background-color 0.3s ease;
+
+  &.active {
+    border: 2px dotted #ff8f8f;
+    background: #ff000014;
+
+    .account-type-icon {
+      filter: invert(33%) sepia(99%) saturate(7470%) hue-rotate(354deg) brightness(92%) contrast(110%);
+    }
+  }
 }
 
-.personal_account_isActive {
-    height       : 143px;
-    width        : 213px;
-    border       : 2px dotted #ff8f8f;
-    background   : #ff000014;
-    border-radius: $border-radius-sm
+.account-type-icon {
+  margin-right: 15px;
+  transition: filter 0.3s ease;
+  filter: invert(76%) sepia(2%) saturate(0%) hue-rotate(182deg) brightness(75%) contrast(84%);
 }
-
-
 
 
 .social-login-main {
@@ -29,14 +48,13 @@
   flex-direction: column;
   justify-content: center;
 }
-// social logins
+
 .login-buttons {
   display: flex;
   flex-direction: column;
-  width: 400px ;
-padding: 50px
+  margin: 7px;
 }
 
-.socials-btns{
+.socials-btns {
   height: 47px !important;
 }
