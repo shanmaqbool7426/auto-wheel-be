@@ -1,4 +1,4 @@
-import { Inter, Poppins, Roboto } from "next/font/google";
+import { Inter, Poppins, Roboto, Lato } from "next/font/google";
 import "./styles/globals.scss";
 import { ColorSchemeScript, MantineProvider } from "@mantine/core";
 import "@mantine/core/styles.css";
@@ -18,6 +18,10 @@ const roboto = Roboto({
   subsets: ["latin"],
   weight: ["400", "500", "700"],
 });
+const lato = Lato({
+  subsets: ["latin"],
+  weight: ["100", "300", "400", "700", "900"],
+});
 const inter = Inter({
   subsets: ["latin"],
   weight: ["400", "500", "700"],
@@ -30,11 +34,11 @@ export const metadata = {
 
 export default function RootLayout({ children }) {
   const theme = {
-    // fontFamily: inter.style.fontFamily,
+    fontFamily: inter.style.fontFamily,
     fontSmoothing: true,
-    // headings: {
-    //   fontFamily: poppins.style.fontFamily,
-    // },
+    headings: {
+      fontFamily: poppins.style.fontFamily,
+    },
     /** Put your mantine theme override here */
   };
 
@@ -49,7 +53,7 @@ export default function RootLayout({ children }) {
           strategy="beforeInteractive"
         />
       </head>
-      <body className={poppins.className}>
+      <body className={inter.className}>
         <Header />
         <MantineProvider theme={theme}>{children}</MantineProvider>
         {/* <MantineProvider>{children}</MantineProvider> */}

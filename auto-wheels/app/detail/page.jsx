@@ -54,6 +54,7 @@ import { FaCalendarDays, FaClock, FaLocationDot } from "react-icons/fa6";
 export default function ProductDetail() {
   const [value, setValue] = useState(50);
   const [endValue, setEndValue] = useState(50);
+
   return (
     <>
       <section className="product-detail py-5">
@@ -496,7 +497,6 @@ export default function ProductDetail() {
                 </h4>
                 <span className="text-muted">Private dealer</span>
                 <div className="row mt-3 mb-4">
-                  z
                   <div className="col">
                     <Card padding="xs" radius="sm" withBorder>
                       <Image
@@ -803,7 +803,7 @@ export default function ProductDetail() {
                       <NextImage
                         src="/products/product-placeholder.png"
                         className="card-img-top object-fit-cover img-fluid"
-                        alt="..."
+                        alt="Product Placeholder"
                         width={270}
                         height={160}
                       />
