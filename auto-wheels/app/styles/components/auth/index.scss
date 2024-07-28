@@ -5,12 +5,10 @@
   padding: 30px;
   margin-bottom: 41px !important;
 }
-.account-type-container {
-  display: flex;
-  justify-content: space-between;
-  width: 511px;
-  padding: 30px;
-  margin-bottom: 41px !important;
+
+.signup-modal {
+  width: 450px;
+  padding: 0px 65px;
 }
 
 .account-type-box {
@@ -20,6 +18,7 @@
   height: 103px;
   width: 213px;
   border: 1px solid silver;
+  margin-bottom: 30px;
   border-radius: 8px;
   cursor: pointer;
   transition: border-color 0.3s ease, background-color 0.3s ease;
@@ -52,9 +51,13 @@
 .login-buttons {
   display: flex;
   flex-direction: column;
-  margin: 7px;
+  margin: 7px 30px;
 }
 
 .socials-btns {
   height: 47px !important;
+}
+
+.alerts-quickly {
+  margin: 0px 72px;
 }

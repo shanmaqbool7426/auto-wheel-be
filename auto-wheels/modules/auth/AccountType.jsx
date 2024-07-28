@@ -3,15 +3,19 @@ import { Modal, Text } from "@mantine/core";
 import Image from "next/image";
 import personal from "../../public/auth/personal.svg";
 import dealer_icon from "../../public/auth/dealer_icon.svg";
+import SocialsLogin from "./SocialsLogins";
 
 const AccountTypeModal = ({ opened, onClose }) => {
-  const [activeType, setActiveType] = useState(null);
+  const [activeType, setActiveType] = useState('personal');
+  const [modalOpened, setModalOpened] = useState(false);
 
   const handleAccountTypeClick = (type) => {
+    setModalOpened(true)
     setActiveType(type);
+    onClose()
   };
-
   return (
+    <>
     <Modal
       opened={opened}
       onClose={onClose}
@@ -22,10 +26,10 @@ const AccountTypeModal = ({ opened, onClose }) => {
       overlayOpacity={0.55}
       overlayBlur={3}
     >
-      <h5 className="m-4 ms-4">Choose Account Type</h5>
-      {/* <Text fw={700} size="sm">Choose Account Type</Text> */}
+      {/* <h5 className="m-4 ms-4">Choose Account Type</h5> */}
+      <Text fw={700} fz="lg" size="md" className="mt-5 mb-1  ms-4 ps-1">Choose Account Type</Text>
 
-      <div className="account-type-container">
+      <div className="account-type-container ">
         <div
           className={`account-type-box ${activeType === 'personal' ? 'active' : ''}`}
           onClick={() => handleAccountTypeClick('personal')}
@@ -61,6 +65,12 @@ const AccountTypeModal = ({ opened, onClose }) => {
         </div>
       </div>
     </Modal>
+
+    <SocialsLogin
+        socialOpened={modalOpened}
+        socialOnClose={() => setModalOpened(false)}
+      />
+    </>
   );
 };
 

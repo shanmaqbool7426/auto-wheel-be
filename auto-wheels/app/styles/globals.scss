@@ -188,7 +188,7 @@ footer ul>li a {
 
 .model-height {
   height: 550px;
-  width: 500px;
+  width: 450px;
   overflow-y: hidden; /* Hide vertical scrollbar */
   overflow-x: hidden; /* Hide horizontal scrollbar */
 }
@@ -206,4 +206,16 @@ footer ul>li a {
     color: var(--mantine-color-white);
     border-width: 0;
   }
+}
+.socials-btns-inner{
+  display: flex;
+    justify-content: space-around;
+    width: 222px !important;
+    align-items: center;
+}
+.primary {
+  color: #E90808;
+}
+.cursor{
+  cursor: pointer;
 }

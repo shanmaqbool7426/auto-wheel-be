@@ -1,9 +1,14 @@
+import AccountTypeModal from "@/modules/auth/AccountType";
 import Image from "next/image";
 import Link from "next/link";
+import { useState } from "react";
 import { Stack } from "react-bootstrap";
 
 const Header = () => {
+	const [modalOpened, setModalOpened] = useState(false);
+
   return (
+	<>
     <header className="site-header bg-white py-3 theme-header">
       <nav className="container">
         <div className="row align-items-center">
@@ -51,7 +56,7 @@ const Header = () => {
           </div>
           <div className="col-lg-3">
             <Stack direction="horizontal" gap={2}>
-              <button className="btn btn-outline-primary ms-auto">Login</button>
+              <button className="btn btn-outline-primary ms-auto" onClick={()=>setModalOpened(true)}>Login</button>
               <button className="btn btn-primary">Post an Ad</button>
             </Stack>
           </div>
@@ -142,6 +147,11 @@ const Header = () => {
 </div> 
 </nav> */}
     </header>
+	<AccountTypeModal
+        opened={modalOpened}
+        onClose={() => setModalOpened(false)}
+      />
+	</>
   );
 };
 

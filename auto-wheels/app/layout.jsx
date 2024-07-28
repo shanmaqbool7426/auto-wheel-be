@@ -2,7 +2,7 @@
 import { Inter, Poppins, Roboto } from "next/font/google";
 import "./styles/globals.scss";
 import classes from "./styles/Demo.module.scss";
-import { ColorSchemeScript, createTheme, MantineProvider, Button, TextInput, Input } from "@mantine/core";
+import { ColorSchemeScript, createTheme, MantineProvider, Button, TextInput, Input, Checkbox } from "@mantine/core";
 
 import "@mantine/core/styles.css";
 import Header from "@/components/Header";
@@ -36,23 +36,21 @@ const theme = createTheme({
         input: classes.input,
       },
     }),
+    Checkbox: Checkbox.extend({
+      classNames: {
+        input: classes.input,
+      },
+    }),
+    InputWrapper: Input.Wrapper.extend({
+      classNames: {
+        label: classes.input_label,
+      },
+    }),
+
   },
-  // '#E90808', '#FEF3F3', '#F05252'
-  // '#333333 ', '#AAAAAA', '#F3F3F3'
-    colors: {
-      primary: [
-        '#E90808',
-        '#FEF3F3',
-        '#F05252',
-      ],
-      secondary: [
-        '#333333',
-        '#AAAAAA',
-        
-      ],
-    },
-  defaultRadius: 'sm'
- 
+  defaultRadius: 'sm',
+  fontFamily: 'system-ui',
+
 });
 
 export default function RootLayout({ children }) {
@@ -67,10 +65,12 @@ export default function RootLayout({ children }) {
         />
       </head>
       <body className={poppins.className}>
-        <Header />
-        <MantineProvider theme={theme}>{children}</MantineProvider>
-        <Footer />
+        <MantineProvider theme={theme}>
+          <Header />
+          {children}
+          <Footer />
+        </MantineProvider>
       </body>
-    </html>
+    </html >
   );
 }

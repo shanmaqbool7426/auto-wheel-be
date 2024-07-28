@@ -1,21 +1,33 @@
 .root {
-    &[data-variant='danger'] {
-      background-color: var(--mantine-color-red-9);
-      color: var(--mantine-color-red-0);
-    }
-  
-    &[data-variant='primary'] {
-      background: #E90808;
-      color: var(--mantine-color-white);
-      border-width: 0;
-    }
+  &[data-variant='danger'] {
+    background-color: var(--mantine-color-red-9);
+    color: var(--mantine-color-red-0);
   }
 
-  .input {
-    transition: none;
-    &:focus-within {
-      outline: 1px solid #E90808;
-      border-color: transparent;
-    }
+  &[data-variant='primary'] {
+    background: #E90808;
+    color: white !important;
+    border-width: 0;
   }
-  
+}
+
+.input {
+  transition: none;
+
+  &:focus-within {
+    outline: 1px solid #E90808;
+    border-color: transparent;
+  }
+}
+
+.input_label {
+  color: #565656;
+  margin: 5px 0px;
+  font-size: medium;
+}
+
+.mantine-focus-auto {
+ 
+    background-color: #E90808;
+    cursor: default;
+}

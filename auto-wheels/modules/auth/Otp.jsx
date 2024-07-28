@@ -3,12 +3,11 @@ import { Modal, Button, Group, PasswordInput, Text, PinInput, Center } from '@ma
 import { Fieldset, TextInput } from '@mantine/core';
 import classes from '../../app/styles/Demo.module.scss';
 
-function Otp() {
-    const [opened, { open, close }] = useDisclosure(false);
+function Otp({otpOpen,otpClose}) {
 
     return (
         <>
-            <Modal opened={true} onClose={close} title="">
+            <Modal opened={otpOpen} onClose={otpClose} title="">
                 <h5>Forgot Password!!</h5>
                 <Text ta="center">If you've forgotten your account password, Enter your email below and we will send you an email with instructions to reset your account.</Text>
                 <Center maw={400} h={100} >

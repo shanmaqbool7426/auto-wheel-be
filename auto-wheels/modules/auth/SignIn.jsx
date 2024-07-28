@@ -3,12 +3,12 @@ import { Modal, Button, Group, PasswordInput, Text } from '@mantine/core';
 import { Fieldset, TextInput } from '@mantine/core';
 import classes from '../../app/styles/Demo.module.scss';
 
-function SignIn() {
-    const [opened, { open, close }] = useDisclosure(false);
+function SignIn({signOpen, signInClose}) {
+    // const [opened, { open, close }] = useDisclosure(false);
 
     return (
         <>
-            <Modal opened={true} onClose={close} title="">
+            <Modal opened={signOpen} onClose={signInClose} title="">
                 <h5>Let’s get you started!</h5>
                 <Fieldset legend="" variant="unstyled" className='mx-5'>
                     <TextInput label="Email" placeholder="Enter email" className='my-3'         classNames={classes}
