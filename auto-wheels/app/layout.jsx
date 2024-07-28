@@ -4,12 +4,13 @@ import "./styles/globals.scss";
 import classes from "./styles/Demo.module.scss";
 import {
   ColorSchemeScript,
-  createTheme,
   MantineProvider,
   Button,
   TextInput,
   Input,
+  Checkbox,
 } from "@mantine/core";
+
 import "@mantine/core/styles.css";
 import "@mantine/carousel/styles.css";
 import Header from "@/components/Header";
@@ -32,36 +33,32 @@ const inter = Inter({
 });
 
 // Theme configuration
-// const theme = createTheme({
-//   components: {
-//     Button: Button.extend({
-//       classNames: classes,
-//     }),
-//     Input: Input.extend({
-//       classNames: {
-//         input: classes.input,
-//       },
-//     }),
-//   },
-//   // '#E90808', '#FEF3F3', '#F05252'
-//   // '#333333 ', '#AAAAAA', '#F3F3F3'
-//   colors: {
-//     primary: ["#E90808", "#FEF3F3", "#F05252"],
-//     secondary: ["#333333", "#AAAAAA"],
-//   },
-//   defaultRadius: "sm",
-// });
+const theme = {
+  components: {
+    Button: {
+      classNames: classes,
+    },
+    Input: {
+      classNames: {
+        input: classes.input,
+      },
+    },
+    Checkbox: {
+      classNames: {
+        input: classes.input,
+      },
+    },
+    InputWrapper: {
+      classNames: {
+        label: classes.input_label,
+      },
+    },
+  },
+  defaultRadius: "sm",
+  fontFamily: "system-ui",
+};
 
 export default function RootLayout({ children }) {
-  const theme = {
-    fontFamily: inter.style.fontFamily,
-    fontSmoothing: true,
-    headings: {
-      fontFamily: poppins.style.fontFamily,
-    },
-    /** Put your mantine theme override here */
-  };
-
   return (
     <html lang="en">
       <head>
@@ -72,10 +69,12 @@ export default function RootLayout({ children }) {
           strategy="beforeInteractive"
         />
       </head>
-      <body className={inter.className}>
-        <Header />
-        <MantineProvider theme={theme}>{children}</MantineProvider>
-        <Footer />
+      <body className={poppins.className}>
+        <MantineProvider theme={theme}>
+          <Header />
+          {children}
+          <Footer />
+        </MantineProvider>
       </body>
     </html>
   );

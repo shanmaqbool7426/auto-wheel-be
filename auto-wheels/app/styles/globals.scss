@@ -73,7 +73,7 @@ $image-opacity  : 100%;
 @import "./components/header";
 @import "./components/modal";
 @import "./components/auth/index";
-@import "./components/product";
+// @import "./components/product";
 
 // Import Section Styles
 @import "./sections/hero";
@@ -122,7 +122,7 @@ footer ul>li a {
 
 .model-height {
   height    : 550px;
-  width     : 500px;
+  width     : 450px;
   overflow-y: hidden;
   /* Hide vertical scrollbar */
   overflow-x: hidden;
@@ -144,4 +144,19 @@ footer ul>li a {
     color       : var(--mantine-color-white);
     border-width: 0;
   }
+}
+
+.socials-btns-inner {
+  display        : flex;
+  justify-content: space-around;
+  width          : 222px !important;
+  align-items    : center;
+}
+
+.primary {
+  color: #E90808;
+}
+
+.cursor {
+  cursor: pointer;
 }

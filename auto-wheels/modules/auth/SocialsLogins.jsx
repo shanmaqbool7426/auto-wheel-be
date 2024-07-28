@@ -1,5 +1,5 @@
-import React from "react";
-import { Button, Flex, Grid, Modal } from "@mantine/core";
+import React, { useState } from "react";
+import { Button, Flex, Grid, Modal, Text } from "@mantine/core";
 import Image from "next/image";
 import google_icon from "../../public/auth/google_icon.svg";
 import car from "../../public/auth/car.svg";
@@ -8,96 +8,139 @@ import email_icon from "../../public/auth/email_icon.svg";
 import apple_icon from "../../public/auth/apple_icon.svg";
 import { rem } from "@mantine/core";
 import { Carousel } from "@mantine/carousel";
-import "@mantine/carousel/styles.css";
 import { IconArrowRight, IconArrowLeft } from "@tabler/icons-react";
-const SocialsLogin = ({ opened, onClose }) => {
+import "@mantine/carousel/styles.css";
+import SignUp from "./SignUp";
+
+import classes from "../../app/styles/Demo.module.scss";
+const SocialsLogin = ({ socialOpened, socialOnClose }) => {
+  const [modalOpened, setModalOpened] = useState(false);
+
   return (
-    <Modal
-      opened={opened}
-      onClose={onClose}
-      title=""
-      centered
-      size="auto"
-      overlayOpacity={0.55}
-      overlayBlur={3}
-    >
-      <div className="model-height">
-        {/* <h1 className='m-4'>Choose Account Type</h1> */}
-        <Carousel
-          height={180}
-          nextControlIcon={
-            <IconArrowRight style={{ width: rem(16), height: rem(16) }} />
-          }
-          previousControlIcon={
-            <IconArrowLeft style={{ width: rem(16), height: rem(16) }} />
-          }
-        >
-          <Carousel.Slide>
-            <div>
-              <div className="d-flex justify-content-center">
-                <Image width={120} height={120} src={car} alt="Google" />
-              </div>
-              <div className="text-center">
-                <h5>New Car Alert</h5>
-                <p className="px-3">
-                  Create alerts quickly and get notified when new car available
-                </p>
-              </div>
-            </div>
-          </Carousel.Slide>
+    <>
+      <Modal
+        opened={socialOpened}
+        onClose={socialOnClose}
+        title=""
+        centered
+        size="auto"
+        overlayOpacity={0.55}
+        overlayBlur={3}
+        withCloseButton={false}
+      >
+        <div className="model-height">
+          {/* <h1 className='m-4'>Choose Account Type</h1> */}
+          <Carousel
+            height={180}
+            classNames={classes}
+            nextControlIcon={
+              <IconArrowRight style={{ width: rem(16), height: rem(16) }} />
+            }
+            previousControlIcon={
+              <IconArrowLeft style={{ width: rem(16), height: rem(16) }} />
+            }
+          >
+            <Carousel.Slide>
+              <div>
+                <div className="d-flex justify-content-center">
+                  <Image width={120} height={120} src={car} alt="Google" />
+                </div>
+                <div className="text-center">
+                  <Text fw={700}>New Car Alert</Text>
 
-          <Carousel.Slide>
-            <div>
-              <div className="d-flex justify-content-center">
-                <Image width={120} height={120} src={car} alt="Google" />
+                  <p className="alerts-quickly">
+                    Create alerts quickly and get notified when new car
+                    available
+                  </p>
+                </div>
               </div>
-              <div className="text-center">
-                <h5>New Car Alert</h5>
-                <p className="px-3">
-                  Create alerts quickly and get notified when new car available
-                </p>
+            </Carousel.Slide>
+
+            <Carousel.Slide>
+              <div>
+                <div className="d-flex justify-content-center">
+                  <Image width={120} height={120} src={car} alt="Google" />
+                </div>
+                <div className="text-center">
+                  <Text fw={700}>New Car Alert</Text>
+                  <p className="alerts-quickly">
+                    Create alerts quickly and get notified when new car
+                    available
+                  </p>
+                </div>
               </div>
-            </div>
-          </Carousel.Slide>
-          <Carousel.Slide>
-            <div>
-              <div className="d-flex justify-content-center">
-                <Image width={120} height={120} src={car} alt="Google" />
+            </Carousel.Slide>
+            <Carousel.Slide>
+              <div>
+                <div className="d-flex justify-content-center">
+                  <Image width={120} height={120} src={car} alt="Google" />
+                </div>
+                <div className="text-center">
+                  <Text fw={700}>New Car Alert</Text>
+                  <p className="alerts-quickly">
+                    Create alerts quickly and get notified when new car
+                    available
+                  </p>
+                </div>
               </div>
-              <div className="text-center">
-                <h5>New Car Alert</h5>
-                <p className="px-3">
-                  Create alerts quickly and get notified when new car available
-                </p>
+            </Carousel.Slide>
+            {/* ...other slides */}
+          </Carousel>
+          <div className="login-buttons">
+            <Button className="socials-btns google-btn m-2 " variant="default">
+              <div className="socials-btns-inner">
+                <Image width={30} height={30} src={google_icon} alt="Google" />
+                <div>Continue with Google</div>
               </div>
-            </div>
-          </Carousel.Slide>
-          {/* ...other slides */}
-        </Carousel>
-        <div className="login-buttons">
-          <Button className="socials-btns google-btn m-3 " variant="default">
-            <Image width={30} height={30} src={google_icon} alt="Google" />{" "}
-            Continue with Google
-          </Button>
-          <Button className="socials-btns facebook-btn m-3 " variant="default">
-            <Image width={30} height={30} src={facebook_icon} alt="Facebook" />{" "}
-            Continue with Facebook
-          </Button>
-          <Button className="socials-btns apple-btn m-3" variant="default">
-            <Image width={30} height={30} src={apple_icon} alt="Apple" />{" "}
-            Continue with Apple
-          </Button>
-          <Button className="socials-btns email-btn m-3" variant="default">
-            <Image width={30} height={30} src={email_icon} alt="Email" />{" "}
-            Continue with Email
-          </Button>
+            </Button>
+
+            <Button
+              className="socials-btns facebook-btn m-2 "
+              variant="default"
+            >
+              <div className="socials-btns-inner">
+                <Image
+                  width={30}
+                  height={30}
+                  src={facebook_icon}
+                  alt="Facebook"
+                />
+                <div>Continue with Facebook</div>
+              </div>
+            </Button>
+            <Button className="socials-btns apple-btn m-2" variant="default">
+              <div className="socials-btns-inner">
+                <Image width={30} height={30} src={apple_icon} alt="Apple" />
+                <div>Continue with Apple</div>
+              </div>
+            </Button>
+            <Button className="socials-btns email-btn m-2" variant="default">
+              <div className="socials-btns-inner">
+                <Image width={30} height={30} src={email_icon} alt="Email" />
+                <div>Continue with Email</div>
+              </div>
+            </Button>
+          </div>
+          <p className="text-center">
+            Don't have am account ?{" "}
+            <b
+              className="primary cursor"
+              onClick={() => {
+                setModalOpened(true);
+                socialOnClose();
+              }}
+            >
+              {" "}
+              Sign Up
+            </b>{" "}
+          </p>
         </div>
-      </div>
-
-      <p className="text-center my-1">
-        Don't have am account ? <b> Sign Up</b>{" "}
-      </p>
-    </Modal>
+      </Modal>
+      <SignUp
+        signUpOpened={modalOpened}
+        signUpOnClose={() => setModalOpened(false)}
+      />
+    </>
   );
 };
 

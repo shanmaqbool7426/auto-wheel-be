@@ -58,18 +58,18 @@ const Hero = () => {
         </div>
       </div>
     </div>
-    <Button onClick={() => setModalOpened(true)}>Open Modal</Button>
+    {/* <Button onClick={() => setModalOpened(true)}>Open Modal</Button>
     <Button onClick={() => setColorScheme('dark')}>Dark</Button>
-    <Button onClick={() => setColorScheme('light')}>light</Button>
+    <Button onClick={() => setColorScheme('light')}>light</Button> */}
 
     {/* <SocialsLogin 
         opened={modalOpened}
         onClose={() => setModalOpened(false)}
       /> */}
-    <AccountTypeModal 
+    {/* <AccountTypeModal 
         opened={modalOpened}
         onClose={() => setModalOpened(false)}
-      />
+      /> */}
 
     </>
   );
