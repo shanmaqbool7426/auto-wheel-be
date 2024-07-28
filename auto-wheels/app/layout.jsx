@@ -1,8 +1,8 @@
-'use client';
+"use client";
 import { Inter, Poppins, Roboto } from "next/font/google";
 import "./styles/globals.scss";
 import classes from "./styles/Demo.module.scss";
-import { ColorSchemeScript, createTheme, MantineProvider, Button, TextInput, Input, Checkbox } from "@mantine/core";
+import { ColorSchemeScript, MantineProvider, Button, TextInput, Input, Checkbox } from "@mantine/core";
 
 import "@mantine/core/styles.css";
 import Header from "@/components/Header";
@@ -19,39 +19,36 @@ const roboto = Roboto({
   subsets: ["latin"],
   weight: ["400", "500", "700"],
 });
-
 const inter = Inter({
   subsets: ["latin"],
   weight: ["400", "500", "700"],
 });
 
 // Theme configuration
-const theme = createTheme({
+const theme = {
   components: {
-    Button: Button.extend({
+    Button: {
       classNames: classes,
-    }),
-    Input: Input.extend({
+    },
+    Input: {
       classNames: {
         input: classes.input,
       },
-    }),
-    Checkbox: Checkbox.extend({
+    },
+    Checkbox: {
       classNames: {
         input: classes.input,
       },
-    }),
-    InputWrapper: Input.Wrapper.extend({
+    },
+    InputWrapper: {
       classNames: {
         label: classes.input_label,
       },
-    }),
-
+    },
   },
   defaultRadius: 'sm',
   fontFamily: 'system-ui',
-
-});
+};
 
 export default function RootLayout({ children }) {
   return (
@@ -71,6 +68,6 @@ export default function RootLayout({ children }) {
           <Footer />
         </MantineProvider>
       </body>
-    </html >
+    </html>
   );
 }

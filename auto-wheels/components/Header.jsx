@@ -26,7 +26,7 @@ const Header = () => {
                     role="button"
                     data-bs-toggle="dropdown"
                     aria-expanded="false"
-                    href={"#"}
+                    href={"listing/cars"}
                   >
                     Car
                   </Link>
@@ -43,13 +43,13 @@ const Header = () => {
                   </ul>
                 </li>
                 <li className="list-inline-item dropdown">
-                  <Link href={"#"}>Bike</Link>
+                  <Link href={"/listing/bikes"}>Bike</Link>
                 </li>
                 <li className="list-inline-item dropdown">
-                  <Link href={"#"}>Truck</Link>
+                  <Link href={"/listing/trucks"}>Truck</Link>
                 </li>
                 <li className="list-inline-item dropdown">
-                  <Link href={"#"}>Blogs</Link>
+                  <Link href={"/blogs"}>Blogs</Link>
                 </li>
               </ul>
             </div>
