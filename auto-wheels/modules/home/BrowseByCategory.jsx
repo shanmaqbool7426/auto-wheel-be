@@ -1,31 +1,29 @@
+import { Anchor, Flex, Text, Title } from "@mantine/core";
 import Image from "next/image";
 import Link from "next/link";
 import React from "react";
 
 const BrowseByCategory = () => {
   return (
-    <div className="browse-cats-section py-5">
+    <div className="browse-cats-section py-5 bg-light">
       <div className="container">
         <div className="row">
           <div className="col-lg-6">
-            <div className="d-flex align-items-center justify-content-between">
-              <h3 className="category-title fw-bold mb-0">
-                Browse by
-                <span className="text-primary text-decoration-underline ms-1">
+            <Flex justify="space-between" align="center" mb="xl">
+              <Title order={2}>
+                Browse by{" "}
+                <Text span c="#E90808" inherit>
                   Make
-                </span>
-              </h3>
-              <Link
-                href={"#"}
-                className="text-primary float-end text-decoration-none"
-              >
+                </Text>
+              </Title>
+              <Anchor component={Link} href="#" c="pink">
                 Show all Makes
-              </Link>
-            </div>
+              </Anchor>
+            </Flex>
             <div className="cat-by-brand">
-              <div className="row mt-5">
+              <div className="row">
                 <div className="col-sm-3">
-                  <div className="d-flex flex-column single-brand-item">
+                  <Flex direction="column" className="single-brand-item">
                     <Image
                       width={100}
                       height={100}
@@ -33,10 +31,10 @@ const BrowseByCategory = () => {
                       className="mx-auto text-center"
                     />
                     <Link href={"#"}>Acura</Link>
-                  </div>
+                  </Flex>
                 </div>
                 <div className="col-sm-3">
-                  <div className="d-flex flex-column single-brand-item">
+                  <Flex direction="column" className="single-brand-item">
                     <Image
                       width={100}
                       height={100}
@@ -44,10 +42,10 @@ const BrowseByCategory = () => {
                       className="mx-auto text-center"
                     />
                     <Link href={"#"}>Bentley</Link>
-                  </div>
+                  </Flex>
                 </div>
                 <div className="col-sm-3">
-                  <div className="d-flex flex-column single-brand-item">
+                  <Flex direction="column" className="single-brand-item">
                     <Image
                       width={100}
                       height={100}
@@ -55,10 +53,10 @@ const BrowseByCategory = () => {
                       className="mx-auto text-center"
                     />
                     <Link href={"#"}>BMW</Link>
-                  </div>
+                  </Flex>
                 </div>
                 <div className="col-sm-3">
-                  <div className="d-flex flex-column single-brand-item">
+                  <Flex direction="column" className="single-brand-item">
                     <Image
                       width={100}
                       height={100}
@@ -66,11 +64,11 @@ const BrowseByCategory = () => {
                       className="mx-auto text-center"
                     />
                     <Link href={"#"}>Chevrolet</Link>
-                  </div>
+                  </Flex>
                 </div>
 
                 <div className="col-sm-3">
-                  <div className="d-flex flex-column single-brand-item">
+                  <Flex direction="column" className="single-brand-item">
                     <Image
                       width={100}
                       height={100}
@@ -78,10 +76,10 @@ const BrowseByCategory = () => {
                       className="mx-auto text-center"
                     />
                     <Link href={"#"}>Ford</Link>
-                  </div>
+                  </Flex>
                 </div>
                 <div className="col-sm-3">
-                  <div className="d-flex flex-column single-brand-item">
+                  <Flex direction="column" className="single-brand-item">
                     <Image
                       width={70}
                       height={100}
@@ -89,10 +87,10 @@ const BrowseByCategory = () => {
                       className="mx-auto text-center"
                     />
                     <Link href={"#"}>Honda</Link>
-                  </div>
+                  </Flex>
                 </div>
                 <div className="col-sm-3">
-                  <div className="d-flex flex-column single-brand-item">
+                  <Flex direction="column" className="single-brand-item">
                     <Image
                       width={80}
                       height={100}
@@ -100,10 +98,10 @@ const BrowseByCategory = () => {
                       className="mx-auto text-center"
                     />
                     <Link href={"#"}>Hyundai</Link>
-                  </div>
+                  </Flex>
                 </div>
                 <div className="col-sm-3">
-                  <div className="d-flex flex-column single-brand-item">
+                  <Flex direction="column" className="single-brand-item">
                     <Image
                       width={100}
                       height={100}
@@ -111,30 +109,28 @@ const BrowseByCategory = () => {
                       className="mx-auto text-center"
                     />
                     <Link href={"#"}>KIA</Link>
-                  </div>
+                  </Flex>
                 </div>
               </div>
             </div>
           </div>
           <div className="col-lg-6 ps-5">
-            <div className="d-flex align-items-center justify-content-between">
-              <h3 className="category-title fw-bold mb-0">
-                Browse by
-                <span className="text-primary text-decoration-underline ms-1">
+            <Flex justify="space-between" align="center" mb="xl">
+              <Title order={2}>
+                Browse by{" "}
+                <Text span c="#E90808" inherit>
                   Body
-                </span>
-              </h3>
-              <Link
-                href={"#"}
-                className="text-primary float-end text-decoration-none"
-              >
+                </Text>
+              </Title>
+              <Anchor component={Link} href="#" c="pink">
                 Show all Makes
-              </Link>
-            </div>
+              </Anchor>
+            </Flex>
+
             <div className="cat-by-brand cat-by-body">
-              <div className="row mt-5">
+              <div className="row">
                 <div className="col-sm-3">
-                  <div className="d-flex flex-column single-brand-item">
+                  <Flex className="single-brand-item" direction="column">
                     <Image
                       width={100}
                       height={100}
@@ -142,10 +138,10 @@ const BrowseByCategory = () => {
                       className="mx-auto text-center"
                     />
                     <Link href={"#"}>Convertible</Link>
-                  </div>
+                  </Flex>
                 </div>
                 <div className="col-sm-3">
-                  <div className="d-flex flex-column single-brand-item">
+                  <Flex className="single-brand-item" direction="column">
                     <Image
                       width={100}
                       height={100}
@@ -153,10 +149,10 @@ const BrowseByCategory = () => {
                       className="mx-auto text-center"
                     />
                     <Link href={"#"}>Coupe</Link>
-                  </div>
+                  </Flex>
                 </div>
                 <div className="col-sm-3">
-                  <div className="d-flex flex-column single-brand-item">
+                  <Flex className="single-brand-item" direction="column">
                     <Image
                       width={100}
                       height={100}
@@ -164,10 +160,10 @@ const BrowseByCategory = () => {
                       className="mx-auto text-center"
                     />
                     <Link href={"#"}>Hatchback</Link>
-                  </div>
+                  </Flex>
                 </div>
                 <div className="col-sm-3">
-                  <div className="d-flex flex-column single-brand-item">
+                  <Flex className="single-brand-item" direction="column">
                     <Image
                       width={100}
                       height={100}
@@ -175,10 +171,10 @@ const BrowseByCategory = () => {
                       className="mx-auto text-center"
                     />
                     <Link href={"#"}>Minivan</Link>
-                  </div>
+                  </Flex>
                 </div>
                 <div className="col-sm-3">
-                  <div className="d-flex flex-column single-brand-item">
+                  <Flex className="single-brand-item" direction="column">
                     <Image
                       width={100}
                       height={100}
@@ -186,10 +182,10 @@ const BrowseByCategory = () => {
                       className="mx-auto text-center"
                     />
                     <Link href={"#"}>Pickups</Link>
-                  </div>
+                  </Flex>
                 </div>
                 <div className="col-sm-3">
-                  <div className="d-flex flex-column single-brand-item">
+                  <Flex className="single-brand-item" direction="column">
                     <Image
                       width={100}
                       height={100}
@@ -197,10 +193,10 @@ const BrowseByCategory = () => {
                       className="mx-auto text-center"
                     />
                     <Link href={"#"}>Sedan</Link>
-                  </div>
+                  </Flex>
                 </div>
                 <div className="col-sm-3">
-                  <div className="d-flex flex-column single-brand-item">
+                  <Flex className="single-brand-item" direction="column">
                     <Image
                       width={100}
                       height={100}
@@ -208,10 +204,10 @@ const BrowseByCategory = () => {
                       className="mx-auto text-center"
                     />
                     <Link href={"#"}>Sport Cars</Link>
-                  </div>
+                  </Flex>
                 </div>
                 <div className="col-sm-3">
-                  <div className="d-flex flex-column single-brand-item">
+                  <Flex className="single-brand-item" direction="column">
                     <Image
                       width={100}
                       height={100}
@@ -219,7 +215,7 @@ const BrowseByCategory = () => {
                       className="mx-auto text-center"
                     />
                     <Link href={"#"}>SUV</Link>
-                  </div>
+                  </Flex>
                 </div>
               </div>
             </div>

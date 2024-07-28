@@ -10,8 +10,8 @@ import {
   TextInput,
   Input,
 } from "@mantine/core";
-
 import "@mantine/core/styles.css";
+import "@mantine/carousel/styles.css";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import Script from "next/script";

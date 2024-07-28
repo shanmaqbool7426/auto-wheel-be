@@ -1,26 +1,36 @@
+import {
+  Flex,
+  Text,
+  Title,
+  Anchor,
+  Rating,
+  Button,
+  Group,
+} from "@mantine/core";
 import Image from "next/image";
 import Link from "next/link";
 import React from "react";
-import { FaRegStar } from "react-icons/fa";
 
 const ComparisonProducts = () => {
   return (
-    <section className="comparison-products py-5">
+    <section className="comparison-products bg-light py-5">
       <div className="container">
         <div className="row">
           <div className="col">
-            <div className="category-title d-flex justify-content-between align-items-center">
-              <h3 className="fw-bold mb-0">
-                Top
-                <span className="text-primary ms-1">Comparison</span>
-              </h3>
-              <Link href={"#"} className="float-end text-decoration-none">
+            <Flex justify="space-between" align="center" mb="xl">
+              <Title order={2}>
+                Top{" "}
+                <Text span c="#E90808" inherit>
+                  Comparison
+                </Text>
+              </Title>
+              <Anchor component={Link} href="#" c="#E90808">
                 Show all Comparison
-              </Link>
-            </div>
+              </Anchor>
+            </Flex>
           </div>
           <div className="col-lg-12">
-            <div className="row mt-4">
+            <div className="row">
               {[1, 2, 3, 4, 5, 6].map((_, index) => {
                 return (
                   <>
@@ -46,39 +56,40 @@ const ComparisonProducts = () => {
                           </div>
                         </div>
                         <div className="card-body">
-                          <div className="product-content row">
-                            <div className="product-info col">
+                          <Group justify="space-between">
+                            <Flex direction="column" gap="5">
+                              <Text fw={500}> 2016 Ford Escape Cape</Text>
+                              <Flex align="center" justify="center" gap={5}>
+                                <Rating defaultValue={2} />
+                                (4/5)
+                              </Flex>
+                            </Flex>
+                            <Flex direction="column" gap="5">
+                              <Text fw={500}> 2016 Ford Escape Cape</Text>
+                              <Flex align="center" justify="center" gap={5}>
+                                <Rating defaultValue={2} />
+                                (4/5)
+                              </Flex>
+                            </Flex>
+                            {/* <div className="product-info col">
                               2016 Ford Escape Cape
                               <span className="d-block mt-2">
-                                <span className="text-warning">
-                                  <FaRegStar />
-                                  <FaRegStar />
-                                  <FaRegStar />
-                                  <FaRegStar />
-                                  <FaRegStar />
-                                </span>
-                                (4/5)
+                                <Flex align="center" justify="center" gap={5}>
+                                  <Rating defaultValue={2} />
+                                  (4/5)
+                                </Flex>
                               </span>
-                            </div>
-                            <div className="product-info col">
-                              2016 Ford Escape Cape
-                              <span className="d-block mt-2">
-                                <span className="text-warning">
-                                  <FaRegStar />
-                                  <FaRegStar />
-                                  <FaRegStar />
-                                  <FaRegStar />
-                                  <FaRegStar />
-                                </span>
-                                (4/5)
-                              </span>
-                            </div>
-                            <div className="d-grid mt-4">
-                              <button className="btn btn-outline-primary btn-compare">
-                                Compare
-                              </button>
-                            </div>
-                          </div>
+                            </div> */}
+
+                            <Button
+                              variant="outline"
+                              color="#E90808"
+                              fullWidth
+                              size="md"
+                            >
+                              Compare
+                            </Button>
+                          </Group>
                         </div>
                       </div>
                     </div>

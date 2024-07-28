@@ -6,31 +6,11 @@
         text-decoration: none;
 
         .play-button {
-            position: absolute;
-            top     : 30%;
-            left    : 44%;
-
-            svg {
-                width : auto;
-                height: 80px;
-            }
-        }
-
-        img {
-            border-radius: 5px;
-            object-fit   : cover;
-        }
-
-        .larger-thumb {
-            img {
-                min-height: 387px;
-
-            }
+            top : calc(calc(376px / 2) - 25px);
+            left: calc(calc(636px / 2) - 25px)
         }
 
         .title {
-            color: #111111;
-
             &:hover {
                 color: $primary;
             }
@@ -44,6 +24,18 @@
             svg {
                 width : auto;
                 height: auto;
+            }
+        }
+    }
+
+    .video-thumbnail-sm {
+        .play-button {
+            top : calc(calc(181px / 2) - 25px);
+            left: calc(calc(306px / 2) - 25px);
+
+            svg {
+                width : 50px;
+                height: 50px;
             }
         }
     }

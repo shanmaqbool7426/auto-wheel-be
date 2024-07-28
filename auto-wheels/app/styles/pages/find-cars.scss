@@ -1,0 +1,26 @@
+.background-search-verlay {
+    background-color: rgba(233, 8, 8, 0.8);
+    height      : 200px;
+}
+
+.breadcrumb {
+    .breadcrumb-item {
+        a {
+            color: #FFFFFFB2 !important;
+        }
+
+        &:before {
+            color: $white !important;
+        }
+
+        &.active {
+            a {
+                color      : $white !important;
+                font-weight: 500;
+            }
+        }
+    }
+}
+
+.popular-new-cars{
+}
