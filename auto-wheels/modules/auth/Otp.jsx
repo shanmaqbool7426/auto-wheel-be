@@ -16,7 +16,7 @@ function Otp() {
 
   return (
     <>
-      <Modal opened={true} onClose={close} title="">
+      <Modal opened={false} onClose={close} title="">
         <h5>Forgot Password!!</h5>
         <Text ta="center">
           If you've forgotten your account password, Enter your email below and

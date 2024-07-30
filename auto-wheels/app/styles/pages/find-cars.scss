@@ -1,6 +1,6 @@
 .background-search-verlay {
     background-color: rgba(233, 8, 8, 0.8);
-    height      : 200px;
+    height          : 200px;
 }
 
 .breadcrumb {
@@ -22,5 +22,18 @@
     }
 }
 
-.popular-new-cars{
+
+.quick-links {
+    ul {
+        margin-bottom: 0;
+
+        >li {
+            margin-bottom: 0.6rem;
+
+            a {
+                color    : #878787;
+                font-size: 14px;
+            }
+        }
+    }
 }

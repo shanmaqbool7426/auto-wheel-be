@@ -34,28 +34,11 @@ const inter = Inter({
 
 // Theme configuration
 const theme = {
-  components: {
-    Button: {
-      classNames: classes,
-    },
-    Input: {
-      classNames: {
-        input: classes.input,
-      },
-    },
-    Checkbox: {
-      classNames: {
-        input: classes.input,
-      },
-    },
-    InputWrapper: {
-      classNames: {
-        label: classes.input_label,
-      },
-    },
+  fontFamily: inter.style.fontFamily,
+  fontSmoothing: true,
+  headings: {
+    fontFamily: poppins.style.fontFamily,
   },
-  defaultRadius: "sm",
-  fontFamily: "system-ui",
 };
 
 export default function RootLayout({ children }) {
@@ -69,7 +52,7 @@ export default function RootLayout({ children }) {
           strategy="beforeInteractive"
         />
       </head>
-      <body className={poppins.className}>
+      <body>
         <MantineProvider theme={theme}>
           <Header />
           {children}

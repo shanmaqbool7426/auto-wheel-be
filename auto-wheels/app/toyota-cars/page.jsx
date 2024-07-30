@@ -4,12 +4,9 @@ import {
   Anchor,
   Box,
   Group,
-  Badge,
   Button,
   Card,
   Title,
-  Input,
-  Select,
   Text,
   Image,
   Flex,
@@ -17,25 +14,17 @@ import {
   rem,
   Grid,
   Tabs,
-  SimpleGrid,
+  Center,
 } from "@mantine/core";
-import {
-  CarComparisonSmall,
-  CarSmall,
-  GearsHandle,
-  SmallReviewIcon,
-} from "@/components/Icons";
-import QuickLinks from "@/components/QuickLinks";
-
-import { IconSearch } from "@tabler/icons-react";
-import BrowseByCategory from "@/modules/home/BrowseByCategory";
+import NextImage from "next/image";
 import ComparisonProducts from "@/modules/home/ComparisonProducts";
 import BrowseVideos from "@/modules/home/BrowseVideos";
 import BrowseBlogs from "@/modules/home/BrowseBlogs";
 import { Carousel } from "@mantine/carousel";
 import Link from "next/link";
+import FAQ from "@/components/Faq";
 
-const NewCarsFindSection = () => {
+const NewCarsDetailPage = () => {
   const tagsArray = [
     { name: "All (601)", isSelected: true },
     { name: "Service (39)" },
@@ -46,10 +35,21 @@ const NewCarsFindSection = () => {
     { name: "Power (53)" },
     { name: "More ..." },
   ];
+  const brandsURLs = [
+    { url: "/brands/acura.svg", name: "Acura" },
+    { url: "/brands/hyundai.svg", name: "Hyundai", isHeightLarger: false },
+    { url: "/brands/ford.svg", name: "Ford" },
+    { url: "/brands/kia.svg", name: "KIA" },
+    { url: "/brands/nissan.svg", name: "Nissan" },
+    { url: "/brands/bmw.svg", name: "BMW" },
+    { url: "/brands/bentley.svg", name: "Bentley" },
+    { url: "/brands/toyota.svg", name: "Toyota" },
+    { url: "/brands/chevrolet.svg", name: "Chevrolet" },
+  ];
   return (
     <>
       <section className="find-cars">
-        <Box className="background-search-verlay" mb="100">
+        <Box className="background-search-verlay" mb="220">
           <div className="container">
             <div className="row">
               <div className="col-md-12">
@@ -63,98 +63,56 @@ const NewCarsFindSection = () => {
                     </li>
                   </ol>
                 </nav>
-                <Group>
-                  <Button
-                    leftSection={<CarSmall />}
-                    variant="light"
-                    radius="md"
-                    size="md"
-                    bg="#333"
-                    c="white"
-                    autoContrast
-                  >
-                    New Cars
-                  </Button>
-                  <Button
-                    leftSection={<CarSmall />}
-                    variant="light"
-                    size="md"
-                    radius="md"
-                    bg="white"
-                    c="#333"
-                    autoContrast
-                  >
-                    Used Cars
-                  </Button>
-                  <Button
-                    leftSection={<CarComparisonSmall />}
-                    variant="light"
-                    size="md"
-                    radius="md"
-                    bg="white"
-                    c="#333"
-                    autoContrast
-                  >
-                    Car Comparison
-                  </Button>
-                  <Button
-                    leftSection={<SmallReviewIcon />}
-                    variant="light"
-                    size="md"
-                    radius="md"
-                    bg="white"
-                    c="#333"
-                    autoContrast
-                  >
-                    Car Reviews
-                  </Button>
-                </Group>
               </div>
               <div className="col-md-12">
-                <Box className="search-wrapper-card" mt="xl">
+                <Box className="search-wrapper-card">
                   <Card
                     shadow="0px 4px 20px 0px #00000014"
                     padding="lg"
-                    radius="md"
+                    radius="sm"
                   >
                     <Title order={3} mb="md">
-                      Find New Cars in Pakistan
+                      Toyota 2023 Car Models, Prices & Pictures in Pakistan
                     </Title>
                     <div className="row mb-2">
                       <div className="col-md-3">
-                        <Input
-                          size="md"
-                          radius="md"
-                          placeholder="Search by Car Make or Model"
-                          leftSection={<IconSearch size={16} />}
-                        />
+                        <Card shadow="none" h="100%" withBorder py="lg">
+                          <Flex
+                            direction="column"
+                            gap="xs"
+                            justify="center"
+                            align="center"
+                          >
+                            <Image
+                              src="/brands/toyota.svg"
+                              alt="Toyota Logo"
+                              h={100}
+                              w={100}
+                            />
+                            <Title order={5} fw={600} c="#E90808">
+                              Toyota Pricelist
+                            </Title>
+                            <Button variant="outline" color="#E90808" mt="sm">
+                              Used Toyota Cars for sale
+                            </Button>
+                          </Flex>
+                        </Card>
                       </div>
-                      <div className="col-md-3">
-                        <Select
-                          size="md"
-                          radius="md"
-                          leftSection={<GearsHandle />}
-                          placeholder="Choose Make"
-                          data={["React", "Angular", "Vue", "Svelte"]}
-                        />
-                      </div>
-                      <div className="col-md-3">
-                        <Select
-                          size="md"
-                          radius="md"
-                          placeholder="Choose Make"
-                          data={["React", "Angular", "Vue", "Svelte"]}
-                        />
-                      </div>
-                      <div className="col-md-3">
-                        <Button
-                          fullWidth
-                          size="md"
-                          radius="md"
-                          bg="#E90808"
-                          leftSection={<IconSearch size={16} />}
-                        >
-                          Search
+                      <div className="col-md-9">
+                        <Text mb="md">
+                          The prices of a Toyota Car in Pakistan start from PKR
+                          4,399,000.0 for a new Toyota Yaris to PKR
+                          156,829,000.0 for a new Toyota Land Cruiser. There are
+                          currently 12 new car models available at Toyota
+                          dealerships across Pakistan. Toyota Cars are also
+                          widely available in used conditions starting from PKR
+                          180,000 for a used Toyota Corolla to PKR 145,000,000
+                          for a used Toyota Land Cruiser. There are a total of
+                          26648 Toyota Cars available for sale in Pakistan on
+                          PakWheels.
+                        </Text>
+                        <Button color="#E90808" autoContrast fw={500}>
+                          Read More
                         </Button>
                       </div>
                     </div>
@@ -165,8 +123,7 @@ const NewCarsFindSection = () => {
           </div>
         </Box>
 
-        <BrowseByCategory />
-        <section className="popular-new-cars py-5">
+        <section className="popular-new-cars bg-light py-5">
           <div className="container">
             <div className="row">
               <Box className="col-md-12" mb="xl">
@@ -217,60 +174,13 @@ const NewCarsFindSection = () => {
             </div>
           </div>
         </section>
-        <section className="newly-launched-cars bg-light py-5">
-          <div className="container">
-            <div className="row">
-              <Box className="col-md-12" mb="xl">
-                <Title order={2}>
-                  Newly Launched{" "}
-                  <Text span c="#E90808" inherit>
-                    Cars
-                  </Text>
-                </Title>
-              </Box>
-              {[...Array(4).keys()].map((_, index) => {
-                return (
-                  <Box className="col-md-3">
-                    <Card
-                      shadow="0px 4px 20px 0px #00000014"
-                      pb="xl"
-                      pt="0"
-                      px="0"
-                      mb="xl"
-                    >
-                      <Image
-                        p="lg"
-                        pt="xl"
-                        src="/find-cars/img-square.png"
-                        height={130}
-                        alt="Mehran"
-                        className="img-fluid"
-                      />
 
-                      <Flex direction="column" align="center" gap="xs">
-                        <Title order={5} fw={500} c="#E90808">
-                          Toyota Corolla
-                        </Title>
-                        <Text fw={600} fs="xl">
-                          Rs 54.79 - 75.49 Lacs
-                        </Text>
-                        <Text span inherit>
-                          (Launched Expected 2024*)
-                        </Text>
-                      </Flex>
-                    </Card>
-                  </Box>
-                );
-              })}
-            </div>
-          </div>
-        </section>
         <section className="upcoming-cars py-5">
           <div className="container">
             <div className="row">
               <Box className="col-md-12" mb="xl">
                 <Title order={2}>
-                  Newly Launched{" "}
+                  Upcoming{" "}
                   <Text span c="#E90808" inherit>
                     Cars
                   </Text>
@@ -305,108 +215,6 @@ const NewCarsFindSection = () => {
                         <Text span inherit>
                           (Launched Expected 2024*)
                         </Text>
-                      </Flex>
-                    </Card>
-                  </Box>
-                );
-              })}
-            </div>
-          </div>
-        </section>
-        <section className="cars-by-model bg-light py-5">
-          <div className="container">
-            <div className="row">
-              <Box className="col-md-12" mb="xl">
-                <Title order={2}>
-                  Toyota New Car{" "}
-                  <Text span c="#E90808" inherit>
-                    Models
-                  </Text>
-                </Title>
-              </Box>
-              {[...Array(8).keys()].map((_, index) => {
-                return (
-                  <Box className="col-md-3">
-                    <Card
-                      shadow="0px 4px 20px 0px #00000014"
-                      pb="xl"
-                      pt="0"
-                      px="0"
-                      mb="xl"
-                    >
-                      <Image
-                        p="lg"
-                        pt="xl"
-                        src="/find-cars/img-square.png"
-                        height={130}
-                        alt="Mehran"
-                        className="img-fluid"
-                      />
-
-                      <Flex direction="column" align="center" gap="xs">
-                        <Title order={5} fw={500} c="#E90808">
-                          Toyota Corolla
-                        </Title>
-                        <Text fw={600} fs="xl">
-                          Rs 54.79 - 75.49 Lacs
-                        </Text>
-                        <Flex align="center" justify="center" gap="xs">
-                          <Rating defaultValue={2} />
-                          <Text span inherit>
-                            (3/5)
-                          </Text>
-                        </Flex>
-                      </Flex>
-                    </Card>
-                  </Box>
-                );
-              })}
-            </div>
-          </div>
-        </section>
-        <section className="cars-by-model py-5">
-          <div className="container">
-            <div className="row">
-              <Box className="col-md-12" mb="xl">
-                <Title order={2}>
-                  Honda New Car{" "}
-                  <Text span c="#E90808" inherit>
-                    Models
-                  </Text>
-                </Title>
-              </Box>
-              {[...Array(8).keys()].map((_, index) => {
-                return (
-                  <Box className="col-md-3">
-                    <Card
-                      shadow="0px 4px 20px 0px #00000014"
-                      pb="xl"
-                      pt="0"
-                      px="0"
-                      mb="xl"
-                    >
-                      <Image
-                        p="lg"
-                        pt="xl"
-                        src="/find-cars/img-square.png"
-                        height={130}
-                        alt="Mehran"
-                        className="img-fluid"
-                      />
-
-                      <Flex direction="column" align="center" gap="xs">
-                        <Title order={5} fw={500} c="#E90808">
-                          Toyota Corolla
-                        </Title>
-                        <Text fw={600} fs="xl">
-                          Rs 54.79 - 75.49 Lacs
-                        </Text>
-                        <Flex align="center" justify="center" gap="xs">
-                          <Rating defaultValue={2} />
-                          <Text span inherit>
-                            (3/5)
-                          </Text>
-                        </Flex>
                       </Flex>
                     </Card>
                   </Box>
@@ -538,10 +346,59 @@ const NewCarsFindSection = () => {
           </div>
         </section>
 
-        <QuickLinks />
+        <section className="brands-faq-section pb-5">
+          <div className="container">
+            <div className="row">
+              <div className="col-md-12">
+                <Title order={2} mb="lg">
+                  Toyota{" "}
+                  <Text span c="#E90808" inherit>
+                    Alternatives
+                  </Text>
+                </Title>
+              </div>
+
+              <div className="brands-carousel my-3">
+                <Carousel
+                  loop
+                  withControls={true}
+                  slideSize="14.28571%"
+                  slideGap=""
+                  align="start"
+                  slidesToScroll={7}
+                >
+                  {brandsURLs.map((item, index) => {
+                    return (
+                      <Carousel.Slide key={index}>
+                        <Flex
+                          direction="column"
+                          justify="center"
+                          align="center"
+                          className="single-brand-item"
+                        >
+                          <NextImage
+                            width={100}
+                            height={100}
+                            src={item.url}
+                            className="mx-auto text-center"
+                          />
+                          <Anchor component={Link} href="#" c="#333">
+                            {item.name}
+                          </Anchor>
+                        </Flex>
+                      </Carousel.Slide>
+                    );
+                  })}
+                </Carousel>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <FAQ />
       </section>
     </>
   );
 };
 
-export default NewCarsFindSection;
+export default NewCarsDetailPage;
