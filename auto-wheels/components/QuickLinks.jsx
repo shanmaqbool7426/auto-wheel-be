@@ -3,12 +3,12 @@ import { Box, Title, SimpleGrid, Anchor } from "@mantine/core";
 import Link from "next/link";
 import React from "react";
 
-const QuickLinks = () => {
+const QuickLinks = ({ titlePopular, titleUsed }) => {
   return (
     <section className="quick-links py-5">
       <Box className="container">
         <SimpleGrid cols={1} mb="md">
-          <Title order={3}>Popular Used Trucks</Title>
+          <Title order={3}>{titlePopular ? titlePopular : "Popular Used Trucks"}</Title>
         </SimpleGrid>
         <SimpleGrid cols={{ base: 2, sm: 2, md: 6, lg: 6, xl: 6 }} spacing="md">
           <ul className="list-unstyled">
@@ -102,7 +102,7 @@ const QuickLinks = () => {
 
         {/* Used Car Links */}
         <SimpleGrid cols={1} mb="md" mt="md">
-          <Title order={3}>Used Cars by City</Title>
+          <Title order={3}>{titleUsed ? titleUsed : "Used Cars by City"}</Title>
         </SimpleGrid>
         <SimpleGrid cols={{ base: 2, sm: 2, md: 6, lg: 6, xl: 6 }} spacing="md">
           <ul className="list-unstyled">

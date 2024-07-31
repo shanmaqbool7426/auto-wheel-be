@@ -11,19 +11,24 @@ import Image from "next/image";
 import Link from "next/link";
 import React from "react";
 
-const ComparisonProducts = () => {
+const ComparisonProducts = ({ title }) => {
   return (
     <section className="comparison-products bg-light py-5">
       <div className="container">
         <div className="row">
           <div className="col">
             <Flex justify="space-between" align="center" mb="xl">
-              <Title order={2}>
-                Top{" "}
-                <Text span c="#E90808" inherit>
-                  Comparison
-                </Text>
-              </Title>
+              {title ? (
+                <Title order={2}>{title}</Title>
+              ) : (
+                <Title order={2}>
+                  Top{" "}
+                  <Text span c="#E90808" inherit>
+                    Comparison
+                  </Text>
+                </Title>
+              )}
+
               <Anchor component={Link} href="#" c="#E90808">
                 Show all Comparison
               </Anchor>

@@ -35,15 +35,16 @@ import {
   IconCameraFilled,
   IconStar,
 } from "@tabler/icons-react";
+import ProductCard from "@/components/ui/ProductCard";
 
 const BlogModule = () => {
   return (
     <>
-      <section className="blog-page py-5">
-        <div className="container">
-          <div className="row ">
-            <div className="col-md-6">
-              <Box h={"100%"}>
+      <Box component="section" className="blog-page py-5">
+        <Box className="container">
+          <Box className="row ">
+            <Box className="col-md-6">
+              <Box h="100%">
                 <BackgroundImage
                   h={450}
                   src="/blogs/blog-placeholder.png"
@@ -56,7 +57,7 @@ const BlogModule = () => {
                     align="flex-start"
                     justify="flex-end"
                   >
-                    <Link href={"#"} className="text-decoration-none">
+                    <Link href="#" className="text-decoration-none">
                       <Title c="white" fw={500} order={4} mb="xs" lineClamp={2}>
                         BackgroundImage component can be used to add any content
                         on image. It is useful for hero headers and other
@@ -67,10 +68,10 @@ const BlogModule = () => {
                   </Flex>
                 </BackgroundImage>
               </Box>
-            </div>
-            <div className="col-md-6">
-              <div className="row">
-                <div className="col-md-6">
+            </Box>
+            <Box className="col-md-6">
+              <Box className="row">
+                <Box className="col-md-6">
                   <Box h={214} mb={"md"}>
                     <BackgroundImage
                       h={214}
@@ -100,8 +101,8 @@ const BlogModule = () => {
                       </Flex>
                     </BackgroundImage>
                   </Box>
-                </div>
-                <div className="col-md-6">
+                </Box>
+                <Box className="col-md-6">
                   <Box h={214} mb={"md"}>
                     <BackgroundImage
                       h={214}
@@ -131,10 +132,10 @@ const BlogModule = () => {
                       </Flex>
                     </BackgroundImage>
                   </Box>
-                </div>
-              </div>
-              <div className="row">
-                <div className="col-md-6">
+                </Box>
+              </Box>
+              <Box className="row">
+                <Box className="col-md-6">
                   <Box h={214} mb={"md"}>
                     <BackgroundImage
                       h={214}
@@ -164,8 +165,8 @@ const BlogModule = () => {
                       </Flex>
                     </BackgroundImage>
                   </Box>
-                </div>
-                <div className="col-md-6">
+                </Box>
+                <Box className="col-md-6">
                   <Box h={214} mb={"md"}>
                     <BackgroundImage
                       h={214}
@@ -195,10 +196,10 @@ const BlogModule = () => {
                       </Flex>
                     </BackgroundImage>
                   </Box>
-                </div>
-              </div>
-            </div>
-          </div>
+                </Box>
+              </Box>
+            </Box>
+          </Box>
 
           {/* Recent Post Section */}
           <section className="recent-posts my-5 border-bottom pb-5 mb-5">
@@ -208,8 +209,8 @@ const BlogModule = () => {
                 Posts
               </Text>
             </Title>
-            <div className="row">
-              <div className="col-md-8">
+            <Box className="row">
+              <Box className="col-md-8">
                 {[1, 2, 3, 4, 5].map((_, index) => {
                   return (
                     <>
@@ -244,7 +245,7 @@ const BlogModule = () => {
                               justify="space-between"
                               align="center"
                             >
-                              <div className="left d-flex gap-2">
+                              <Box className="left d-flex gap-2">
                                 <Text
                                   span
                                   size="sm"
@@ -263,8 +264,8 @@ const BlogModule = () => {
                                   <EyeIcon />
                                   56
                                 </Text>
-                              </div>
-                              <div className="right">
+                              </Box>
+                              <Box className="right">
                                 <Text
                                   span
                                   className="d-flex gap-1 align-items-center"
@@ -273,7 +274,7 @@ const BlogModule = () => {
                                   <ViewIcon />
                                   10
                                 </Text>
-                              </div>
+                              </Box>
                             </Flex>
                             <Text lineClamp={4} size="sm">
                               Atlas Honda, commonly known as Honda Bikes, has
@@ -335,7 +336,7 @@ const BlogModule = () => {
                         justify="space-between"
                         align="center"
                       >
-                        <div className="left d-flex gap-2">
+                        <Box className="left d-flex gap-2">
                           <Text
                             span
                             size="sm"
@@ -354,8 +355,8 @@ const BlogModule = () => {
                             <EyeIcon />
                             56
                           </Text>
-                        </div>
-                        <div className="right">
+                        </Box>
+                        <Box className="right">
                           <Text
                             span
                             className="d-flex gap-1 align-items-center"
@@ -364,7 +365,7 @@ const BlogModule = () => {
                             <ViewIcon />
                             10
                           </Text>
-                        </div>
+                        </Box>
                       </Flex>
                       <Text lineClamp={4} size="sm">
                         Atlas Honda, commonly known as Honda Bikes, has recorded
@@ -456,8 +457,8 @@ const BlogModule = () => {
                   </Grid.Col>
                 </Grid>
                 {/* Two Cols Grid Posts */}
-              </div>
-              <div className="col-md-4">
+              </Box>
+              <Box className="col-md-4">
                 <Card
                   shadow="0px 4px 20px 0px #00000014"
                   padding="md"
@@ -633,19 +634,19 @@ const BlogModule = () => {
                     </Badge>
                   </Group>
                 </Card>
-              </div>
-            </div>
+              </Box>
+            </Box>
           </section>
           <section className="tips-section">
-            <div className="row">
+            <Box className="row">
               <Title order={2} mb="lg">
                 Tips & Advice
               </Title>
 
-              <div className="row">
+              <Box className="row">
                 {[1, 2, 3, 4, 5, 6, 7, 8].map((_, index) => {
                   return (
-                    <div className="col-md-3" key={index}>
+                    <Box className="col-md-3" key={index}>
                       <Card padding="none" mb="xl">
                         <Card.Section className="position-relative">
                           <Badge
@@ -678,17 +679,17 @@ const BlogModule = () => {
                           <Text span>Oct 23, 2023</Text>
                         </Flex>
                       </Card>
-                    </div>
+                    </Box>
                   );
                 })}
-              </div>
-            </div>
+              </Box>
+            </Box>
           </section>
-        </div>
+        </Box>
         <section className="find-section py-5">
-          <div className="container">
-            <div className="row">
-              <div className="col-12">
+          <Box className="container">
+            <Box className="row">
+              <Box className="col-12">
                 <Title
                   order={2}
                   pb="md"
@@ -697,131 +698,52 @@ const BlogModule = () => {
                 >
                   Find whatever you want
                 </Title>
-              </div>
-              <div className="col-md-3">
+              </Box>
+              <Box className="col-md-3">
                 <Select
                   size="md"
                   placeholder="Select your preference"
                   data={["React", "Angular", "Vue", "Svelte"]}
                 />
-              </div>
-              <div className="col-md-3">
+              </Box>
+              <Box className="col-md-3">
                 <Select
                   size="md"
                   placeholder="Choose Make"
                   data={["React", "Angular", "Vue", "Svelte"]}
                 />
-              </div>
-              <div className="col-md-3">
+              </Box>
+              <Box className="col-md-3">
                 <Select
                   size="md"
                   placeholder="Choose Model"
                   data={["React", "Angular", "Vue", "Svelte"]}
                 />
-              </div>
-              <div className="col-md-3">
+              </Box>
+              <Box className="col-md-3">
                 <Select
                   size="md"
                   placeholder="Select your preference"
                   data={["React", "Angular", "Vue", "Svelte"]}
                 />
-              </div>
-            </div>
-          </div>
+              </Box>
+            </Box>
+          </Box>
         </section>
         <section className="blog-products py-5">
-          <div className="container">
-            <div className="row">
+          <Box className="container">
+            <Box className="row">
               {[1, 2, 3, 4, 5, 6].map((_, index) => {
                 return (
-                  <div className="col-md-4">
-                    <Card padding="none" mb="lg">
-                      <Card.Section className="position-relative">
-                        <Flex
-                          align="center"
-                          className="position-absolute"
-                          c="white"
-                          style={{ top: "15px", left: "15px" }}
-                        >
-                          <CameraIcon />
-                          <Text span ml="5">
-                            5
-                          </Text>
-                        </Flex>
-
-                        <IconStar
-                          color="white"
-                          stroke={2}
-                          className="position-absolute"
-                          style={{ bottom: "25px", left: "15px" }}
-                        />
-
-                        <Image
-                          radius="md"
-                          src="/products/product-placeholder.png"
-                          className="img-fluid"
-                        />
-                        <Group gap="10" grow mt="5">
-                          <Progress
-                            radius="0"
-                            color="#EB2322"
-                            size="sm"
-                            value={100}
-                          />
-                          <Progress
-                            radius="0"
-                            color="#EB2322"
-                            size="sm"
-                            value={0}
-                          />
-                          <Progress
-                            radius="0"
-                            color="#EB2322"
-                            size="sm"
-                            value={0}
-                          />
-                        </Group>
-                      </Card.Section>
-                      <Box className="product-content" pt="md">
-                        <Title order={5} lineClamp={2}>
-                          <Link
-                            href={"#"}
-                            className="text-decoration-none text-dark"
-                          >
-                            USED 2.0 L 2016 Toyota Yaris..
-                          </Link>
-                        </Title>
-                        <div className="product-price">Rs 7,400,000</div>
-                      </Box>
-                      <div className="product-meta">
-                        <div className="meta-info d-flex justify-content-between align-items-center">
-                          <span className="text-muted d-flex align-items-center gap-1">
-                            <FaCalendarDays /> 2021
-                          </span>
-                          <span className="text-muted d-flex align-items-center gap-1">
-                            <GearsHandle /> Automatic
-                          </span>
-                          <span className="text-muted d-flex align-items-center gap-1">
-                            <FaLocationDot /> Automatic
-                          </span>
-                        </div>
-                        <div className="stock-info d-flex justify-content-between align-items-center mt-2">
-                          <span>
-                            <span className="text-muted">Stock#</span> 324
-                          </span>
-                          <span className="text-muted">
-                            <FaClock /> (Updated 1 month ago)
-                          </span>
-                        </div>
-                      </div>
-                    </Card>
-                  </div>
+                  <Box className="col-md-4" key={index}>
+                    <ProductCard bg="transparent" />
+                  </Box>
                 );
               })}
-            </div>
-          </div>
+            </Box>
+          </Box>
         </section>
-      </section>
+      </Box>
     </>
   );
 };

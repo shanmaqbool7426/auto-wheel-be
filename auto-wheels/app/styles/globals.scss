@@ -38,9 +38,12 @@ body {
 @import "./pages/detail";
 @import "./pages/blog";
 @import "./pages/find-cars";
+@import "./pages/comparison-detail";
 
 // Import Theme Component Styles
 @import "./theme/compnents/tabs";
+@import "./theme/compnents/pagination";
+@import "./components/product-card";
 
 .theme-header {
   border-bottom: 2px solid #f8f9fa;
