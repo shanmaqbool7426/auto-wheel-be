@@ -6,6 +6,7 @@ import cors from 'cors';
 // const compression = require('compression');
 import {connectDB} from './Utils/connectDB.js';
 import authRoutes from './User/route.js'
+import {errorHandler} from "./Middleware/errorHandler.js"
 // const { errorHandler, notFound } = require('./middleware/errorMiddleware');
 
 // Load environment variables
@@ -47,7 +48,7 @@ app.use('/api/auth', authRoutes);
 // app.use(notFound);
 
 // Middleware for handling errors
-// app.use(errorHandler);
+app.use(errorHandler);
 
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {

@@ -8,7 +8,8 @@ import {
   // updateProfile,
   // forgotPassword,
   resetPassword,
-  requestPasswordReset
+  requestPasswordReset,
+  verifyUser
 } from './controller.js';
 
 const upload = multer({ storage: multer.memoryStorage() });
@@ -17,6 +18,7 @@ const router = express.Router();
 
 router.post('/register', registerUser);
 router.post('/login', login);
+router.post('/verify-user', verifyUser);
 router.post('/password-reset-request', requestPasswordReset);
 // router.get('/profile', getProfile); // Assuming authentication middleware is applied
 // router.put('/profile', updateProfile); // Assuming authentication middleware is applied
