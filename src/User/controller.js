@@ -24,7 +24,7 @@ const registerUser = asyncHandler(async (req, res) => {
 
   user.verificationCode = Math.floor(1000 + Math.random() * 9000).toString();
   await user.save();
-  await sendVerificationEmail(user.email, user.verificationCode);
+  await sendVerificationEmail(user.email, 'Verification Code',  user.verificationCode);
 
   return responses.created(res, 'Verification code sent to your email address', {});
 });
@@ -41,14 +41,13 @@ const login = asyncHandler(async (req, res) => {
 
   if (user && (await user.matchPassword(password))) {
     return responses.ok(res, 'User authenticated successfully', {
-      user,
+      user, // password will be excluded automatically
       token: generateToken(user._id),
     });
   } else {
     return responses.unauthorized(res, 'Invalid email or password');
   }
 });
-
 // Verify User
 
 const verifyUser = asyncHandler(async (req, res) => {
@@ -60,9 +59,9 @@ const verifyUser = asyncHandler(async (req, res) => {
     return responses.notFound(res, 'User not found');
   }
 
-  if (user.verificationCode === code) {
+  if (user.verificationCode === codes) {
     user.isVerified = true;
-    user.verificationCode = null;
+    user.verificationCodea = null;
     await user.save();
     return responses.ok(res, 'User verified successfully');
   } else {
