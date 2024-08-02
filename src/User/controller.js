@@ -1,8 +1,10 @@
 import asyncHandler from 'express-async-handler';
+import crypto from "crypto"
+import bcrypt from "bcryptjs"
 import User from "./model.js"
 import responses from "../Utils/response.js";
 import generateToken from '../Utils/generateToken.js';
-import  sendVerificationEmail  from '../Utils/sendEmail.js';
+import sendVerificationEmail from '../Utils/sendEmail.js';
 
 // const { sendVerificationEmail } = require('../utils/sendEmail');
 import { registerValidation, loginValidation } from '../Validations/authValidation.js';
@@ -24,7 +26,10 @@ const registerUser = asyncHandler(async (req, res) => {
 
   user.verificationCode = Math.floor(1000 + Math.random() * 9000).toString();
   await user.save();
-  await sendVerificationEmail(user.email, 'Verification Code',  user.verificationCode);
+  const mailOptions = {
+    to: user.email, subject: 'Verification Code', text: user.verificationCode
+  }
+  await sendVerificationEmail(mailOptions);
 
   return responses.created(res, 'Verification code sent to your email address', {});
 });
@@ -59,7 +64,7 @@ const verifyUser = asyncHandler(async (req, res) => {
     return responses.notFound(res, 'User not found');
   }
 
-  if (user.verificationCode === codes) {
+  if (user.verificationCode === code) {
     user.isVerified = true;
     user.verificationCodea = null;
     await user.save();
@@ -74,31 +79,61 @@ const verifyUser = asyncHandler(async (req, res) => {
 // Password Reset Request
 const requestPasswordReset = asyncHandler(async (req, res) => {
   const { email } = req.body;
+    const user = await User.findOne({ email });
+    if (!user) {
+      return responses.notFound(res, 'User not found');
+    }
 
-  const user = await User.findOne({ email });
+    // Generate a reset token
+    const resetToken = crypto.randomBytes(32).toString('hex');
+    const resetTokenHash = await bcrypt.hash(resetToken, 10);
 
-  if (user) {
-    const resetToken = generateToken(user._id);
-    await sendVerificationEmail(user.email, `Your password reset token is ${resetToken}`);
-    res.status(200).json({ message: 'Password reset token sent to email' });
-  } else {
-    res.status(404).json({ message: 'User not found' });
-  }
+    // Set token and expiry on the user model
+    user.resetPasswordToken = resetTokenHash;
+    user.resetPasswordExpires = Date.now() + 3600000; // 1 hour
+
+    await user.save();
+    
+
+    // Send the reset link via email
+    const resetLink = `http://yourdomain.com/reset-password/${resetToken}`;
+    const mailOptions = {
+      to: 'johandosea@mailinator.com',
+      subject: 'Password Reset',
+      text: `You are receiving this because you (or someone else) have requested the reset of the password for your account.\n\n
+    Please click on the following link, or paste this into your browser to complete the process:\n\n
+    ${resetLink}\n\n
+    If you did not request this, please ignore this email and your password will remain unchanged.\n`
+    };
+
+    await sendVerificationEmail(mailOptions);
+    console.log('aaaaaaaaaaaaaa')
+    responses.ok(res, "Password reset link sent to email")
 });
 
 // Reset Password
 const resetPassword = asyncHandler(async (req, res) => {
-  const { userId, password } = req.body;
+  const { token } = req.params;
+  const { password } = req.body;
 
-  const user = await User.findById(userId);
+    const user = await User.findOne({
+      resetPasswordExpires: { $gt: Date.now() }
+    });
 
-  if (user) {
-    user.password = password;
+    if (!user) {
+      return res.badRequest(res,'Password reset token is invalid or has expired');
+    }
+
+    const isTokenValid = await bcrypt.compare(token, user.resetPasswordToken);
+    if (!isTokenValid) {
+      return res.badRequest(res,'Password reset token is invalid or has expired');
+    }
+
+    user.password = await bcrypt.hash(password, 10);
+    user.resetPasswordToken = undefined;
+    user.resetPasswordExpires = undefined;
     await user.save();
-    return responses.ok(res, 'Password reset successfully');
-  } else {
-    return responses.notFound(res, 'User not found');
-  }
+    responses.ok(res,'Password has been reset');
 });
 
 export {
