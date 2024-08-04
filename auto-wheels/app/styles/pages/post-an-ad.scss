@@ -1,0 +1,21 @@
+.stepper-form {
+    .mantine-Input-section:has(>span) {
+        background-color: $gray-100;
+        border-left     : 1px solid $gray-300;
+        font-size       : 0.75rem;
+    }
+
+}
+
+// .uploaded-image-wrapper {
+//     .mantine-Dropzone-inner {
+//         img {
+//             min-height: 400px;
+//         }
+//     }
+// }
+
+.mantine-Input-section {
+    background-color: $gray-100;
+    border-left     : 1px solid $gray-300;
+}
