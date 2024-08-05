@@ -1,17 +1,17 @@
 import asyncHandler from 'express-async-handler';
 import BrowesByMake from './model.js'; // Ensure this path is correct for your project structure
 import responses from "../Utils/response.js";
+import { uploadOnCloudinary } from '../Utils/cloudinary.js';
 
 // Create a new make entry
 export const createMake = asyncHandler(async (req, res) => {
-  const { companyImage, name } = req.body;
-
-  const make = new BrowesByMake({ companyImage, name });
-
+  const { name } = req.body;
+  const companyImageURL = await uploadOnCloudinary(req.file?.path)
+  const make = new BrowesByMake({companyImage: companyImageURL.url, name });
   await make.save();
-
   return responses.created(res, 'Make entry created successfully', make);
 });
+
 
 // Retrieve all make entries
 export const getAllMakes = asyncHandler(async (req, res) => {
