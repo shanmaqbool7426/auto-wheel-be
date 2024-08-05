@@ -2,10 +2,11 @@ import mongoose from 'mongoose';
 
 const BrowesBodySchema = mongoose.Schema(
     {
-        bodyImage: { type: String, required: true },
+        bodyImage: { type: String },
         name: { type: String, required: true }
     },
     { timestamps: true }
 );
 
-mongoose.model('BrowesByBody', BrowesBodySchema)
+const BrowesByBody= mongoose.model('BrowesByBody', BrowesBodySchema)
+export default BrowesByBody

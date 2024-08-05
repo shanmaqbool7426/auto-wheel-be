@@ -64,11 +64,11 @@
         rating: Number,
         reviews: Number,
         location: String,
-        contact: {
         type: Map,
         of: String
-        }
     }
     }, { timestamps: true });
 
-    module.exports = mongoose.model('Vehicle', vehicleSchema);
+    const Vehicle = mongoose.model('Vehicle', vehicleSchema);
+
+    export default Vehicle;

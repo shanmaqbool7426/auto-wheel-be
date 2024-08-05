@@ -6,6 +6,9 @@ import cors from 'cors';
 // const compression = require('compression');
 import {connectDB} from './Utils/connectDB.js';
 import authRoutes from './User/route.js'
+import browesByMakeRoutes from './BrowesByMake/route.js'
+import browesByBodyRoutes from './BrowseByBody/route.js'
+import vehicleRoutes from './Vehicle/route.js'
 import {errorHandler} from "./Middleware/errorHandler.js"
 // const { errorHandler, notFound } = require('./middleware/errorMiddleware');
 
@@ -31,18 +34,23 @@ app.use(helmet());
 
 // Enable CORS
 const corsOptions = {
-  origin: 'http://yourfrontenddomain.com', 
-  optionsSuccessStatus: 200,
-};
+  "/": {
+    origin:["http://localhost:5000"], // Allowed origins for the /user route
+    credentials: true, // Allow credentials (cookies, authorization headers, etc.)
+  }}
 app.use(cors(corsOptions));
 
 // app.use(compression());
 
 // Middleware for parsing JSON requests
 app.use(express.json());
+app.use(express.urlencoded({limit: '50mb'}));
 
 // Route handlers
 app.use('/api/auth', authRoutes);
+app.use('/api/browes-by-make', browesByMakeRoutes);
+app.use('/api/browes-by-body', browesByBodyRoutes);
+app.use('/api/vehicle', vehicleRoutes);
 
 // Middleware for handling 404 errors
 // app.use(notFound);
