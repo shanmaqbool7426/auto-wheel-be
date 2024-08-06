@@ -7,7 +7,7 @@ import React from "react";
 import { FaLocationDot, FaCalendarDays, FaClock } from "react-icons/fa6";
 import { Box } from "@mantine/core";
 
-const CarCard = ({ images, index }) => {
+const CarCard = ({ vehicle, index }) => {
   return (
     // <div className={`card ${styles.productCard}`}>
     //   <Image
@@ -71,25 +71,25 @@ const CarCard = ({ images, index }) => {
       <div class="card-body">
         <div className="product-content">
           <Link href={"#"} className="d-inline-block w-50 lc-2 product-title">
-            Kia Sportage Brand New Model
+            {vehicle?.name}
           </Link>
-          <div className="product-price">Rs 7,400,000</div>
+          <div className="product-price">Rs {vehicle?.price}</div>
         </div>
         <div className="product-meta">
           <div className="meta-info d-flex justify-content-between align-items-center">
             <span className="text-muted d-flex align-items-center gap-1">
-              <FaCalendarDays /> 2021
+              <FaCalendarDays /> {vehicle?.year}
             </span>
             <span className="text-muted d-flex align-items-center gap-1">
-              <GearsHandle /> Automatic
+              <GearsHandle />  {vehicle?.specifications?.transmission}
             </span>
             <span className="text-muted d-flex align-items-center gap-1">
-              <FaLocationDot /> Automatic
+              <FaLocationDot /> {vehicle?.seller?.location}
             </span>
           </div>
           <div className="stock-info d-flex justify-content-between align-items-center mt-2">
             <span>
-              <span className="text-muted">stock#</span> 324
+              <span className="text-muted">stock#</span> {vehicle?.specifications?.stockId}
             </span>
             <span className="text-muted">
               <FaClock /> (Updated 1 month ago)

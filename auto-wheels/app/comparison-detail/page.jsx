@@ -144,6 +144,7 @@ const CarComparionDetail = () => {
                               size="sm"
                               className="text-primary"
                             >
+                            
                               <Center inline>
                                 <Box mr={5}>Buy Used Suzuki Swift</Box>
                                 <IconArrowUpRight
