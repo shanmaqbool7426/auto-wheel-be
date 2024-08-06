@@ -110,7 +110,7 @@ const getListVehicles = asyncHandler(async (req, res) => {
         sort: { createdAt: -1 }
     };
     const vehicles = await Vehicle.find(filters);
-    return responses.ok(res, 'Vehicles retrieved successfully', vehicles);
+    return response.ok(res, 'Vehicles retrieved successfully', vehicles);
 
 
 })
