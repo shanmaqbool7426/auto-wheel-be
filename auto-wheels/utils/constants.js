@@ -6,5 +6,7 @@ export const API_ENDPOINTS = {
     INSTANT_USED_CARS: 'https://fakestoreapi.com/products',
     VIDEOS: 'https://fakestoreapi.com/products',
     BLOGS: 'https://fakestoreapi.com/products',
+
+    SIGNUP:"http://localhost:5000/api/user/register",
   };
   
