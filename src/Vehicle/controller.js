@@ -10,7 +10,7 @@ const createVehicle = asyncHandler(async (req, res) => {
     try {
         // Parse JSON strings from the request body
         const parsedSpecifications = JSON.parse(req.body.specifications);
-        console.log('Parse JSON',req.files.image[0].path)
+        console.log('Parse JSON',req.files.image)
         const parsedFeatures = JSON.parse(req.body.features);
         const parsedSeller = JSON.parse(req.body.seller);
         
