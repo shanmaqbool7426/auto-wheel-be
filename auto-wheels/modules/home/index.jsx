@@ -5,10 +5,10 @@ import ComparisonProducts from "./ComparisonProducts";
 import SearchByLocations from "./SearchByLocations";
 import BrowseVideos from "./BrowseVideos";
 import BrowseBlogs from "./BrowseBlogs";
-import {fetchDashboardData} from "../../services/dashboard"
+import {fetcHomeData} from "../../services/home"
 
 export default async  function HomeModule() {
- const res= await fetchDashboardData()
+ const res= await fetcHomeData()
 
  console.log('res>>>>', res?.vehiclesTypes)
   return (

@@ -1,7 +1,7 @@
 import { fetchAPI } from '../utils/fetchAPI';
 import { API_ENDPOINTS } from '../utils/constants';
 
-export const fetchDashboardData = async () => {
+export const fetcHomeData = async () => {
   try {
     const [makes, bodies, vehiclesTypes, comparisons, instantUsedCars, videos, blogs] = await Promise.all([
       fetchAPI(API_ENDPOINTS.MAKES,),

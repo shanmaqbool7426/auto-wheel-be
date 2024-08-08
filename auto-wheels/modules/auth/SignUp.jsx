@@ -19,7 +19,7 @@ function SignUp({ signUpOpened, signUpOnClose }) {
       phone: '',
       password: '',
       confirmPassword: '',
-      termsOfService: false,
+      // termsOfService: false,
     },
     validate: {
       fullName: (value) => (value.trim() ? null : 'Full name is required'),
@@ -27,15 +27,17 @@ function SignUp({ signUpOpened, signUpOnClose }) {
       phone: (value) => (value.trim() ? null : 'Phone number is required'),
       password: (value) => (value.length >= 6 ? null : 'Password must be at least 6 characters long'),
       confirmPassword: (value, values) => {
-        console.log('Confirm Password',value, values);
+        console.log('Confirm Password',value);
       }
        
     //   termsOfService: (value) => (value ? null : 'You must agree to the terms of service'),
     },
   });
 
-  const { isLoading, error, handleChange, handleSubmit } = useFormSubmission (API_ENDPOINTS.SIGNUP, form.values, form.validate);
-
+  console.log('Validating',form.getValues())
+  const { isLoading, error, handleChange, handleSubmit } = useFormSubmission (API_ENDPOINTS.SIGNUP, form.getValues()
+  , form.validate);
+console.log('Form submission',error)
   return (
     <>
       <Modal opened={signUpOpened} onClose={signUpOnClose} title="" size="auto" withCloseButton={false}>
@@ -81,7 +83,7 @@ function SignUp({ signUpOpened, signUpOnClose }) {
                 placeholder="*********"
                 className='my-2'
                 key={form.key('confirmPassword')}
-                {...form.getInputProps('confirmPassword ')}
+                {...form.getInputProps('confirmPassword')}
                 error={form.errors.confirmPassword && form.errors.confirmPassword}
               />
               <Checkbox

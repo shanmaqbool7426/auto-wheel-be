@@ -4,8 +4,6 @@ import { Fieldset, TextInput } from '@mantine/core';
 import classes from '../../app/styles/Demo.module.scss';
 
 function SignIn({signOpen, signInClose}) {
-    // const [opened, { open, close }] = useDisclosure(false);
-
     return (
         <>
             <Modal opened={signOpen} onClose={signInClose} title="">
