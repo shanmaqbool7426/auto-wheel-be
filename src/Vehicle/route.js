@@ -21,7 +21,7 @@ router.post('/', upload.fields([
         maxCount: 10
     }
 ]), createVehicle); // Assuming authentication middleware is applied
-// router.put('/:id', updateVehicle); // Assuming authentication middleware is applied
-// router.delete('/:id', deleteVehicle); // Assuming authentication middleware is applied
+// router.put('/:id', updateVehicle);
+// router.delete('/:id', deleteVehicle); 
 
 export default  router;

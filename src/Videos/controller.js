@@ -2,9 +2,7 @@ import Video from "./Video.js";
 const asyncHandler = require('express-async-handler');
 import responses from "Utils/responses"
 
-// @desc Create a new video
-// @route POST /api/videos
-// @access Public
+
 const createVideo = asyncHandler(async (req, res) => {
   const { title, url, thumbnail, description } = req.body;
 
@@ -18,17 +16,13 @@ const createVideo = asyncHandler(async (req, res) => {
   responses.created(res, 'Video created successfully', video);
 });
 
-// @desc Get all videos
-// @route GET /api/videos
-// @access Public
+
 const getVideos = asyncHandler(async (req, res) => {
   const videos = await Video.find().sort({ dateUploaded: -1 });
   responses.ok(res, 'Videos fetched successfully', videos);
 });
 
-// @desc Get video by ID
-// @route GET /api/videos/:id
-// @access Public
+
 const getVideoById = asyncHandler(async (req, res) => {
   const video = await Video.findById(req.params.id);
 
@@ -39,9 +33,7 @@ const getVideoById = asyncHandler(async (req, res) => {
   responses.ok(res, 'Video fetched successfully', video);
 });
 
-// @desc Update video
-// @route PUT /api/videos/:id
-// @access Public
+
 const updateVideo = asyncHandler(async (req, res) => {
   const { title, url, thumbnail, description } = req.body;
 
@@ -61,9 +53,7 @@ const updateVideo = asyncHandler(async (req, res) => {
   responses.ok(res, 'Video updated successfully', video);
 });
 
-// @desc Delete video
-// @route DELETE /api/videos/:id
-// @access Public
+
 const deleteVideo = asyncHandler(async (req, res) => {
   const video = await Video.findById(req.params.id);
 

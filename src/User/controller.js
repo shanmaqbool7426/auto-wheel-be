@@ -10,7 +10,6 @@ import sendVerificationEmail from '../Utils/sendEmail.js';
 import { registerValidation, loginValidation } from '../Validations/authValidation.js';
 
 
-// User Registration
 const registerUser = asyncHandler(async (req, res) => {
   console.log('registerUser', req.body)
   const { error } = registerValidation(req.body);
@@ -36,7 +35,6 @@ const registerUser = asyncHandler(async (req, res) => {
 });
 
 
-// User Authentication
 const login = asyncHandler(async (req, res) => {
   const { error } = loginValidation(req.body);
   if (error) return responses.badRequest(res, error.details[0].message);
@@ -47,14 +45,13 @@ const login = asyncHandler(async (req, res) => {
 
   if (user && (await user.matchPassword(password))) {
     return responses.ok(res, 'User authenticated successfully', {
-      user, // password will be excluded automatically
+      user,
       token: generateToken(user._id),
     });
   } else {
     return responses.unauthorized(res, 'Invalid email or password');
   }
 });
-// Verify User
 
 const verifyUser = asyncHandler(async (req, res) => {
   const { userId, code } = req.body;
@@ -77,7 +74,6 @@ const verifyUser = asyncHandler(async (req, res) => {
 
 
 
-// Password Reset Request
 const requestPasswordReset = asyncHandler(async (req, res) => {
   const { email } = req.body;
     const user = await User.findOne({ email });
@@ -85,18 +81,15 @@ const requestPasswordReset = asyncHandler(async (req, res) => {
       return responses.notFound(res, 'User not found');
     }
 
-    // Generate a reset token
     const resetToken = crypto.randomBytes(32).toString('hex');
     const resetTokenHash = await bcrypt.hash(resetToken, 10);
 
-    // Set token and expiry on the user model
     user.resetPasswordToken = resetTokenHash;
     user.resetPasswordExpires = Date.now() + 3600000; // 1 hour
 
     await user.save();
     
 
-    // Send the reset link via email
     const resetLink = `http://yourdomain.com/reset-password/${resetToken}`;
     const mailOptions = {
       to: 'johandosea@mailinator.com',
@@ -112,7 +105,6 @@ const requestPasswordReset = asyncHandler(async (req, res) => {
     responses.ok(res, "Password reset link sent to email")
 });
 
-// Reset Password
 const resetPassword = asyncHandler(async (req, res) => {
   const { token } = req.params;
   const { password } = req.body;
