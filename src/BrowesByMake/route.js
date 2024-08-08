@@ -6,8 +6,7 @@ import {
   getMakeById,
   updateMakeById,
   deleteMakeById
-} from './controller.js'; // Ensure this path is correct for your project structure
-
+} from './controller.js'; 
 const router = express.Router();
 import {upload} from "../Middleware/multer.js"
 

@@ -12,19 +12,11 @@ import vehicleRoutes from './Vehicle/route.js'
 import {errorHandler} from "./Middleware/errorHandler.js"
 // const { errorHandler, notFound } = require('./middleware/errorMiddleware');
 
-// Load environment variables
 dotenv.config();
-
-// Connect to the database
 connectDB();
-
 const app = express();
-
-// Middleware for securing HTTP headers
-
 app.use(helmet());
 
-// Middleware for rate limiting
 // const limiter = rateLimit({
 //   windowMs: 15 * 60 * 1000, // 15 minutes
 //   max: 100, // Limit each IP to 100 requests per `window` (here, per 15 minutes)
@@ -32,30 +24,25 @@ app.use(helmet());
 // });
 // app.use('/api/', limiter);
 
-// Enable CORS
 const corsOptions = {
   "/": {
-    origin:["http://localhost:5000"], // Allowed origins for the /user route
-    credentials: true, // Allow credentials (cookies, authorization headers, etc.)
+    origin:["http://localhost:5000"], 
+    credentials: true,
   }}
 app.use(cors(corsOptions));
 
 // app.use(compression());
 
-// Middleware for parsing JSON requests
 app.use(express.json());
 app.use(express.urlencoded({limit: '50mb'}));
 
-// Route handlers
 app.use('/api/user', authRoutes);
 app.use('/api/browes-by-make', browesByMakeRoutes);
 app.use('/api/browes-by-body', browesByBodyRoutes);
 app.use('/api/vehicle', vehicleRoutes);
 
-// Middleware for handling 404 errors
 // app.use(notFound); 
 
-// Middleware for handling errors
 app.use(errorHandler);
 
 const PORT = process.env.PORT || 5000;
