@@ -12,6 +12,7 @@ import { registerValidation, loginValidation } from '../Validations/authValidati
 
 // User Registration
 const registerUser = asyncHandler(async (req, res) => {
+  console.log('registerUser', req.body)
   const { error } = registerValidation(req.body);
   if (error) return responses.badRequest(res, error.details[0].message);
 
