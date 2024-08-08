@@ -47,13 +47,13 @@ app.use(express.json());
 app.use(express.urlencoded({limit: '50mb'}));
 
 // Route handlers
-app.use('/api/auth', authRoutes);
+app.use('/api/user', authRoutes);
 app.use('/api/browes-by-make', browesByMakeRoutes);
 app.use('/api/browes-by-body', browesByBodyRoutes);
 app.use('/api/vehicle', vehicleRoutes);
 
 // Middleware for handling 404 errors
-// app.use(notFound);
+// app.use(notFound); 
 
 // Middleware for handling errors
 app.use(errorHandler);
