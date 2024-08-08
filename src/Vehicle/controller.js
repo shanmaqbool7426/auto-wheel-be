@@ -1,5 +1,5 @@
 import asyncHandler from 'express-async-handler';
-import Vehicle from './model.js'; // Ensure this path is correct for your project structure
+import Vehicle from './model.js'; 
 import response from "../Utils/response.js";
 import { uploadOnCloudinary } from '../Utils/cloudinary.js';
 
@@ -8,29 +8,26 @@ import { uploadOnCloudinary } from '../Utils/cloudinary.js';
 
 const createVehicle = asyncHandler(async (req, res) => {
     try {
-        // Parse JSON strings from the request body
         const parsedSpecifications = JSON.parse(req.body.specifications);
-        console.log('Parse JSON',req.files.image[0].path)
+        console.log('Parse JSON',req.files.image)
         const parsedFeatures = JSON.parse(req.body.features);
         const parsedSeller = JSON.parse(req.body.seller);
         
         let productUrl = null;
 
         console.log('>>>>>>>>>>>',req.files.image[0].path)
-        // Check if file is uploaded
         if (req.files) {
             productUrl = await uploadOnCloudinary(req.files.image[0].path);
             if (!productUrl || !productUrl.url) {
                 throw new Error('Error uploading image to Cloudinary');
             }
         }
-        // const parsedImages = productUrl.url
-        // Create vehicle data object
+
         const vehicleData = {
             ...req.body,
             features: parsedFeatures,
             seller: parsedSeller,
-            image: productUrl ? productUrl.url : undefined // Add the product URL to the vehicle data if available
+            image: productUrl ? productUrl.url : undefined 
         };
 
         
