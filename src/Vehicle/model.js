@@ -5,27 +5,27 @@
             type: String,
             enum: ['car', 'bike', 'truck'],
             required: true,
-            index: true // Index on type field
+            index: true
           },
           name: {
             type: String,
             required: true,
-            index: true // Index on name field
+            index: true 
           },
           price: {
             type: Number,
             required: true,
-            index: true // Index on price field
+            index: true 
           },
           model: {
             type: String,
             required: true,
-            index: true // Index on model field
+            index: true 
           },
           year: {
             type: Number,
             required: true,
-            index: true // Index on year field
+            index: true 
           },
           condition: {
             type: String,
@@ -35,14 +35,14 @@
             type: String,
           },
           specifications: {
-            stockId: { type: String, index: true }, // Index on stockId field
-            bodyType: { type: String, index: true }, // Index on bodyType field
-            fuelType: { type: String, index: true }, // Index on fuelType field
+            stockId: { type: String, index: true }, 
+            bodyType: { type: String, index: true }, 
+            fuelType: { type: String, index: true },
             engine: String,
-            mileage: { type: Number, index: true }, // Index on mileage field
-            transmission: { type: String, index: true }, // Index on transmission field
+            mileage: { type: Number, index: true }, 
+            transmission: { type: String, index: true }, 
             drive: String,
-            vin: { type: String, index: true }, // Index on vin field
+            vin: { type: String, index: true }, 
             exteriorColor: String,
             interiorColor: String,
             doors: Number,
