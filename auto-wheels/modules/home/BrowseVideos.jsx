@@ -32,7 +32,7 @@ const BrowseVideos = () => {
               target="_blank"
               className="video-thumbnail"
             >
-              {/* <Card.Section className="position-relative">
+              <Card.Section className="position-relative">
                 <span className="play-button position-absolute">
                   <PlayButton />
                 </span>
@@ -43,7 +43,7 @@ const BrowseVideos = () => {
                   className="img-fluid"
                   alt="No way!"
                 />
-              </Card.Section> */}
+              </Card.Section>
               <Title
                 order={3}
                 lineClamp={1}
@@ -70,7 +70,7 @@ const BrowseVideos = () => {
                       target="_blank"
                       className="video-thumbnail video-thumbnail-sm"
                     >
-                      {/* <Card.Section className="position-relative">
+                      <Card.Section className="position-relative">
                         <span className="play-button position-absolute">
                           <PlayButton />
                         </span>
@@ -80,7 +80,7 @@ const BrowseVideos = () => {
                           className="img-fluid"
                           alt="No way!"
                         />
-                      </Card.Section> */}
+                      </Card.Section>
                       <Title
                         order={5}
                         lineClamp={1}

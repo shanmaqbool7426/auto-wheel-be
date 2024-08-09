@@ -7,7 +7,7 @@ import AccountTypeModal from "../auth/AccountType.jsx"
 import SocialsLogin from "../auth/SocialsLogins.jsx"
 // import SignIn from "../auth/SignIn.tsx"
 import SignUp from "../auth/SignUp.jsx"
-import Otp from "../auth/Otp.jsx"
+// import Otp from "../auth/Otp.jsx"
 import { useMantineColorScheme, Button, Group } from '@mantine/core';
 
 const poppin = Poppins({

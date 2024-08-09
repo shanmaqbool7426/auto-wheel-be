@@ -1,7 +1,7 @@
-import { Title, Accordion } from "@mantine/core";
+import { Title, Accordion, Text } from "@mantine/core";
 import React from "react";
 
-const FAQ = () => {
+const FAQ = ({ title, titleSpan }) => {
   const faq = [
     {
       index: 1,
@@ -50,7 +50,12 @@ const FAQ = () => {
         <div className="row">
           <div className="col-md-12">
             <Title order={2} mb="xl">
-              Toyota Car FAQs
+              {title ? title : " Toyota Car FAQs"}{" "}
+              {titleSpan && (
+                <Text span inherit className="text-primary">
+                  {titleSpan}
+                </Text>
+              )}
             </Title>
           </div>
           <div className="col-md-12">
