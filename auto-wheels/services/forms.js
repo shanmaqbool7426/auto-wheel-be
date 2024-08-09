@@ -1,4 +1,3 @@
-// api.js
 export async function submitFormData(url, data) {
     const response = await fetch(url, {
       method: 'POST',

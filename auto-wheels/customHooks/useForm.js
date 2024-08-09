@@ -1,9 +1,8 @@
-// useForm.js
 import { useState } from 'react';
 import { submitFormData } from '@/services/forms';
 
-export function useFormSubmission(url, initialValues, validate) {
-  const [values, setValues] = useState(initialValues);
+export function useFormSubmission(url, formValues, validate) {
+  const [values, setValues] = useState(formValues);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
 
@@ -20,15 +19,15 @@ export function useFormSubmission(url, initialValues, validate) {
     setError(null);
 
     try {
-      const validationErrors = validate(values);
-      if (Object.keys(validationErrors).length > 0) {
+      const validationErrors = validate(formValues);
+      if (validationErrors.hasErrors && Object.keys(validationErrors).length > 0) {
         setError('Validation error');
         console.error(validationErrors);
         return;
       }
 
-      const data = await submitFormData(url, values);
-      console.log(data); // Handle the response data if necessary
+      const data = await submitFormData(url, formValues);
+      console.log(data);
     } catch (error) {
       setError(error.message);
       console.error(error);
