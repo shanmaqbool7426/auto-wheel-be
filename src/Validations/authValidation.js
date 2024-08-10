@@ -6,7 +6,7 @@ const registerValidation = (data) => {
     email: Joi.string().email().required(),
     phone: Joi.string().required(),
     password: Joi.string().min(6).required(),
-    // accountType: Joi.string().valid('Personal', 'Dealer').required(),
+    accountType: Joi.string().optional()
   });
 
   return schema.validate(data);
