@@ -10,6 +10,8 @@ import {
   Input,
   Checkbox,
 } from "@mantine/core";
+import { SessionProvider } from "next-auth/react";
+
 
 import "@mantine/core/styles.css";
 import "@mantine/carousel/styles.css";
@@ -53,12 +55,12 @@ export default function RootLayout({ children }) {
         />
       </head>
       <body>
-        <MantineProvider theme={theme}>
-          <Header />
-          {children}
-          <Footer />
-        </MantineProvider>
-      </body>
+          <MantineProvider theme={theme}>
+            <Header />
+            {children}
+            <Footer />
+          </MantineProvider>
+       </body>
     </html>
   );
 }

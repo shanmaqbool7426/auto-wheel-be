@@ -3,9 +3,9 @@ import { useForm } from '@mantine/form';
 import { useState } from 'react';
 import SignIn from './SignIn.jsx';
 import Otp from './Otp';
-import { useFormSubmission } from '@/customHooks/useForm.js';
+import { useFormSubmission } from '@/custom-hooks/useForm.js';
 import classes from '../../app/styles/Demo.module.scss';
-import { API_ENDPOINTS } from '@/utils/constants.js';
+import { API_ENDPOINTS } from '@/constants/api-endpoints.js';
 
 
 function SignUp({ signUpOpened, signUpOnClose }) {

@@ -1,6 +1,8 @@
+
 import React, { useState } from "react";
 import { Button, Flex, Grid, Modal, Text } from "@mantine/core";
 import Image from "next/image";
+
 import google_icon from "../../public/auth/google_icon.svg";
 import car from "../../public/auth/car.svg";
 import facebook_icon from "../../public/auth/facebook_icon.svg";
@@ -12,8 +14,10 @@ import { IconArrowRight, IconArrowLeft } from "@tabler/icons-react";
 import "@mantine/carousel/styles.css";
 import SignUp from "./SignUp";
 
+
 import classes from "../../app/styles/Demo.module.scss";
 const SocialsLogin = ({ socialOpened, socialOnClose }) => {
+
   const [modalOpened, setModalOpened] = useState(false);
 
   return (
@@ -87,7 +91,8 @@ const SocialsLogin = ({ socialOpened, socialOnClose }) => {
             {/* ...other slides */}
           </Carousel>
           <div className="login-buttons">
-            <Button className="socials-btns google-btn m-2 " variant="default">
+            <form >
+            <Button className="socials-btns google-btn m-2 " variant="default" type="submit" name="action" value={"google"} onClick={() => signIn('google')}>
               <div className="socials-btns-inner">
                 <Image width={30} height={30} src={google_icon} alt="Google" />
                 <div>Continue with Google</div>
@@ -120,6 +125,7 @@ const SocialsLogin = ({ socialOpened, socialOnClose }) => {
                 <div>Continue with Email</div>
               </div>
             </Button>
+            </form>
           </div>
           <p className="text-center">
             Don't have am account ?{" "}
