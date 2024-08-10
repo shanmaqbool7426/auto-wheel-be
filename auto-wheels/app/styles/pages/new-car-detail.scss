@@ -1,0 +1,38 @@
+.cars-detail .gallery-slider {
+    .mantine-Carousel-controls {
+        .mantine-Carousel-control {
+            background-color: $primary;
+            color           : $white;
+            border          : none;
+
+            svg {
+                width : 1.4rem !important;
+                height: 1.4rem !important;
+            }
+        }
+    }
+}
+
+table {
+    .mantine-Checkbox-body {
+        align-items    : center;
+        justify-content: center;
+    }
+}
+
+.has-typography {
+
+    h1,
+    h2,
+    h3,
+    h4,
+    h5,
+    h6 {
+        margin-bottom: 0.7rem;
+        font-weight  : 600;
+    }
+
+    p {
+        margin-bottom: 1.5rem;
+    }
+}
