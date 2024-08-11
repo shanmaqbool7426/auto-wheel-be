@@ -56,6 +56,10 @@
           sellerNotes: {
             type: String
           },
+          defaultImage:{
+            type: String,
+            default: 'https://via.placeholder.com/300x200'
+          },
           images: {
             type: [String]
           },

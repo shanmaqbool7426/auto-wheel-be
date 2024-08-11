@@ -1,27 +1,31 @@
-import express  from "express"
+import express from "express"
 import {
-//   getAllVehicles,
-//   getVehicleById,
+  //   getAllVehicles,
+  //   getVehicleById,
   createVehicle,
   getBrowseByVehicles,
-//   updateVehicle,
-//   deleteVehicle,
+  //   updateVehicle,
+  //   deleteVehicle,
   getListVehicles
-}  from "./controller.js"
-import {upload} from "../Middleware/multer.js"
+} from "./controller.js"
+import { upload } from "../Middleware/multer.js"
 
 const router = express.Router();
 
-router.get('/', getListVehicles); 
-router.get('/vehicles-by-type', getBrowseByVehicles); 
+router.get('/', getListVehicles);
+router.get('/vehicles-by-type', getBrowseByVehicles);
 // router.get('/:id', getVehicleById);
 router.post('/', upload.fields([
-    {
-        name: "image",
-        maxCount: 10
-    }
+  {
+    name: "images",
+    maxCount: 10
+  },
+  {
+    name: "defaultImage",
+    maxCount: 1
+  }
 ]), createVehicle); // Assuming authentication middleware is applied
 // router.put('/:id', updateVehicle);
 // router.delete('/:id', deleteVehicle); 
 
-export default  router;
+export default router;

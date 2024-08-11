@@ -8,46 +8,95 @@ import { uploadOnCloudinary } from '../Utils/cloudinary.js';
 
 const createVehicle = asyncHandler(async (req, res) => {
     try {
-        const parsedSpecifications = JSON.parse(req.body.specifications);
-        console.log('Parse JSON',req.files.image)
-        const parsedFeatures = JSON.parse(req.body.features);
-        const parsedSeller = JSON.parse(req.body.seller);
-        
-        let productUrl = null;
-
-        console.log('>>>>>>>>>>>',req.files.image[0].path)
-        if (req.files) {
-            productUrl = await uploadOnCloudinary(req.files.image[0].path);
-            if (!productUrl || !productUrl.url) {
-                throw new Error('Error uploading image to Cloudinary');
-            }
+      const { specifications, features, seller, ...rest } = req.body;
+  
+      // Parse JSON fields
+      const parsedSpecifications = JSON.parse(specifications);
+      const parsedFeatures = JSON.parse(features);
+      const parsedSeller = JSON.parse(seller);
+  
+      let uploadedImages = [];
+      let defaultImageUrl = null;
+  
+      if (req.files) {
+        const imageUploadPromises = [];
+  
+        if (req.files.images) {
+          req.files.images.forEach((file) => {
+            imageUploadPromises.push(uploadOnCloudinary(file.path));
+          });
         }
-
-        const vehicleData = {
-            ...req.body,
-            features: parsedFeatures,
-            seller: parsedSeller,
-            image: productUrl ? productUrl.url : undefined 
-        };
-
-        
-        const vehicle = new Vehicle(vehicleData);
-        await vehicle.save();
-        response.ok(res, "Vehicle Created Successfully");
+  
+        if (req.files.defaultImage) {
+          imageUploadPromises.push(uploadOnCloudinary(req.files.defaultImage[0].path));
+        }
+  
+        const uploadResults = await Promise.all(imageUploadPromises);
+  
+        uploadResults.forEach((uploadResult, index) => {
+          if (uploadResult && uploadResult.url) {
+            if (index < req.files.images.length) {
+              uploadedImages.push(uploadResult.url);
+            } else {
+              defaultImageUrl = uploadResult.url;
+            }
+          } else {
+            throw new Error('Error uploading image to Cloudinary');
+          }
+        });
+      }
+  
+      const vehicleData = {
+        ...rest,
+        specifications: parsedSpecifications,
+        features: parsedFeatures,
+        seller: parsedSeller,
+        images: uploadedImages,
+        defaultImage: defaultImageUrl || rest.defaultImage,
+      };
+  
+      const vehicle = new Vehicle(vehicleData);
+      await vehicle.save();
+  
+      response.ok(res, "Vehicle Created Successfully");
     } catch (error) {
-        console.error(error);
-        // response.error(res, "Error creating vehicle", error.message);
+      console.error(error);
     }
-});
+  });
+  
 
+  
+//   const getBrowseByVehicles = asyncHandler(async (req, res) => {
+//     try {
+//       const bikes = await Vehicle.find({ type: 'bike' }).limit(8);
+//       const trucks = await Vehicle.find({ type: 'truck' }).limit(8);
+//       const cars = await Vehicle.find({ type: 'car' }).limit(8);
+//       const vehicles = [...bikes, ...trucks, ...cars];
+//       console.log('>>>>>>>>>. ', vehicles)
+//       return response.ok(res, 'Vehicles retrieved successfully', vehicles);
+//     } catch (error) {
+//       return response.error(res, 'Error retrieving vehicles', error);
+//     }
+//   });
   
   const getBrowseByVehicles = asyncHandler(async (req, res) => {
     try {
-      const bikes = await Vehicle.find({ type: 'bike' }).limit(8);
-      const trucks = await Vehicle.find({ type: 'truck' }).limit(8);
-      const cars = await Vehicle.find({ type: 'car' }).limit(8);
-      const vehicles = [...bikes, ...trucks, ...cars];
-      console.log('>>>>>>>>>. ', vehicles)
+      const { type } = req.query;
+      let vehicles;
+      if (type) {
+        vehicles = await Vehicle.find({ type }).limit(8);
+      } else {
+        vehicles = await Vehicle.aggregate([
+          { $match: { type: { $in: ['car', 'bike', 'truck'] } } },
+          { $sample: { size: 24 } }, 
+          { $group: { _id: '$type', vehicles: { $push: '$$ROOT' } } },
+          { $project: { vehicles: { $slice: ['$vehicles', 8] } } },
+          { $unwind: '$vehicles' },
+          { $replaceRoot: { newRoot: '$vehicles' } },
+          { $sample: { size: 8 } }
+        ]);
+      }      
+      console.log('Retrieved vehicles:', vehicles);
       return response.ok(res, 'Vehicles retrieved successfully', vehicles);
     } catch (error) {
       return response.error(res, 'Error retrieving vehicles', error);
@@ -61,7 +110,8 @@ const getListVehicles = asyncHandler(async (req, res) => {
         type,
         make,
         model,
-        year,
+        yearMin,
+        yearMax,
         priceMin,
         priceMax,
         bodyType,
@@ -71,7 +121,8 @@ const getListVehicles = asyncHandler(async (req, res) => {
         mileageMax,
         search = '',
         page = 1,
-        limit = 10
+        limit = 10,
+        sort
     } = req.query;
 
     const filters = {};
@@ -79,7 +130,8 @@ const getListVehicles = asyncHandler(async (req, res) => {
     if (type) filters.type = type;
     if (make) filters.make = new RegExp(make, 'i');
     if (model) filters.model = new RegExp(model, 'i');
-    if (year) filters.year = year;
+    if (priceMin) filters.year = { $gte: yearMin };
+    if (priceMax) filters.year = { ...filters.year, $lte: yearMax };
     if (priceMin) filters.price = { $gte: priceMin };
     if (priceMax) filters.price = { ...filters.price, $lte: priceMax };
     if (bodyType) filters['specifications.bodyType'] = bodyType;
@@ -100,14 +152,29 @@ const getListVehicles = asyncHandler(async (req, res) => {
     }
 
     const options = {
+        skip: (parseInt(page, 10) - 1) * parseInt(limit, 10),
         page: parseInt(page, 10),
         limit: parseInt(limit, 10),
-        // select: 'name price model year transmission seller.location',
         lean: true,
-        sort: { createdAt: -1 }
+        sort: { }
     };
-    const vehicles = await Vehicle.find(filters);
-    return response.ok(res, 'Vehicles retrieved successfully', vehicles);
+    if (sort === 'priceAsc') {
+        options.sort.price = 1;
+    } else if (sort === 'priceDesc') {
+        options.sort.price = -1;
+    } else if (sort === 'latest') {
+        options.sort.createdAt = -1;
+    } else {
+        options.sort.createdAt = -1;
+    }
+    const totalVehicles = await Vehicle.countDocuments(filters);
+    const vehicles = await Vehicle.find(filters,null,options);
+
+    const vehiclesResponse = {
+        results: vehicles,
+        count: totalVehicles,
+    };
+    return response.ok(res, 'Vehicles retrieved successfully', vehiclesResponse);
 
 
 })
