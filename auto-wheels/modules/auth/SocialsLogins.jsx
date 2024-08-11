@@ -91,7 +91,6 @@ const SocialsLogin = ({ socialOpened, socialOnClose }) => {
             {/* ...other slides */}
           </Carousel>
           <div className="login-buttons">
-            <form >
             <Button className="socials-btns google-btn m-2 " variant="default" type="submit" name="action" value={"google"} onClick={() => signIn('google')}>
               <div className="socials-btns-inner">
                 <Image width={30} height={30} src={google_icon} alt="Google" />
@@ -125,7 +124,6 @@ const SocialsLogin = ({ socialOpened, socialOnClose }) => {
                 <div>Continue with Email</div>
               </div>
             </Button>
-            </form>
           </div>
           <p className="text-center">
             Don't have am account ?{" "}

@@ -5,7 +5,7 @@ export function useFormSubmission(url, formValues, validate) {
   const [values, setValues] = useState(formValues);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
-
+  const [data, setData] = useState({})
   const handleChange = (field, value) => {
     setValues({
       ...values,
@@ -27,7 +27,7 @@ export function useFormSubmission(url, formValues, validate) {
       }
 
       const data = await submitFormData(url, formValues);
-      console.log(data);
+      setData(data)
     } catch (error) {
       setError(error.message);
       console.error(error);
@@ -36,5 +36,5 @@ export function useFormSubmission(url, formValues, validate) {
     }
   };
 
-  return { values, isLoading, error, handleChange, handleSubmit };
+  return { values, isLoading, error, handleChange, handleSubmit,data };
 }

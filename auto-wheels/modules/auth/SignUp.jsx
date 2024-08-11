@@ -1,12 +1,12 @@
 import { Modal, Button, Group, PasswordInput, Text, Checkbox, TextInput } from '@mantine/core';
 import { useForm } from '@mantine/form';
-import { useState } from 'react';
-import SignIn from './SignIn.jsx';
+import { useEffect, useState } from 'react';
+import SignIn from './SignIn';
 import Otp from './Otp';
-import { useFormSubmission } from '@/custom-hooks/useForm.js';
+import { useFormSubmission } from '@/custom-hooks/useForm';
+import { validateSignUpForm } from '@/utils/validation';
+import { API_ENDPOINTS } from '@/constants/api-endpoints';
 import classes from '../../app/styles/Demo.module.scss';
-import { API_ENDPOINTS } from '@/constants/api-endpoints.js';
-
 
 function SignUp({ signUpOpened, signUpOnClose }) {
   const [modalOpened, setModalOpened] = useState(false);
@@ -19,25 +19,29 @@ function SignUp({ signUpOpened, signUpOnClose }) {
       phone: '',
       password: '',
       confirmPassword: '',
-      // termsOfService: false,
     },
-    validate: {
-      fullName: (value) => (value.trim() ? null : 'Full name is required'),
-      email: (value) => (/^\S+@\S+$/.test(value) ? null : 'Invalid email'),
-      phone: (value) => (value.trim() ? null : 'Phone number is required'),
-      password: (value) => (value.length >= 6 ? null : 'Password must be at least 6 characters long'),
-      confirmPassword: (value, values) => {
-        console.log('Confirm Password',value);
-      }
-       
-    //   termsOfService: (value) => (value ? null : 'You must agree to the terms of service'),
-    },
+    validate: validateSignUpForm,
   });
 
-  console.log('Validating',form.getValues())
-  const { isLoading, error, handleChange, handleSubmit } = useFormSubmission (API_ENDPOINTS.SIGNUP, form.getValues()
-  , form.validate);
-console.log('Form submission',error)
+  const { isLoading, error, handleSubmit,data={} } = useFormSubmission(
+    API_ENDPOINTS.SIGNUP,
+    form.values,
+    form.validate
+  );
+
+  useEffect(() => {
+    
+    if(data && data?.success){
+  console.log('>> >>>',data.success)
+  setModalOpenedOtp(true);
+  signUpOnClose();
+}
+
+  }, [data])
+  
+
+
+console.log('modalOpenedOtp',modalOpenedOtp)
   return (
     <>
       <Modal opened={signUpOpened} onClose={signUpOnClose} title="" size="auto" withCloseButton={false}>
