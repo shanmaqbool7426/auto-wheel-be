@@ -1,8 +1,19 @@
-import React from "react";
+"use client"
+import React, { useState } from "react";
 import { Box, Pagination } from "@mantine/core";
 import CarCard from "@/components/ui/CarCard";
+import { fetchAPI } from '@/utils/fetchAPI';
+import { API_ENDPOINTS } from '@/constants/api-endpoints';
 
-const BrowseByType = ({ bg, pagination, vehicles }) => (
+const BrowseByType = ({ bg, pagination, vehicles:initialVehicles }) => {
+  const [selectedType, setSelectedType] = useState('All');
+  const [vehicles, setVehicles] = useState(initialVehicles||[]);
+  const handleTypeChange = async (type) => {
+    setSelectedType(type);
+    const res = await fetchAPI(API_ENDPOINTS.VEHICLES_TYPE(type === 'All' ? '' : type));
+    setVehicles(res || []);
+  };
+ return (
   <section className={`browse-type-section py-5 ${bg || ""}`}>
     <Box className="container">
       <Box className="row">
@@ -12,14 +23,13 @@ const BrowseByType = ({ bg, pagination, vehicles }) => (
               Browse by <span className="text-primary ms-1">Type</span>
             </h3>
             <ul className="nav nav-pills gap-2" id="pills-tab" role="tablist">
-              {['All', 'Cars', 'Bike', 'Truck'].map((type, index) => (
+              {[{label:'All',value:'All'}, {label:'Cars',value:'car'}, {label:'Bike',value:'bike'}, {label:'Truck',value:'truck'}].map((type, index) => (
                 <li key={index} className="nav-item" role="presentation">
                   <button
-                    className={`nav-link ${index === 0 ? 'active' : ''}`}
-                    data-bs-toggle="pill"
-                    data-bs-target={`#pills-${type.toLowerCase()}`}
-                  >
-                    {type}
+                    className={`nav-link ${selectedType === type.value ? 'active' : ''}`}
+                    onClick={() => handleTypeChange(type.value)}
+                    >
+                    {type.label}
                   </button>
                 </li>
               ))}
@@ -47,6 +57,6 @@ const BrowseByType = ({ bg, pagination, vehicles }) => (
       </Box>
     </Box>
   </section>
-);
+)};
 
 export default BrowseByType;

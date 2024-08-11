@@ -26,14 +26,14 @@ const CarComparison = () => {
             <Box className="row">
               <Box className="col-md-12">
                 <nav className="mt-3">
-                  <ol class="breadcrumb">
-                    <li class="breadcrumb-item">
+                  <ol className="breadcrumb">
+                    <li className="breadcrumb-item">
                       <Anchor href="#">Cars</Anchor>
                     </li>
-                    <li class="breadcrumb-item" aria-current="page">
+                    <li className="breadcrumb-item" aria-current="page">
                       <Anchor href="#">Car Reviews</Anchor>
                     </li>
-                    <li class="breadcrumb-item active" aria-current="page">
+                    <li className="breadcrumb-item active" aria-current="page">
                       <Anchor href="#">Toyota Corolla Reviews</Anchor>
                     </li>
                   </ol>

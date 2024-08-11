@@ -23,8 +23,8 @@ const AccountTypeModal = ({ opened, onClose }) => {
       title=""
       centered
       size="auto"
-      overlayOpacity={0.55}
-      overlayBlur={3}
+      overlayopacity={0.55}
+      overlayblur={3}
     >
       {/* <h5 className="m-4 ms-4">Choose Account Type</h5> */}
       <Text fw={700} fz="lg" size="md" className="mt-5 mb-1  ms-4 ps-1">Choose Account Type</Text>

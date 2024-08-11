@@ -6,7 +6,7 @@ export const fetcHomeData = async () => {
     const [makes, bodies, vehiclesTypes, comparisons, instantUsedCars, videos, blogs] = await Promise.all([
       fetchAPI(API_ENDPOINTS.MAKES,),
       fetchAPI(API_ENDPOINTS.BODIES),
-      fetchAPI(API_ENDPOINTS.VEHICLES_TYPE,),
+      fetchAPI(API_ENDPOINTS.VEHICLES_TYPE()),
       fetchAPI(API_ENDPOINTS.COMPARISONS,),
       fetchAPI(API_ENDPOINTS.INSTANT_USED_CARS,),
       fetchAPI(API_ENDPOINTS.VIDEOS,),

@@ -6,8 +6,8 @@ import { BsArrowRight } from "react-icons/bs";
 const HeroTabs = () => {
   return (
     <div>
-      <ul class="nav nav-tabs" id="myTab" role="tablist">
-        <li class="nav-item flex-fill">
+      <ul className="nav nav-tabs" id="myTab" role="tablist">
+        <li className="nav-item flex-fill">
           <span
             data-bs-toggle="tab"
             className="nav-link d-flex flex-column justify-content-center align-items-center"
@@ -17,7 +17,7 @@ const HeroTabs = () => {
             Car
           </span>
         </li>
-        <li class="nav-item flex-fill">
+        <li className="nav-item flex-fill">
           <span
             className="nav-link d-flex flex-column justify-content-center align-items-center"
             data-bs-toggle="tab"
@@ -27,7 +27,7 @@ const HeroTabs = () => {
             Bikes
           </span>
         </li>
-        <li class="nav-item flex-fill">
+        <li className="nav-item flex-fill">
           <span
             className="nav-link d-flex flex-column justify-content-center align-items-center"
             data-bs-toggle="tab"
@@ -38,9 +38,9 @@ const HeroTabs = () => {
           </span>
         </li>
       </ul>
-      <div class="tab-content" id="myTabContent">
+      <div className="tab-content" id="myTabContent">
         <div
-          class="tab-pane fade show active"
+          className="tab-pane fade show active"
           id="home-tab-pane"
           role="tabpanel"
           aria-labelledby="home-tab"
@@ -78,7 +78,7 @@ const HeroTabs = () => {
           </form>
         </div>
         {/* <div
-          class="tab-pane fade"
+          className="tab-pane fade"
           id="profile-tab-pane"
           role="tabpanel"
           aria-labelledby="profile-tab"
@@ -87,7 +87,7 @@ const HeroTabs = () => {
           ...
         </div>
         <div
-          class="tab-pane fade"
+          className="tab-pane fade"
           id="contact-tab-pane"
           role="tabpanel"
           aria-labelledby="contact-tab"
