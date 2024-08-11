@@ -813,7 +813,7 @@ export default function ProductDetail() {
                       <span className="single-bar"></span>
                       <span className="single-bar"></span>
                     </div>
-                    <div class="card-body">
+                    <div className="card-body">
                       <div className="product-content">
                         <Link
                           href={"#"}

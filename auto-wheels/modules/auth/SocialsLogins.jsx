@@ -28,8 +28,8 @@ const SocialsLogin = ({ socialOpened, socialOnClose }) => {
         title=""
         centered
         size="auto"
-        overlayOpacity={0.55}
-        overlayBlur={3}
+        overlayopacity={0.55}
+        overlayblur={3}
         withCloseButton={false}
       >
         <div className="model-height">

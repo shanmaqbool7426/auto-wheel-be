@@ -1,6 +1,8 @@
 "use client";
 import { Inter, Poppins, Roboto } from "next/font/google";
 import "./styles/globals.scss";
+import NextTopLoader from 'nextjs-toploader';
+import ReduxProvider from "@/store/provider"
 import classes from "./styles/Demo.module.scss";
 import {
   ColorSchemeScript,
@@ -55,11 +57,24 @@ export default function RootLayout({ children }) {
         />
       </head>
       <body>
+      <NextTopLoader 
+       color="#2299DD"
+       initialPosition={0.08}
+       crawlSpeed={200}
+       height={3}
+       crawl={true}
+       showSpinner={false}
+       easing="ease"
+       speed={200}
+       shadow="0 0 10px #2299DD,0 0 5px #2299DD"
+      />
+      <ReduxProvider>
           <MantineProvider theme={theme}>
             <Header />
             {children}
             <Footer />
           </MantineProvider>
+      </ReduxProvider>
        </body>
     </html>
   );

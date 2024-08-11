@@ -52,14 +52,14 @@ const CarComparionDetail = () => {
             <div className="row">
               <div className="col-md-12">
                 <nav className="mt-3">
-                  <ol class="breadcrumb">
-                    <li class="breadcrumb-item">
+                  <ol className="breadcrumb">
+                    <li className="breadcrumb-item">
                       <Anchor href="#">Cars</Anchor>
                     </li>
-                    <li class="breadcrumb-item" aria-current="page">
+                    <li className="breadcrumb-item" aria-current="page">
                       <Anchor href="#">Car Comparison</Anchor>
                     </li>
-                    <li class="breadcrumb-item active" aria-current="page">
+                    <li className="breadcrumb-item active" aria-current="page">
                       <Anchor href="#">
                         Suzuki Swift vs Toyota Hilux vs Peugeot 2008
                       </Anchor>

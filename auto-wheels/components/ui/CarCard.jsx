@@ -56,19 +56,28 @@ const CarCard = ({ vehicle, index }) => {
     //   </div>
     // </div>
     <Box className="card product-card">
-      <Image
+      {/* <Image
         src="/products/product-placeholder.png"
         className="card-img-top object-fit-cover img-fluid"
         alt="..."
         width={270}
         height={160}
+      /> */}
+      <img
+        src={vehicle?.defaultImage ? vehicle?.defaultImage : "/products/product-placeholder.png"}
+        alt="..."
+        style={{objectFit:'cover',maxHeight:'160px',minHeight:'160px'}}
+        onError={(e) => {
+          e.target.onerror = null;
+          e.target.src = "/products/product-placeholder.png";
+        }}
       />
       <div className="progress-bars">
         <span className="single-bar active"></span>
         <span className="single-bar"></span>
         <span className="single-bar"></span>
       </div>
-      <div class="card-body">
+      <div className="card-body">
         <div className="product-content">
           <Link href={"#"} className="d-inline-block w-50 lc-2 product-title">
             {vehicle?.name}
