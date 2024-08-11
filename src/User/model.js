@@ -3,11 +3,11 @@ import bcrypt from 'bcryptjs';
 
 const userSchema = mongoose.Schema(
   {
-    fullname: { type: String, required: true },
+    fullName: { type: String, required: true },
     email: { type: String, required: true, unique: true },
     phone: { type: String, required: true },
     password: { type: String, required: true },
-    accountType: { type: String, enum: ['Personal', 'Dealer'], required: true },
+    accountType: { type: String, enum: ['Personal', 'Dealer'] },
     rating: { type: Number, default: 0 },
     isVerified: { type: Boolean, default: false },
     verificationCode: { type: String },
