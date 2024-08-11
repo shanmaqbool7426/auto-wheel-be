@@ -17,7 +17,7 @@ const createVehicle = asyncHandler(async (req, res) => {
   
       let uploadedImages = [];
       let defaultImageUrl = null;
-  
+        console.log()
       if (req.files) {
         const imageUploadPromises = [];
   
@@ -35,7 +35,7 @@ const createVehicle = asyncHandler(async (req, res) => {
   
         uploadResults.forEach((uploadResult, index) => {
           if (uploadResult && uploadResult.url) {
-            if (index < req.files.images.length) {
+            if (index < req.files.images?.length) {
               uploadedImages.push(uploadResult.url);
             } else {
               defaultImageUrl = uploadResult.url;
@@ -57,8 +57,7 @@ const createVehicle = asyncHandler(async (req, res) => {
   
       const vehicle = new Vehicle(vehicleData);
       await vehicle.save();
-  
-      response.ok(res, "Vehicle Created Successfully");
+      response.ok(res, "Vehicle Created Successfully",vehicle);
     } catch (error) {
       console.error(error);
     }
@@ -119,6 +118,7 @@ const getListVehicles = asyncHandler(async (req, res) => {
         transmission,
         mileageMin,
         mileageMax,
+        city,
         search = '',
         page = 1,
         limit = 10,
@@ -135,6 +135,7 @@ const getListVehicles = asyncHandler(async (req, res) => {
     if (priceMin) filters.price = { $gte: priceMin };
     if (priceMax) filters.price = { ...filters.price, $lte: priceMax };
     if (bodyType) filters['specifications.bodyType'] = bodyType;
+    if (city) filters['seller.location'] = city;
     if (fuelType) filters['specifications.fuelType'] = fuelType;
     if (transmission) filters['specifications.transmission'] = transmission;
     if (mileageMin) filters['specifications.mileage'] = { $gte: mileageMin };

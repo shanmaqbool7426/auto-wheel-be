@@ -12,6 +12,11 @@
             required: true,
             index: true 
           },
+          make: {
+            type: String,
+            required: true,
+            index: true 
+          },
           price: {
             type: Number,
             required: true,
