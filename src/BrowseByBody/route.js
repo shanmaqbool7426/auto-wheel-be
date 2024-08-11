@@ -12,7 +12,7 @@ import {upload} from "../Middleware/multer.js"
 
 
 router.post('/', upload.single("bodyImage"),createBody);
-router.get('/', getAllBodies);
+router.get('/:type', getAllBodies);
 router.get('/:id', getBodyById);
 router.put('/:id', updateBodyById);
 router.delete('/:id', deleteBodyById);
