@@ -6,13 +6,16 @@ const useListingFilter = (options={}) => {
   const {type='car'} = options
   const searchParams = useSearchParams();
   const { replace } = useRouter();
-  const [resetFetch,setResetFetch]=useState(true);
+  const [resetFetch,setResetFetch]=useState(false);
+  const [isFetched,setIsFetched]=useState(false);
+  const [imediateFetch,setImediateFetch]=useState(false);
   const [filters, setFilters] = useState({
     city: "",
+    search:"",
     condition: "Condition",
-    make: "Make",
-    model: "Model",
-    mileage: [100, 20000],
+    make: [],
+    model: [],
+    mileage: [100, 2000000],
     price: [1200000, 2000000],
     year: [2000, 2024],
     transmission: "Transmission",
@@ -40,9 +43,10 @@ const useListingFilter = (options={}) => {
   
     // Add filters to the query only if they are not empty or default
     if (filters.city) query.city = filters.city;
+    if (filters.search) query.search = filters.search;
     if (filters.condition !== "Condition") query.condition = filters.condition;
-    if (filters.make !== "Make") query.make = filters.make;
-    if (filters.model !== "Model") query.model = filters.model;
+    if (filters.make.length > 0) query.make = filters.make.join(',');
+    if (filters.model.length > 0) query.model = filters.model.join(',');
     if (filters.transmission !== "Transmission") query.transmission = filters.transmission;
     if (filters.drive !== "Drive") query.drive = filters.drive;
     if (filters.exteriorColor !== "Exterior Color") query.exteriorColor = filters.exteriorColor;
@@ -50,7 +54,7 @@ const useListingFilter = (options={}) => {
     if (filters.bodyType) query.bodyType = filters.bodyType;
   
     // Add mileage, price, and year ranges if they are different from the defaults
-    if (filters.mileage[0] !== 100 || filters.mileage[1] !== 20000) {
+    if (filters.mileage[0] !== 100 || filters.mileage[1] !== 2000000) {
       query.mileageMin = filters.mileage[0];
       query.mileageMax = filters.mileage[1];
     }
@@ -58,11 +62,11 @@ const useListingFilter = (options={}) => {
       query.priceMin = filters.price[0];
       query.priceMax = filters.price[1];
     }
-    // query.yearMin = filters.year[0];
-    // query.yearMax = filters.year[1];
-  
-    console.log("Fetching data with filters:", query);
-  
+    if (filters.price[0] !== 2000 || filters.price[1] !== 2024) {
+      query.yearMin = filters.year[0];
+      query.yearMax = filters.year[1];
+    }
+      
     fetch(`${API_ENDPOINTS?.VEHICLES_Listing}?${new URLSearchParams(query)}`)
       .then((response) => response.json())
       .then((data) => {
@@ -78,13 +82,13 @@ const useListingFilter = (options={}) => {
 
   useEffect(() => {
     const currentParams = Object.fromEntries(searchParams.entries());
-    console.log(searchParams.entries());
     const updatedFilters = {
       city: currentParams.city || "",
+      search: currentParams.search || "",
       condition: currentParams.condition || "Condition",
-      make: currentParams.make || "Make",
-      model: currentParams.model || "Model",
-      mileage: currentParams.mileage ? currentParams.mileage.split(',').map(Number) : [100, 20000],
+      make: currentParams.make ? currentParams.make.split(',') : [],
+      model: currentParams.model ? currentParams.model.split(',') : [],
+      mileage: currentParams.mileage ? currentParams.mileage.split(',').map(Number) : [100, 2000000],
       price: currentParams.price ? currentParams.price.split(',').map(Number) : [1200000, 2000000],
       year: currentParams.year ? currentParams.year.split(',').map(Number) : [2000, 2024],
       transmission: currentParams.transmission || "Transmission",
@@ -95,6 +99,7 @@ const useListingFilter = (options={}) => {
     };
 
     setFilters(updatedFilters);
+    setImediateFetch(true)
   }, [searchParams]);
 
   useEffect(() => {
@@ -103,7 +108,7 @@ const useListingFilter = (options={}) => {
         fetchData();
         replace(`?${debouncedQuery}`, { scroll: false });
       }
-    }, 300);
+    }, 600);
 
     return () => {
       clearTimeout(handler);
@@ -115,27 +120,53 @@ const useListingFilter = (options={}) => {
       fetchData();
     }
   }, [resetFetch])
-  
 
+  useEffect(() => {
+    if(imediateFetch && !isFetched){
+      fetchData();
+      setIsFetched(true);
+    }
+  }, [imediateFetch])
+  
   const handleFilterChange = (filterName, value) => {
     setFilters((prevFilters) => {
+      let updatedFilterValue;
+  
+      if (filterName === 'make') {
+        const newValue = prevFilters.make.includes(value)
+          ? prevFilters.make.filter((make) => make !== value)
+          : [...prevFilters.make, value];
+  
+        updatedFilterValue = newValue;
+      } 
+      else if(filterName === 'model'){
+        const newValue = prevFilters.model.includes(value)
+        ? prevFilters.model.filter((model) => model !== value)
+        : [...prevFilters.model, value];
+
+      updatedFilterValue = newValue;
+      }
+      else {
+        updatedFilterValue = value;
+      }
+  
       const updatedFilters = {
         ...prevFilters,
-        [filterName]: Array.isArray(value) ? value : value,
+        [filterName]: updatedFilterValue,
       };
-
+  
       const params = new URLSearchParams(searchParams.toString());
-      params.set(filterName, Array.isArray(value) ? value.join(',') : value);
+      params.set(filterName, Array.isArray(updatedFilterValue) ? updatedFilterValue.join(',') : updatedFilterValue);
       setDebouncedQuery(params.toString());
-
+  
       return updatedFilters;
     });
   };
+  
+
   const handlePaginationChange = (newPage) => {
-    console.log(newPage,"page");
     setPagination((prev) => ({ ...prev, page: newPage }));
     setResetFetch(true);
-    // fetchData();
   };
 
   const handleSortChange = (newSortOrder) => {
@@ -145,10 +176,11 @@ const useListingFilter = (options={}) => {
   const resetFilters = () => {
     setFilters({
       city: "",
+      search: "",
       condition: "Condition",
-      make: "Make",
-      model: "Model",
-      mileage: [100, 20000],
+      make: [],
+      model: [],
+      mileage: [100, 2000000],
       price: [1200000, 2000000],
       year: [2000, 2024],
       transmission: "Transmission",
