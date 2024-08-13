@@ -1,12 +1,12 @@
 'use client';
 
 import React, { Fragment } from "react";
-import { FaLocationDot } from "react-icons/fa6";
-import { CarParts, ResetFiltersIcon, SearchWithCar } from "@/components/Icons";
-import useListingFilter from "@/custom-hooks/useListingFilter";
-import { RangeSlider } from '@mantine/core';
+import { FaLocationDot,FaSearchengin } from "react-icons/fa6";
+import {  ResetFiltersIcon, SearchWithCar } from "@/components/Icons";
+import { Accordion, RangeSlider } from '@mantine/core';
 import Image from "next/image";
-const ListingFilter = ({filters, handleFilterChange, resetFilters}) => {
+import { getBodyTypesByVehicleType, getMakeTypesByVehicleType, getVehicleModelsByMakeAndType, getVehiclePartsIconByVehicleType, vehicleConditionOptions, vehicleDriveOptions, vehicleExteriorColorOptions, vehicleFuelTypeOptions, vehicleTransmissionOptions } from "@/constants/vehicle-constants"
+const ListingFilter = ({ type, filters, handleFilterChange, resetFilters }) => {
 
   return (
     <Fragment>
@@ -18,6 +18,18 @@ const ListingFilter = ({filters, handleFilterChange, resetFilters}) => {
           </div>
         </div>
         <div className="card-body">
+          <div className="input-with-icon mb-4">
+            <span className="icon">
+              <FaSearchengin />
+            </span>
+            <input
+              type="text"
+              placeholder="Search..."
+              className="location-input form-control"
+              value={filters.search}
+              onChange={(e) => handleFilterChange("search", e.target.value)}
+            />
+          </div>
           <div className="input-with-icon mb-4">
             <span className="icon">
               <FaLocationDot />
@@ -39,57 +51,60 @@ const ListingFilter = ({filters, handleFilterChange, resetFilters}) => {
               <option value="Condition" disabled>
                 Condition
               </option>
-              <option value="new">New</option>
-              <option value="used">Used</option>
-            </select>
-          </div>
-          <div className="form-group">
-            <select
-              className="form-select"
-              value={filters.make}
-              onChange={(e) => handleFilterChange("make", e.target.value)}
-            >
-              <option value="Make" disabled>
-                Make
-              </option>
-              <option value="One">One</option>
-              <option value="Two">Two</option>
-              <option value="Three">Three</option>
+              {vehicleConditionOptions.map((condition)=>(
+              <option value={condition.value}>{condition.label}</option>
+              ))}
             </select>
           </div>
 
           {/* Checkbox Filters */}
-          <div className="checkbox-group-filters">
-            <div className="form-check">
-              <input
-                className="form-check-input"
-                type="checkbox"
-                id="Suzuki"
-                checked={filters.make === "Suzuki"}
-                onChange={() => handleFilterChange("make", "Suzuki")}
-              />
-              <label className="form-check-label" htmlFor="Suzuki">
-                Suzuki
-              </label>
-              <div className="count">17,556</div>
-            </div>
-            <div className="form-check">
-              <input
-                className="form-check-input"
-                type="checkbox"
-                id="Honda"
-                checked={filters.make === "Honda"}
-                onChange={() => handleFilterChange("make", "Honda")}
-              />
-              <label className="form-check-label" htmlFor="Honda">
-                Honda
-              </label>
-              <div className="count">17,556</div>
-            </div>
-          </div>
+          <Accordion variant="separated" radius="md" defaultValue="Make">
+            <Accordion.Item size='sm' value='Make' style={{ background: 'white', borderColor:'#E3E3E3' }}>
+              <Accordion.Control>Make</Accordion.Control>
+              <Accordion.Panel>          <div className="checkbox-group-filters">
+                {getMakeTypesByVehicleType(type)?.map(make => (
+                  <div className="form-check" key={make.value}>
+                    <input
+                      className="form-check-input"
+                      type="checkbox"
+                      id={make.label}
+                      checked={filters.make.includes(make.value)}
+                      onChange={() => handleFilterChange("make", make.value)}
+                    />
+                    <label className="form-check-label" htmlFor={make.label}>
+                      {make.label}
+                    </label>
+                    <div className="count">17,556</div>
+                  </div>
+                ))}
+              </div></Accordion.Panel>
+            </Accordion.Item>
+          </Accordion>
 
           {/* Remaining Filters */}
-          <div className="form-group my-4">
+          <Accordion variant="separated" radius="md" defaultValue="Model" className="mt-3">
+            <Accordion.Item size='sm' value='Model' style={{ background: 'white', borderColor:'#E3E3E3' }}>
+              <Accordion.Control>Model</Accordion.Control>
+              <Accordion.Panel>          <div className="checkbox-group-filters">
+                {getVehicleModelsByMakeAndType(filters.make,type)?.map(model => (
+                  <div className="form-check" key={model.value}>
+                    <input
+                      className="form-check-input"
+                      type="checkbox"
+                      id={model.label}
+                      checked={filters.model.includes(model.value)}
+                      onChange={() => handleFilterChange("model", model.value)}
+                    />
+                    <label className="form-check-label" htmlFor={model.label}>
+                      {model.label}
+                    </label>
+                    <div className="count">17,556</div>
+                  </div>
+                ))}
+              </div></Accordion.Panel>
+            </Accordion.Item>
+          </Accordion>
+          {/* <div className="form-group my-4">
             <select
               className="form-select"
               value={filters.model}
@@ -102,7 +117,7 @@ const ListingFilter = ({filters, handleFilterChange, resetFilters}) => {
               <option value="Two">Two</option>
               <option value="Three">Three</option>
             </select>
-          </div>
+          </div> */}
 
           {/* Custom Range Slider for Mileage */}
           <div className="range-slider">
@@ -113,7 +128,7 @@ const ListingFilter = ({filters, handleFilterChange, resetFilters}) => {
               color="red"
               thumbSize={18}
               min={100}
-              max={20000}
+              max={2000000}
               value={filters.mileage}
               size={3}
               onChange={(value) => handleFilterChange("mileage", value)}
@@ -239,9 +254,9 @@ const ListingFilter = ({filters, handleFilterChange, resetFilters}) => {
                 <option value="Transmission" disabled>
                   Transmission
                 </option>
-                <option value="Automatic">Automatic</option>
-                <option value="Manual">Manual</option>
-                <option value="CVT">CVT</option>
+                {vehicleTransmissionOptions.map((transmission,index)=>(
+                <option value={transmission.value} key={index}>{transmission.label}</option>
+                ))}
               </select>
             </div>
             <div className="form-group mb-3">
@@ -253,9 +268,9 @@ const ListingFilter = ({filters, handleFilterChange, resetFilters}) => {
                 <option value="Drive" disabled>
                   Drive
                 </option>
-                <option value="awd">AWD</option>
-                <option value="fwd">FWD</option>
-                <option value="rwd">RWD</option>
+                {vehicleDriveOptions.map((drive,index)=>(
+                <option value={drive.value} key={index}>{drive.label}</option>
+                ))}
               </select>
             </div>
             <div className="form-group mb-3">
@@ -267,9 +282,9 @@ const ListingFilter = ({filters, handleFilterChange, resetFilters}) => {
                 <option value="Exterior Color" disabled>
                   Exterior Color
                 </option>
-                <option value="Red">Red</option>
-                <option value="Blue">Blue</option>
-                <option value="Black">Black</option>
+                {vehicleExteriorColorOptions.map((color,index)=>(
+                <option value={color.value} key={index}>{color.label}</option>
+                ))}
               </select>
             </div>
             <div className="form-group mb-3">
@@ -281,9 +296,9 @@ const ListingFilter = ({filters, handleFilterChange, resetFilters}) => {
                 <option value="Fuel Type" disabled>
                   Fuel Type
                 </option>
-                <option value="Petrol">Petrol</option>
-                <option value="Diesel">Diesel</option>
-                <option value="Electric">Electric</option>
+                {vehicleFuelTypeOptions.map((fuel,index)=>(
+                <option value={fuel.value} key={index}>{fuel.label}</option>
+                ))}
               </select>
             </div>
           </div>
@@ -298,20 +313,13 @@ const ListingFilter = ({filters, handleFilterChange, resetFilters}) => {
       <div className="card filter-card">
         <div className="card-header">
           <div className="card-title">
-            <CarParts />
+            {getVehiclePartsIconByVehicleType(type)}
             <h5 className="mb-0">Body</h5>
           </div>
         </div>
         <div className="card-body">
           <div className="row">
-            {[
-              { src: "/car-body/Hatchback.svg", label: "Compact",value:'compact' },
-              { src: "/car-body/coupe.svg", label: "Coupe",value:'coupe' },
-              { src: "/car-body/Sport-Cars.svg", label: "Crossovers", value:'crossovers' },
-              { src: "/car-body/SUV.svg", label: "Off-Road",value:'offroad' },
-              { src: "/car-body/Pickups.svg", label: "Pickups",value:'pickups' },
-              { src: "/car-body/Sedan.svg", label: "Sedan",value:'sedan' },
-            ].map((bodyType) => (
+            {getBodyTypesByVehicleType(type).map((bodyType) => (
               <div className="col-md-6" key={bodyType.label}>
                 <div className="single-brand-item selected-brand-item text-center">
                   <label className={`text-decoration-none ${filters.bodyType === bodyType.value ? 'checked' : ''}`}>
