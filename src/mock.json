@@ -1,0 +1,519 @@
+[
+    {
+      "city": "Karachi",
+      "type":"car",
+      "cityArea": "DHA Phase 6",
+      "carInfo": "Toyota Corolla 2023",
+      "registeredIn": "Registered",
+      "price": 3200000,
+      "description": "Well-maintained Toyota Corolla with low mileage. Original documents available.",
+      "specifications": {
+        "stockId": "TC2023001",
+        "bodyType": "Sedan",
+        "fuelType": "Petrol",
+        "engine": "1.8L 4-Cylinder",
+        "mileage": 12000,
+        "transmission": "Automatic",
+        "drive": "Front-Wheel Drive",
+        "vin": "JTDBL40E699123456",
+        "exteriorColor": "White",
+        "interiorColor": "Beige",
+        "doors": 4,
+        "seats": 5
+      },
+      "features": ["ABS", "Air Bags", "Air Conditioning", "Power Steering", "Sun Roof", "Navigation System"],
+      "sellerNotes": "No accidents. First owner.",
+      "defaultImage": "https://via.placeholder.com/300x200",
+      "images": ["https://via.placeholder.com/300x200", "https://via.placeholder.com/300x200"],
+      "contactInfo": {
+        "mobileNumber": "03001234567",
+        "secondaryNumber": "03211234567",
+        "allowWhatsAppContact": true
+      },
+      "seller": "64d30dcf4f9d70c0f4e7b6f0"
+    },
+    {
+      "city": "Lahore",
+      "cityArea": "Gulberg",
+      "type":"car",
+      "carInfo": "Honda Civic 2022",
+      "registeredIn": "Registered",
+      "price": 3500000,
+      "description": "Top of the line Honda Civic. Recently serviced.",
+      "specifications": {
+        "stockId": "HC2022001",
+        "bodyType": "Sedan",
+        "fuelType": "Petrol",
+        "engine": "1.5L Turbo",
+        "mileage": 8000,
+        "transmission": "Automatic",
+        "drive": "Front-Wheel Drive",
+        "vin": "2HGFB2F59CH123456",
+        "exteriorColor": "Black",
+        "interiorColor": "Black",
+        "doors": 4,
+        "seats": 5
+      },
+      "features": ["ABS", "Air Bags", "Air Conditioning", "Heated Seats", "Alloy Rims", "Rear Camera"],
+      "sellerNotes": "Used by a single owner.",
+      "defaultImage": "https://via.placeholder.com/300x200",
+      "images": ["https://via.placeholder.com/300x200", "https://via.placeholder.com/300x200"],
+      "contactInfo": {
+        "mobileNumber": "03009876543",
+        "secondaryNumber": "03459876543",
+        "allowWhatsAppContact": true
+      },
+      "seller": "64d30dcf4f9d70c0f4e7b6f1"
+    },
+    {
+      "city": "Islamabad",
+      "type":"car",
+      "cityArea": "F-8",
+      "carInfo": "Suzuki Alto 2021",
+      "registeredIn": "Un-Registered",
+      "price": 1500000,
+      "description": "Brand new Suzuki Alto, perfect for city driving.",
+      "specifications": {
+        "stockId": "SA2021001",
+        "bodyType": "Hatchback",
+        "fuelType": "Petrol",
+        "engine": "0.6L 3-Cylinder",
+        "mileage": 5000,
+        "transmission": "Manual",
+        "drive": "Front-Wheel Drive",
+        "vin": "MNBUS25X003456789",
+        "exteriorColor": "Silver",
+        "interiorColor": "Grey",
+        "doors": 5,
+        "seats": 5
+      },
+      "features": ["Air Bags", "Power Steering", "Keyless Entry", "Immobilizer Key"],
+      "sellerNotes": "Brand new, first owner.",
+      "defaultImage": "https://via.placeholder.com/300x200",
+      "images": ["https://via.placeholder.com/300x200", "https://via.placeholder.com/300x200"],
+      "contactInfo": {
+        "mobileNumber": "03112345678",
+        "secondaryNumber": null,
+        "allowWhatsAppContact": false
+      },
+      "seller": "64d30dcf4f9d70c0f4e7b6f2"
+    },
+    {
+      "city": "Peshawar",
+      "type":"car",
+      "cityArea": "Hayatabad",
+      "carInfo": "Kia Sportage 2022",
+      "registeredIn": "Registered",
+      "price": 4500000,
+      "description": "Kia Sportage AWD, in excellent condition.",
+      "specifications": {
+        "stockId": "KS2022001",
+        "bodyType": "SUV",
+        "fuelType": "Petrol",
+        "engine": "2.0L 4-Cylinder",
+        "mileage": 18000,
+        "transmission": "Automatic",
+        "drive": "All-Wheel Drive",
+        "vin": "KNAPC8152M9123456",
+        "exteriorColor": "Blue",
+        "interiorColor": "Black",
+        "doors": 5,
+        "seats": 5
+      },
+      "features": ["ABS", "Air Bags", "Air Conditioning", "Power Windows", "Rear Camera", "Sun Roof"],
+      "sellerNotes": "Serviced regularly at the dealership.",
+      "defaultImage": "https://via.placeholder.com/300x200",
+      "images": ["https://via.placeholder.com/300x200", "https://via.placeholder.com/300x200"],
+      "contactInfo": {
+        "mobileNumber": "03007654321",
+        "secondaryNumber": "03217654321",
+        "allowWhatsAppContact": true
+      },
+      "seller": "64d30dcf4f9d70c0f4e7b6f3"
+    },
+    {
+      "city": "Quetta",
+      "type":"car",
+
+      "cityArea": "Satellite Town",
+      "carInfo": "Hyundai Tucson 2023",
+      "registeredIn": "Un-Registered",
+      "price": 4700000,
+      "description": "Hyundai Tucson with full options, ready for delivery.",
+      "specifications": {
+        "stockId": "HT2023001",
+        "bodyType": "SUV",
+        "fuelType": "Petrol",
+        "engine": "2.0L 4-Cylinder",
+        "mileage": 0,
+        "transmission": "Automatic",
+        "drive": "All-Wheel Drive",
+        "vin": "KM8J3CA46NU123456",
+        "exteriorColor": "White",
+        "interiorColor": "Beige",
+        "doors": 5,
+        "seats": 5
+      },
+      "features": ["ABS", "Air Bags", "Air Conditioning", "Navigation System", "Heated Seats", "Rear Camera"],
+      "sellerNotes": "Brand new, never driven.",
+      "defaultImage": "https://via.placeholder.com/300x200",
+      "images": ["https://via.placeholder.com/300x200", "https://via.placeholder.com/300x200"],
+      "contactInfo": {
+        "mobileNumber": "03006543210",
+        "secondaryNumber": "03316543210",
+        "allowWhatsAppContact": true
+      },
+      "seller": "64d30dcf4f9d70c0f4e7b6f4"
+    },
+
+
+
+
+
+
+
+
+
+
+      {
+        "city": "Karachi",
+        "type":"bike",
+
+        "cityArea": "Nazimabad",
+        "bikeInfo": "Yamaha YBR 125 2023",
+        "registeredIn": "Registered",
+        "price": 220000,
+        "description": "Well-maintained Yamaha YBR 125 with low mileage. Original documents available.",
+        "specifications": {
+          "stockId": "YB2023001",
+          "bodyType": "Sport",
+          "fuelType": "Petrol",
+          "engine": "125cc 4-Stroke",
+          "mileage": 5000,
+          "transmission": "Manual",
+          "drive": "Chain Drive",
+          "vin": "YAMAHA1234567890",
+          "exteriorColor": "Red",
+          "interiorColor": "Black",
+          "seats": 2
+        },
+        "features": ["Disc Brakes", "Alloy Rims", "Electric Start"],
+        "sellerNotes": "No accidents. First owner.",
+        "defaultImage": "https://via.placeholder.com/300x200",
+        "images": ["https://via.placeholder.com/300x200", "https://via.placeholder.com/300x200"],
+        "contactInfo": {
+          "mobileNumber": "03001234567",
+          "secondaryNumber": "03211234567",
+          "allowWhatsAppContact": true
+        },
+        "seller": "64d30dcf4f9d70c0f4e7b6f0"
+      },
+      {
+        "city": "Lahore",
+        "type":"bike",
+
+        "cityArea": "Johar Town",
+        "bikeInfo": "Honda CG 125 2022",
+        "registeredIn": "Registered",
+        "price": 180000,
+        "description": "Top of the line Honda CG 125. Recently serviced.",
+        "specifications": {
+          "stockId": "CG2022001",
+          "bodyType": "Standard",
+          "fuelType": "Petrol",
+          "engine": "125cc 4-Stroke",
+          "mileage": 8000,
+          "transmission": "Manual",
+          "drive": "Chain Drive",
+          "vin": "HONDA1234567890",
+          "exteriorColor": "Black",
+          "interiorColor": "Red",
+          "seats": 2
+        },
+        "features": ["Drum Brakes", "Kick Start", "Alloy Rims"],
+        "sellerNotes": "Used by a single owner.",
+        "defaultImage": "https://via.placeholder.com/300x200",
+        "images": ["https://via.placeholder.com/300x200", "https://via.placeholder.com/300x200"],
+        "contactInfo": {
+          "mobileNumber": "03009876543",
+          "secondaryNumber": "03459876543",
+          "allowWhatsAppContact": true
+        },
+        "seller": "64d30dcf4f9d70c0f4e7b6f1"
+      },
+      {
+        "city": "Islamabad",
+        "type":"bike",
+
+        "cityArea": "G-10",
+        "bikeInfo": "Suzuki GS 150 2021",
+        "registeredIn": "Un-Registered",
+        "price": 200000,
+        "description": "Brand new Suzuki GS 150, perfect for city and highway riding.",
+        "specifications": {
+          "stockId": "GS2021001",
+          "bodyType": "Cruiser",
+          "fuelType": "Petrol",
+          "engine": "150cc 4-Stroke",
+          "mileage": 3000,
+          "transmission": "Manual",
+          "drive": "Chain Drive",
+          "vin": "SUZUKI1234567890",
+          "exteriorColor": "Blue",
+          "interiorColor": "Black",
+          "seats": 2
+        },
+        "features": ["Disc Brakes", "Alloy Rims", "Electric Start"],
+        "sellerNotes": "Brand new, first owner.",
+        "defaultImage": "https://via.placeholder.com/300x200",
+        "images": ["https://via.placeholder.com/300x200", "https://via.placeholder.com/300x200"],
+        "contactInfo": {
+          "mobileNumber": "03112345678",
+          "secondaryNumber": null,
+          "allowWhatsAppContact": false
+        },
+        "seller": "64d30dcf4f9d70c0f4e7b6f2"
+      },
+      {
+        "city": "Peshawar",
+        "type":"bike",
+
+        "cityArea": "University Town",
+        "bikeInfo": "Honda CB 150F 2022",
+        "registeredIn": "Registered",
+        "price": "250000",
+        "description": "Honda CB 150F in excellent condition.",
+        "specifications": {
+          "stockId": "CB2022001",
+          "bodyType": "Sport",
+          "fuelType": "Petrol",
+          "engine": "150cc 4-Stroke",
+          "mileage": 4000,
+          "transmission": "Manual",
+          "drive": "Chain Drive",
+          "vin": "HONDA4567891230",
+          "exteriorColor": "Orange",
+          "interiorColor": "Black",
+          "seats": 2
+        },
+        "features": ["Disc Brakes", "Electric Start", "Alloy Rims"],
+        "sellerNotes": "Serviced regularly at the dealership.",
+        "defaultImage": "https://via.placeholder.com/300x200",
+        "images": ["https://via.placeholder.com/300x200", "https://via.placeholder.com/300x200"],
+        "contactInfo": {
+          "mobileNumber": "03007654321",
+          "secondaryNumber": "03217654321",
+          "allowWhatsAppContact": true
+        },
+        "seller": "64d30dcf4f9d70c0f4e7b6f3"
+      },
+      {
+        "city": "Quetta",
+        "type":"bike",
+
+        "cityArea": "Jinnah Road",
+        "bikeInfo": "Kawasaki Ninja 250 2023",
+        "registeredIn": "Un-Registered",
+        "price": 550000,
+        "description": "Kawasaki Ninja 250 with full options, ready for delivery.",
+        "specifications": {
+          "stockId": "KN2023001",
+          "bodyType": "Sport",
+          "fuelType": "Petrol",
+          "engine": "250cc 2-Cylinder",
+          "mileage": 0,
+          "transmission": "Manual",
+          "drive": "Chain Drive",
+          "vin": "KAWASAKI1234567890",
+          "exteriorColor": "Green",
+          "interiorColor": "Black",
+          "seats": 2
+        },
+        "features": ["Disc Brakes", "Electric Start", "Alloy Rims"],
+        "sellerNotes": "Brand new, never driven.",
+        "defaultImage": "https://via.placeholder.com/300x200",
+        "images": ["https://via.placeholder.com/300x200", "https://via.placeholder.com/300x200"],
+        "contactInfo": {
+          "mobileNumber": "03006543210",
+          "secondaryNumber": "03316543210",
+          "allowWhatsAppContact": true
+        },
+        "seller": "64d30dcf4f9d70c0f4e7b6f4"
+      },
+
+
+
+
+
+      {
+        "city": "Karachi",
+        "cityArea": "Korangi Industrial Area",
+        "carInfo": "Hino Dutro 2022",
+        "type": "truck",
+        "registeredIn": "Registered",
+        "price": 6000000,
+        "description": "Well-maintained Hino Dutro with high payload capacity, suitable for industrial transport.",
+        "specifications": {
+          "stockId": "HD2022001",
+          "bodyType": "Truck",
+          "fuelType": "Diesel",
+          "engine": "5.0L 4-Cylinder",
+          "mileage": 50000,
+          "transmission": "Manual",
+          "drive": "Rear-Wheel Drive",
+          "vin": "JHDTY57P8K0234567",
+          "exteriorColor": "White",
+          "interiorColor": "Grey",
+          "doors": 2,
+          "seats": 3,
+          "payloadCapacity": 7000
+        },
+        "features": ["Power Steering", "Air Conditioning", "Anti-Lock Brakes", "Heavy Duty Suspension"],
+        "sellerNotes": "Regularly serviced, in excellent working condition.",
+        "defaultImage": "https://via.placeholder.com/300x200",
+        "images": ["https://via.placeholder.com/300x200", "https://via.placeholder.com/300x200"],
+        "contactInfo": {
+          "mobileNumber": "03001234567",
+          "secondaryNumber": "03211234567",
+          "allowWhatsAppContact": true
+        },
+        "seller": "64d30dcf4f9d70c0f4e7b6f0"
+      },
+      {
+        "city": "Lahore",
+        "cityArea": "Raiwind Road",
+        "carInfo": "Isuzu N-Series 2023",
+        "type": "truck",
+        "registeredIn": "Registered",
+        "price": 7500000,
+        "description": "Brand new Isuzu N-Series truck, ideal for logistics and heavy-duty transport.",
+        "specifications": {
+          "stockId": "IN2023001",
+          "bodyType": "Truck",
+          "fuelType": "Diesel",
+          "engine": "5.2L 4-Cylinder",
+          "mileage": 10000,
+          "transmission": "Manual",
+          "drive": "Rear-Wheel Drive",
+          "vin": "JLS7H43P8M0345678",
+          "exteriorColor": "Blue",
+          "interiorColor": "Grey",
+          "doors": 2,
+          "seats": 3,
+          "payloadCapacity": 8500
+        },
+        "features": ["Power Steering", "Air Conditioning", "ABS", "Reinforced Chassis"],
+        "sellerNotes": "Excellent condition, barely used.",
+        "defaultImage": "https://via.placeholder.com/300x200",
+        "images": ["https://via.placeholder.com/300x200", "https://via.placeholder.com/300x200"],
+        "contactInfo": {
+          "mobileNumber": "03009876543",
+          "secondaryNumber": "03459876543",
+          "allowWhatsAppContact": true
+        },
+        "seller": "64d30dcf4f9d70c0f4e7b6f1"
+      },
+      {
+        "city": "Islamabad",
+        "cityArea": "I-10 Industrial Area",
+        "carInfo": "Mitsubishi Fuso Canter 2021",
+        "type": "truck",
+        "registeredIn": "Un-Registered",
+        "price": 5000000,
+        "description": "Mitsubishi Fuso Canter in pristine condition, perfect for urban freight services.",
+        "specifications": {
+          "stockId": "MF2021001",
+          "bodyType": "Truck",
+          "fuelType": "Diesel",
+          "engine": "4.9L 4-Cylinder",
+          "mileage": 25000,
+          "transmission": "Manual",
+          "drive": "Rear-Wheel Drive",
+          "vin": "JHMGC43P8K0345678",
+          "exteriorColor": "Silver",
+          "interiorColor": "Grey",
+          "doors": 2,
+          "seats": 3,
+          "payloadCapacity": 5000
+        },
+        "features": ["Air Conditioning", "Power Steering", "Anti-Lock Brakes", "High Ground Clearance"],
+        "sellerNotes": "Hardly used, almost like new.",
+        "defaultImage": "https://via.placeholder.com/300x200",
+        "images": ["https://via.placeholder.com/300x200", "https://via.placeholder.com/300x200"],
+        "contactInfo": {
+          "mobileNumber": "03112345678",
+          "secondaryNumber": null,
+          "allowWhatsAppContact": false
+        },
+        "seller": "64d30dcf4f9d70c0f4e7b6f2"
+      },
+      {
+        "city": "Peshawar",
+        "cityArea": "Ring Road",
+        "carInfo": "Hyundai Mighty EX9 2022",
+        "type": "truck",
+        "registeredIn": "Registered",
+        "price": 6800000,
+        "description": "Hyundai Mighty EX9, a durable truck for long hauls and heavy loads.",
+        "specifications": {
+          "stockId": "HE2022001",
+          "bodyType": "Truck",
+          "fuelType": "Diesel",
+          "engine": "4.6L 4-Cylinder",
+          "mileage": 30000,
+          "transmission": "Manual",
+          "drive": "Rear-Wheel Drive",
+          "vin": "KMHGC46P8K0345678",
+          "exteriorColor": "Red",
+          "interiorColor": "Black",
+          "doors": 2,
+          "seats": 3,
+          "payloadCapacity": 9000
+        },
+        "features": ["Power Steering", "Air Conditioning", "ABS", "Heavy Duty Tires"],
+        "sellerNotes": "Well-maintained, ready for heavy-duty tasks.",
+        "defaultImage": "https://via.placeholder.com/300x200",
+        "images": ["https://via.placeholder.com/300x200", "https://via.placeholder.com/300x200"],
+        "contactInfo": {
+          "mobileNumber": "03007654321",
+          "secondaryNumber": "03217654321",
+          "allowWhatsAppContact": true
+        },
+        "seller": "64d30dcf4f9d70c0f4e7b6f3"
+      },
+      {
+        "city": "Quetta",
+        "cityArea": "Industrial Area",
+        "carInfo": "Tata Prima 2023",
+        "type": "truck",
+        "registeredIn": "Un-Registered",
+        "price": 8000000,
+        "description": "Tata Prima with exceptional load-bearing capacity, suitable for heavy industries.",
+        "specifications": {
+          "stockId": "TP2023001",
+          "bodyType": "Truck",
+          "fuelType": "Diesel",
+          "engine": "6.7L 6-Cylinder",
+          "mileage": 1000,
+          "transmission": "Manual",
+          "drive": "Rear-Wheel Drive",
+          "vin": "MATGC57P8K0345678",
+          "exteriorColor": "Yellow",
+          "interiorColor": "Black",
+          "doors": 2,
+          "seats": 3,
+          "payloadCapacity": 12000
+        },
+        "features": ["Power Steering", "Air Conditioning", "Anti-Lock Brakes", "Reinforced Frame"],
+        "sellerNotes": "Brand new, ready for immediate delivery.",
+        "defaultImage": "https://via.placeholder.com/300x200",
+        "images": ["https://via.placeholder.com/300x200", "https://via.placeholder.com/300x200"],
+        "contactInfo": {
+          "mobileNumber": "03006543210",
+          "secondaryNumber": "03316543210",
+          "allowWhatsAppContact": true
+        },
+        "seller": "64d30dcf4f9d70c0f4e7b6f4"
+      }
+  ]
+  

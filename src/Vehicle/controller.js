@@ -8,16 +8,16 @@ import { uploadOnCloudinary } from '../Utils/cloudinary.js';
 
 const createVehicle = asyncHandler(async (req, res) => {
     try {
-      const { specifications, features, seller, ...rest } = req.body;
+      const { specifications, features,contactInfo ,seller, ...rest } = req.body;
   
       // Parse JSON fields
       const parsedSpecifications = JSON.parse(specifications);
       const parsedFeatures = JSON.parse(features);
-      const parsedSeller = JSON.parse(seller);
+      const parsedContactInfo = JSON.parse(contactInfo);
   
       let uploadedImages = [];
       let defaultImageUrl = null;
-        console.log()
+        console.log(req.files.images,'>>>>>>>>>>')
       if (req.files) {
         const imageUploadPromises = [];
   
@@ -31,6 +31,9 @@ const createVehicle = asyncHandler(async (req, res) => {
           imageUploadPromises.push(uploadOnCloudinary(req.files.defaultImage[0].path));
         }
   
+
+
+        
         const uploadResults = await Promise.all(imageUploadPromises);
   
         uploadResults.forEach((uploadResult, index) => {
@@ -50,7 +53,7 @@ const createVehicle = asyncHandler(async (req, res) => {
         ...rest,
         specifications: parsedSpecifications,
         features: parsedFeatures,
-        seller: parsedSeller,
+        contactInfo: parsedContactInfo,
         images: uploadedImages,
         defaultImage: defaultImageUrl || rest.defaultImage,
       };
