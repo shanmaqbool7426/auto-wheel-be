@@ -1,83 +1,97 @@
-    import mongoose from 'mongoose';
+import mongoose from 'mongoose';
 
-    const vehicleSchema = new mongoose.Schema({
-        type: {
-            type: String,
-            enum: ['car', 'bike', 'truck'],
-            required: true,
-            index: true
-          },
-          name: {
-            type: String,
-            required: true,
-            index: true 
-          },
-          make: {
-            type: String,
-            required: true,
-            index: true 
-          },
-          price: {
-            type: Number,
-            required: true,
-            index: true 
-          },
-          model: {
-            type: String,
-            required: true,
-            index: true 
-          },
-          year: {
-            type: Number,
-            required: true,
-            index: true 
-          },
-          condition: {
-            type: String,
-            required: true,
-          },
-          description: {
-            type: String,
-          },
-          specifications: {
-            stockId: { type: String, index: true }, 
-            bodyType: { type: String, index: true }, 
-            fuelType: { type: String, index: true },
-            engine: String,
-            mileage: { type: Number, index: true }, 
-            transmission: { type: String, index: true }, 
-            drive: String,
-            vin: { type: String, index: true }, 
-            exteriorColor: String,
-            interiorColor: String,
-            doors: Number,
-            seats: Number,
-            engineCapacity: Number, // Specific to bikes
-            payloadCapacity: Number, // Specific to trucks
-          },
-          features: {
-            type: [String]
-          },
-          sellerNotes: {
-            type: String
-          },
-          defaultImage:{
-            type: String,
-            default: 'https://via.placeholder.com/300x200'
-          },
-          images: {
-            type: [String]
-          },
-    seller: {
-        name: String,
-        rating: Number,
-        reviews: Number,
-        location: String,
-        type: Map,
-        of: String
+const vehicleSchema = new mongoose.Schema({
+
+  type: {
+    type: String,
+    enum: ['car', 'bike', 'truck'],
+    required: true,
+    index: true
+  },
+  city: {
+    type: String,
+    required: true,
+    index: true, 
+  },
+  cityArea: {
+    type: String,
+    required: true,
+    index: true,
+  },
+  carInfo: {
+    type: String,
+    required: true,
+    index: true, 
+  },
+  registeredIn: {
+    type: String,
+    enum: ['Registered', 'Un-Registered'],
+    required: true,
+  },
+  price: {
+    type: Number,
+    required: true,
+    min: 0,
+  },
+  description: {
+    type: String,
+    required: true,
+  },
+
+  specifications: {
+    stockId: { type: String, index: true },
+    bodyType: { type: String, index: true },
+    fuelType: { type: String, index: true },
+    engine: { type: String, index: true },
+    mileage: { type: Number, index: true },
+    transmission: { type: String, index: true },
+    drive: { type: String, index: true },
+    vin: { type: String, index: true },
+    exteriorColor: { type: String, index: true },
+    interiorColor: { type: String, index: true },
+    doors: { type: Number, min: 2, max: 5 }, 
+    seats: { type: Number, min: 1, max: 9 }, 
+    engineCapacity: { type: Number, min: 50, max: 1500 }, 
+    payloadCapacity: { type: Number, min: 500, max: 50000 }, 
+  },
+  features: {
+    type: [String],
+    index: true,
+  },
+  sellerNotes: {
+    type: String
+  },
+  defaultImage: {
+    type: String,
+    default: 'https://via.placeholder.com/300x200'
+  },
+  images: {
+    type: [String]
+  },
+
+  contactInfo: {
+    mobileNumber: {
+      type: String,
+      required: true,
+      match: /^[0-9]{11}$/ 
+    },
+    secondaryNumber: {
+      type: String,
+      match: /^[0-9]{11}$/
+    },
+    allowWhatsAppContact: {
+      type: Boolean,
+      default: false
     }
-    }, { timestamps: true });
+  },
+  seller: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "User",
+  }
+}, { timestamps: true });
 
-    const Vehicle = mongoose.model('Vehicle', vehicleSchema);
+vehicleSchema.index({ city: 1, carInfo: 1, 'specifications.fuelType': 1 });
 
-    export default Vehicle;
+const Vehicle = mongoose.model('Vehicle', vehicleSchema);
+
+export default Vehicle;
