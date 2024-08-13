@@ -1,6 +1,6 @@
 
-// const BASE_URL = 'https://auto-wheel-be.vercel.app'
-const BASE_URL = 'http://localhost:5000'
+const BASE_URL = 'https://auto-wheel-be.vercel.app'
+// const BASE_URL = 'http://localhost:5000'
 
 export const API_ENDPOINTS = {
     MAKES: `${BASE_URL}/api/browes-by-make`,

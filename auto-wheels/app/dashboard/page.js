@@ -1,16 +1,17 @@
-import { getServerSession } from 'next-auth/next';
-import { authOptions } from '@/app/api/auth/[...nextauth]/route';
 
-export default async function Dashboard() {
-  const session = await getServerSession(authOptions);
-console.log('>>>>>>>>',session);
-  if (!session) {
-    return <p>You are not signed in</p>;
-  }
+'use client'
+export default function Dashboard() {
+
+
+  const handleClick = () => {
+    const whatsappUrl = `https://wa.me/${'03035699524'}?text=${encodeURIComponent('hi auto-wheels')}`;
+    window.open(whatsappUrl, '_blank');
+  };
+
 
   return (
-    <div>
-      <p>Welcome, {session.user.name}!</p>
-    </div>
+    <button onClick={handleClick} className="whatsapp-chat-button">
+      Chat via WhatsApp
+    </button>
   );
 }
