@@ -15,7 +15,7 @@ import "@mantine/carousel/styles.css";
 import SignUp from "./SignUp";
 import { signIn } from 'next-auth/react';
 
-import { signIn } from 'next-auth/react';
+// import { signIn } from 'next-auth/react';
 
 import classes from "../../app/styles/Demo.module.scss";
 const SocialsLogin = ({ socialOpened, socialOnClose }) => {

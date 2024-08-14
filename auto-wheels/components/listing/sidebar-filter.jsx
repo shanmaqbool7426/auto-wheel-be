@@ -1,12 +1,63 @@
 'use client';
 
-import React, { Fragment } from "react";
+import React, { Fragment,useState } from "react";
+
 import { FaLocationDot,FaSearchengin } from "react-icons/fa6";
 import {  ResetFiltersIcon, SearchWithCar } from "@/components/Icons";
+// const { fetchedData, filters, pagination, handlePaginationChange, handleFilterChange, resetFilters,handleSortChange } = useListingFilter({ type: 'params.slug' });
+
 import { Accordion, RangeSlider } from '@mantine/core';
 import Image from "next/image";
 import { getBodyTypesByVehicleType, getMakeTypesByVehicleType, getVehicleModelsByMakeAndType, getVehiclePartsIconByVehicleType, vehicleConditionOptions, vehicleDriveOptions, vehicleExteriorColorOptions, vehicleFuelTypeOptions, vehicleTransmissionOptions } from "@/constants/vehicle-constants"
-const ListingFilter = ({ type, filters, handleFilterChange, resetFilters }) => {
+import useListingFilter from "@/custom-hooks/useListingFilter";
+const ListingFilter = ({ type, handleFilterChange, resetFilters }) => {
+  const [filters, setFilters] = useState({
+    city: [],
+    search:"",
+    condition: [],
+    make: [],
+    model: [],
+    mileage: [100, 2000000],
+    price: [1200000, 2000000],
+    year: [2000, 2024],
+    transmission: [],
+    drive: [],
+    exteriorColor: [],
+    fuelType: [],
+    bodyType: [],
+  });
+
+  const handleCheckboxChange = (filterType, value, isChecked) => {
+    const newFilters = { ...filters };
+    
+    if (isChecked) {
+      newFilters[filterType].push(value);
+    } else {
+      newFilters[filterType] = newFilters[filterType].filter(item => item !== value);
+    }
+
+    setFilters(newFilters);
+    updateCustomUrl(newFilters);
+  };
+
+  const updateCustomUrl = (params) => {
+    let customUrl = '/listing/cars/search/-/';
+    
+    // Add cities
+    if (params.cities.length) {
+      params.cities.forEach(city => {
+        customUrl += `ct_${city.toLowerCase()}/`;
+      });
+    }
+
+    // Add areas
+    if (params.areas.length) {
+      params.areas.forEach(area => {
+        customUrl += `ca_${area.toLowerCase().replace(/ /g, '-')}/`;
+      });
+    }
+    router.push(customUrl, { scroll: false });
+  };
 
   return (
     <Fragment>
@@ -27,7 +78,7 @@ const ListingFilter = ({ type, filters, handleFilterChange, resetFilters }) => {
               placeholder="Search..."
               className="location-input form-control"
               value={filters.search}
-              onChange={(e) => handleFilterChange("search", e.target.value)}
+              // onChange={(e) => handleFilterChange("search", e.target.value)}
             />
           </div>
           <div className="input-with-icon mb-4">
@@ -39,14 +90,15 @@ const ListingFilter = ({ type, filters, handleFilterChange, resetFilters }) => {
               placeholder="Enter your city"
               className="location-input form-control"
               value={filters.city}
-              onChange={(e) => handleFilterChange("city", e.target.value)}
+              onChange={(e) => handleCheckboxChange("cities", e.target.value, e.target.checked)}
             />
+            {/* handleCheckboxChange('cities', 'Islamabad', e.target.checked) */}
           </div>
           <div className="form-group mb-3">
             <select
               className="form-select"
               value={filters.condition}
-              onChange={(e) => handleFilterChange("condition", e.target.value)}
+              // onChange={(e) => handleFilterChange("condition", e.target.value)}
             >
               <option value="Condition" disabled>
                 Condition
@@ -69,7 +121,7 @@ const ListingFilter = ({ type, filters, handleFilterChange, resetFilters }) => {
                       type="checkbox"
                       id={make.label}
                       checked={filters.make.includes(make.value)}
-                      onChange={() => handleFilterChange("make", make.value)}
+                      // onChange={() => handleFilterChange("make", make.value)}
                     />
                     <label className="form-check-label" htmlFor={make.label}>
                       {make.label}
@@ -93,7 +145,7 @@ const ListingFilter = ({ type, filters, handleFilterChange, resetFilters }) => {
                       type="checkbox"
                       id={model.label}
                       checked={filters.model.includes(model.value)}
-                      onChange={() => handleFilterChange("model", model.value)}
+                      // onChange={() => handleFilterChange("model", model.value)}
                     />
                     <label className="form-check-label" htmlFor={model.label}>
                       {model.label}
@@ -131,7 +183,7 @@ const ListingFilter = ({ type, filters, handleFilterChange, resetFilters }) => {
               max={2000000}
               value={filters.mileage}
               size={3}
-              onChange={(value) => handleFilterChange("mileage", value)}
+              // onChange={(value) => handleFilterChange("mileage", value)}
               styles={{ thumb: { borderWidth: 2, padding: 3, borderColor: 'white' } }}
             />
             <div className="range-inputs">
@@ -142,7 +194,7 @@ const ListingFilter = ({ type, filters, handleFilterChange, resetFilters }) => {
                       type="number"
                       className="form-control"
                       value={filters.mileage[0]}
-                      onChange={(e) => handleFilterChange("mileage", [Number(e.target.value), filters.mileage[1]])}
+                      // onChange={(e) => handleFilterChange("mileage", [Number(e.target.value), filters.mileage[1]])}
                     />
                   </div>
                   <div className="col">
@@ -150,7 +202,7 @@ const ListingFilter = ({ type, filters, handleFilterChange, resetFilters }) => {
                       type="number"
                       className="form-control"
                       value={filters.mileage[1]}
-                      onChange={(e) => handleFilterChange("mileage", [filters.mileage[0], Number(e.target.value)])}
+                      // onChange={(e) => handleFilterChange("mileage", [filters.mileage[0], Number(e.target.value)])}
                     />
                   </div>
                 </div>
@@ -171,7 +223,7 @@ const ListingFilter = ({ type, filters, handleFilterChange, resetFilters }) => {
               max={2000000}
               value={filters.price}
               size={3}
-              onChange={(value) => handleFilterChange("price", value)}
+              // onChange={(value) => handleFilterChange("price", value)}
               styles={{ thumb: { borderWidth: 2, padding: 3, borderColor: 'white' } }}
             />
             <div className="range-inputs">
@@ -184,7 +236,7 @@ const ListingFilter = ({ type, filters, handleFilterChange, resetFilters }) => {
                       value={filters.price[0]}
                       min={1200000}
                       max={filters.price[1]}
-                      onChange={(e) => handleFilterChange("price", [Number(e.target.value), filters.price[1]])}
+                      // onChange={(e) => handleFilterChange("price", [Number(e.target.value), filters.price[1]])}
                     />
                   </div>
                   <div className="col">
@@ -194,7 +246,7 @@ const ListingFilter = ({ type, filters, handleFilterChange, resetFilters }) => {
                       value={filters.price[1]}
                       min={filters.price[0]}
                       max={2000000}
-                      onChange={(e) => handleFilterChange("price", [filters.price[0], Number(e.target.value)])}
+                      // onChange={(e) => handleFilterChange("price", [filters.price[0], Number(e.target.value)])}
                     />
                   </div>
                 </div>
@@ -213,7 +265,7 @@ const ListingFilter = ({ type, filters, handleFilterChange, resetFilters }) => {
               max={2024}
               value={filters.year}
               size={3}
-              onChange={(value) => handleFilterChange("year", value)}
+              // onChange={(value) => handleFilterChange("year", value)}
               styles={{ thumb: { borderWidth: 2, padding: 3, borderColor: 'white' } }}
             />
             <div className="range-inputs">
@@ -226,7 +278,7 @@ const ListingFilter = ({ type, filters, handleFilterChange, resetFilters }) => {
                       value={filters.year[0]}
                       min={2000}
                       max={filters.year[1]}
-                      onChange={(e) => handleFilterChange("year", [Number(e.target.value), filters.year[1]])}
+                      // onChange={(e) => handleFilterChange("year", [Number(e.target.value), filters.year[1]])}
                     />
                   </div>
                   <div className="col">
@@ -236,7 +288,7 @@ const ListingFilter = ({ type, filters, handleFilterChange, resetFilters }) => {
                       value={filters.year[1]}
                       min={filters.year[0]}
                       max={2024}
-                      onChange={(e) => handleFilterChange("year", [filters.year[0], Number(e.target.value)])}
+                      // onChange={(e) => handleFilterChange("year", [filters.year[0], Number(e.target.value)])}
                     />
                   </div>
                 </div>
@@ -249,7 +301,7 @@ const ListingFilter = ({ type, filters, handleFilterChange, resetFilters }) => {
               <select
                 className="form-select"
                 value={filters.transmission}
-                onChange={(e) => handleFilterChange("transmission", e.target.value)}
+                // onChange={(e) => handleFilterChange("transmission", e.target.value)}
               >
                 <option value="Transmission" disabled>
                   Transmission
@@ -263,7 +315,7 @@ const ListingFilter = ({ type, filters, handleFilterChange, resetFilters }) => {
               <select
                 className="form-select"
                 value={filters.drive}
-                onChange={(e) => handleFilterChange("drive", e.target.value)}
+                // onChange={(e) => handleFilterChange("drive", e.target.value)}
               >
                 <option value="Drive" disabled>
                   Drive
@@ -277,7 +329,7 @@ const ListingFilter = ({ type, filters, handleFilterChange, resetFilters }) => {
               <select
                 className="form-select"
                 value={filters.exteriorColor}
-                onChange={(e) => handleFilterChange("exteriorColor", e.target.value)}
+                // onChange={(e) => handleFilterChange("exteriorColor", e.target.value)}
               >
                 <option value="Exterior Color" disabled>
                   Exterior Color
@@ -291,7 +343,7 @@ const ListingFilter = ({ type, filters, handleFilterChange, resetFilters }) => {
               <select
                 className="form-select"
                 value={filters.fuelType}
-                onChange={(e) => handleFilterChange("fuelType", e.target.value)}
+                // onChange={(e) => handleFilterChange("fuelType", e.target.value)}
               >
                 <option value="Fuel Type" disabled>
                   Fuel Type
@@ -328,7 +380,7 @@ const ListingFilter = ({ type, filters, handleFilterChange, resetFilters }) => {
                       name="bodyType"
                       value={bodyType.label}
                       checked={filters.bodyType === bodyType.value}
-                      onChange={() => handleFilterChange("bodyType", bodyType.value)}
+                      // onChange={() => handleFilterChange("bodyType", bodyType.value)}
                     />
                     <Image
                       width={100}
