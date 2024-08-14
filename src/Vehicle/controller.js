@@ -106,37 +106,52 @@ const createVehicle = asyncHandler(async (req, res) => {
   });
   
 
+ 
+ 
   const getListVehicles = asyncHandler(async (req, res) => {
     const {
-        type,
-        city,
-        cityArea,
-        registeredIn,
-        priceMin,
-        priceMax,
-        bodyType,
-        fuelType,
-        transmission,
-        exteriorColor,
-        drive,
-        mileageMin,
-        mileageMax,
-        search = '',
-        page = 1,
-        limit = 10,
-        sort
+      type,
+      city,
+      make,
+      model,
+      year,
+      minYear,
+      maxYear,
+      cityArea,
+      registeredIn,
+      priceMin,
+      priceMax,
+      bodyType,
+      fuelType,
+      transmission,
+      exteriorColor,
+      drive,
+      mileageMin,
+      mileageMax,
+      search = '',
+      page = 1,
+      limit = 10,
+      sort
     } = req.query;
   
     const filters = {};
   
     if (type) filters.type = type;
     if (city) filters.city = city;
+    if (make) filters.make = new RegExp(make, 'i');
+    if (model) filters.model = new RegExp(model, 'i');
+    if (year) filters.year = year;
+    if (minYear || maxYear) {
+      filters.year = {};
+      if (minYear) filters.year.$gte = parseInt(minYear, 10);
+      if (maxYear) filters.year.$lte = parseInt(maxYear, 10);
+    }
     if (cityArea) filters.cityArea = cityArea;
     if (registeredIn) filters.registeredIn = registeredIn;
     if (priceMin || priceMax) {
-        filters.price = {};
-        if (priceMin) filters.price.$gte = priceMin;
-        if (priceMax) filters.price.$lte = priceMax;
+      filters.price = {};
+      if (priceMin) filters.price.$gte = priceMin;
+      if (priceMax) filters.price.$lte = priceMax;
     }
     if (bodyType) filters['specifications.bodyType'] = bodyType;
     if (fuelType) filters['specifications.fuelType'] = fuelType;
@@ -144,52 +159,90 @@ const createVehicle = asyncHandler(async (req, res) => {
     if (exteriorColor) filters['specifications.exteriorColor'] = exteriorColor;
     if (drive) filters['specifications.drive'] = drive;
     if (mileageMin || mileageMax) {
-        filters['specifications.mileage'] = {};
-        if (mileageMin) filters['specifications.mileage'].$gte = mileageMin;
-        if (mileageMax) filters['specifications.mileage'].$lte = mileageMax;
+      filters['specifications.mileage'] = {};
+      if (mileageMin) filters['specifications.mileage'].$gte = mileageMin;
+      if (mileageMax) filters['specifications.mileage'].$lte = mileageMax;
     }
   
     if (search) {
-        filters.$or = [
-            { carInfo: new RegExp(search, 'i') },
-            { description: new RegExp(search, 'i') },
-            { 'specifications.bodyType': new RegExp(search, 'i') },
-            { 'specifications.fuelType': new RegExp(search, 'i') },
-            { 'specifications.transmission': new RegExp(search, 'i') },
-            { city: new RegExp(search, 'i') },
-            { cityArea: new RegExp(search, 'i') }
-        ];
+      filters.$or = [
+        { carInfo: new RegExp(search, 'i') },
+        { description: new RegExp(search, 'i') },
+        { make: new RegExp(search, 'i') },
+        { model: new RegExp(search, 'i') },
+        { 'specifications.bodyType': new RegExp(search, 'i') },
+        { 'specifications.fuelType': new RegExp(search, 'i') },
+        { 'specifications.transmission': new RegExp(search, 'i') },
+        { city: new RegExp(search, 'i') },
+        { cityArea: new RegExp(search, 'i') }
+      ];
     }
   
     const options = {
-        skip: (page - 1) * limit,
-        limit: parseInt(limit, 10),
-        sort: {}
+      skip: (page - 1) * limit,
+      limit: parseInt(limit, 10),
+      sort: {}
     };
   
     if (sort === 'priceAsc') {
-        options.sort.price = 1;
+      options.sort.price = 1;
     } else if (sort === 'priceDesc') {
-        options.sort.price = -1;
+      options.sort.price = -1;
     } else {
-        options.sort.createdAt = -1;
+      options.sort.createdAt = -1;
     }
   
+    // Get the list of vehicles with pagination and sorting
     const [totalVehicles, vehicles] = await Promise.all([
-        Vehicle.countDocuments(filters),
-        Vehicle.find(filters, null, options).lean()
+      Vehicle.countDocuments(filters),
+      Vehicle.find(filters, null, options).lean()
     ]);
   
+    // Aggregation to get counts for each field
+    const aggregationPipeline = [
+      { $match: filters },
+      {
+        $facet: {
+          typeCounts: [{ $group: { _id: '$type', count: { $sum: 1 } } }],
+          cityCounts: [{ $group: { _id: '$city', count: { $sum: 1 } } }],
+          makeCounts: [{ $group: { _id: '$make', count: { $sum: 1 } } }],
+          modelCounts: [{ $group: { _id: '$model', count: { $sum: 1 } } }],
+          yearCounts: [{ $group: { _id: '$year', count: { $sum: 1 } } }],
+          bodyTypeCounts: [{ $group: { _id: '$specifications.bodyType', count: { $sum: 1 } } }],
+          fuelTypeCounts: [{ $group: { _id: '$specifications.fuelType', count: { $sum: 1 } } }],
+          transmissionCounts: [{ $group: { _id: '$specifications.transmission', count: { $sum: 1 } } }],
+          exteriorColorCounts: [{ $group: { _id: '$specifications.exteriorColor', count: { $sum: 1 } } }],
+          driveCounts: [{ $group: { _id: '$specifications.drive', count: { $sum: 1 } } }],
+          cityAreaCounts: [{ $group: { _id: '$cityArea', count: { $sum: 1 } } }]
+        }
+      }
+    ];
+  
+    const [aggregationResult] = await Vehicle.aggregate(aggregationPipeline);
+  
+    const counts = {
+      type: aggregationResult.typeCounts || [],
+      city: aggregationResult.cityCounts || [],
+      make: aggregationResult.makeCounts || [],
+      model: aggregationResult.modelCounts || [],
+      year: aggregationResult.yearCounts || [],
+      bodyType: aggregationResult.bodyTypeCounts || [],
+      fuelType: aggregationResult.fuelTypeCounts || [],
+      transmission: aggregationResult.transmissionCounts || [],
+      exteriorColor: aggregationResult.exteriorColorCounts || [],
+      drive: aggregationResult.driveCounts || [],
+      cityArea: aggregationResult.cityAreaCounts || []
+    };
+  
     const vehiclesResponse = {
-        results: vehicles,
-        count: totalVehicles,
+      results: vehicles,
+      count: totalVehicles,
+      counts
     };
   
     return response.ok(res, 'Vehicles retrieved successfully', vehiclesResponse);
   });
   
   export default getListVehicles;
-  
-
 
 export {createVehicle, getBrowseByVehicles, getListVehicles}
