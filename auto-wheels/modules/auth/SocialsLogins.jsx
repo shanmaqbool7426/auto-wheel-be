@@ -13,6 +13,7 @@ import { Carousel } from "@mantine/carousel";
 import { IconArrowRight, IconArrowLeft } from "@tabler/icons-react";
 import "@mantine/carousel/styles.css";
 import SignUp from "./SignUp";
+import { signIn } from 'next-auth/react';
 
 
 import classes from "../../app/styles/Demo.module.scss";

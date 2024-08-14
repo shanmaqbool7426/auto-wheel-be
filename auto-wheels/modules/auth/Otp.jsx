@@ -40,8 +40,9 @@ function Otp({ otpOpen = false, otpClose = () => {} }) {
         <Center maw={400} h={100}>
           <PinInput
             {...form.getInputProps('otp')}
-            length={6}
+            length={4}
             size="lg"
+            placeholder=''
             error={form.errors.otp}
           />
         </Center>
