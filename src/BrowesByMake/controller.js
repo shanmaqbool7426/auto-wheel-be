@@ -1,22 +1,38 @@
+
 import asyncHandler from 'express-async-handler';
 import BrowesByMake from './model.js'; 
 import responses from "../Utils/response.js";
 import { uploadOnCloudinary } from '../Utils/cloudinary.js';
 
 export const createMake = asyncHandler(async (req, res) => {
-  const { name } = req.body;
-  const companyImageURL = await uploadOnCloudinary(req.file?.path)
-  const make = new BrowesByMake({companyImage: companyImageURL.url, name });
+  const { name, type, models } = req.body;
+
+  const companyImageURL =  null;
+//   const parsedModels = JSON.parse(models);
+// console.log('parsedModels',parsedModels);
+
+  const make = new BrowesByMake({
+    companyImage: companyImageURL?.url,
+    name,
+    type,
+    models: models || []
+  });
+
   await make.save();
+
   return responses.created(res, 'Make entry created successfully', make);
 });
 
 
-export const getAllMakes = asyncHandler(async (req, res) => {
-  const makes = await BrowesByMake.find({});
 
+
+export const getAllMakes = asyncHandler(async (req, res) => {
+  const { type } = req.query;
+  const filter = type ? { type } : {};
+  const makes = await BrowesByMake.find(filter);
   return responses.ok(res, 'All make entries retrieved successfully', makes);
 });
+
 
 export const getMakeById = asyncHandler(async (req, res) => {
   const { id } = req.params;
@@ -32,7 +48,7 @@ export const getMakeById = asyncHandler(async (req, res) => {
 
 export const updateMakeById = asyncHandler(async (req, res) => {
   const { id } = req.params;
-  const { companyImage, name } = req.body;
+  const { name, type, models } = req.body;
 
   const make = await BrowesByMake.findById(id);
 
@@ -40,13 +56,20 @@ export const updateMakeById = asyncHandler(async (req, res) => {
     return responses.notFound(res, 'Make entry not found');
   }
 
-  make.companyImage = companyImage || make.companyImage;
+  if (req.file) {
+    const companyImageURL = await uploadOnCloudinary(req.file.path);
+    make.companyImage = companyImageURL.url || make.companyImage;
+  }
+
   make.name = name || make.name;
+  make.type = type || make.type; // Allow updating the type
+  make.models = models || make.models;
 
   await make.save();
 
   return responses.ok(res, 'Make entry updated successfully', make);
 });
+
 
 export const deleteMakeById = asyncHandler(async (req, res) => {
   const { id } = req.params;

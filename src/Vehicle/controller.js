@@ -105,102 +105,91 @@ const createVehicle = asyncHandler(async (req, res) => {
     }
   });
   
-const getListVehicles = asyncHandler(async (req, res) => {
-  const {
-      type,
-      make,
-      model,
-      yearMin,
-      yearMax,
-      priceMin,
-      priceMax,
-      bodyType,
-      fuelType,
-      transmission,
-      exteriorColor,
-      drive,
-      mileageMin,
-      mileageMax,
-      city,
-      condition,
-      search = '',
-      page = 1,
-      limit = 10,
-      sort
-  } = req.query;
 
-  const filters = {};
-
-  if (type) filters.type = type;
-  if (make) {
-      const makeArray = make.split(',');
-      filters.make = { $in: makeArray.map(m => new RegExp(m, 'i')) };
-  }
-  if (model) {
-      const modelArray = model.split(',');
-      filters.model = { $in: modelArray.map(m => new RegExp(m, 'i')) };
-  }
-  // if (model) filters.model = new RegExp(model, 'i');
-  if (condition) filters.condition = new RegExp(condition, 'i');
-  if (yearMin || yearMax) {
-      filters.year = {};
-      if (yearMin) filters.year.$gte = yearMin;
-      if (yearMax) filters.year.$lte = yearMax;
-  }
-  if (priceMin || priceMax) {
-      filters.price = {};
-      if (priceMin) filters.price.$gte = priceMin;
-      if (priceMax) filters.price.$lte = priceMax;
-  }
-  if (bodyType) filters['specifications.bodyType'] = bodyType;
-  if (city) filters['seller.location'] = new RegExp(city.toLowerCase(), 'i');
-  if (fuelType) filters['specifications.fuelType'] = fuelType;
-  if (transmission) filters['specifications.transmission'] = transmission;
-  if (exteriorColor) filters['specifications.exteriorColor'] = exteriorColor;
-  if (drive) filters['specifications.drive'] = drive;
-  if (mileageMin || mileageMax) {
-      filters['specifications.mileage'] = {};
-      if (mileageMin) filters['specifications.mileage'].$gte = mileageMin;
-      if (mileageMax) filters['specifications.mileage'].$lte = mileageMax;
-  }
-
-  if (search) {
-      filters.$or = [
-          { name: new RegExp(search, 'i') },
-          { model: new RegExp(search, 'i') },
-          { 'specifications.bodyType': new RegExp(search, 'i') },
-          { 'specifications.fuelType': new RegExp(search, 'i') },
-          { 'specifications.transmission': new RegExp(search, 'i') },
-          { 'seller.location': new RegExp(search, 'i') }
-      ];
-  }
-
-  const options = {
-      skip: (page - 1) * limit,
-      limit: parseInt(limit, 10),
-      sort: {}
-  };
-
-  if (sort === 'priceAsc') {
-      options.sort.price = 1;
-  } else if (sort === 'priceDesc') {
-      options.sort.price = -1;
-  } else {
-      options.sort.createdAt = -1;
-  }
-
-  const [totalVehicles, vehicles] = await Promise.all([
-      Vehicle.countDocuments(filters),
-      Vehicle.find(filters, null, options).lean()
-  ]);
-
-  const vehiclesResponse = {
-      results: vehicles,
-      count: totalVehicles,
-  };
-
-  return response.ok(res, 'Vehicles retrieved successfully', vehiclesResponse);
-});
+  const getListVehicles = asyncHandler(async (req, res) => {
+    const {
+        type,
+        city,
+        cityArea,
+        registeredIn,
+        priceMin,
+        priceMax,
+        bodyType,
+        fuelType,
+        transmission,
+        exteriorColor,
+        drive,
+        mileageMin,
+        mileageMax,
+        search = '',
+        page = 1,
+        limit = 10,
+        sort
+    } = req.query;
+  
+    const filters = {};
+  
+    if (type) filters.type = type;
+    if (city) filters.city = city;
+    if (cityArea) filters.cityArea = cityArea;
+    if (registeredIn) filters.registeredIn = registeredIn;
+    if (priceMin || priceMax) {
+        filters.price = {};
+        if (priceMin) filters.price.$gte = priceMin;
+        if (priceMax) filters.price.$lte = priceMax;
+    }
+    if (bodyType) filters['specifications.bodyType'] = bodyType;
+    if (fuelType) filters['specifications.fuelType'] = fuelType;
+    if (transmission) filters['specifications.transmission'] = transmission;
+    if (exteriorColor) filters['specifications.exteriorColor'] = exteriorColor;
+    if (drive) filters['specifications.drive'] = drive;
+    if (mileageMin || mileageMax) {
+        filters['specifications.mileage'] = {};
+        if (mileageMin) filters['specifications.mileage'].$gte = mileageMin;
+        if (mileageMax) filters['specifications.mileage'].$lte = mileageMax;
+    }
+  
+    if (search) {
+        filters.$or = [
+            { carInfo: new RegExp(search, 'i') },
+            { description: new RegExp(search, 'i') },
+            { 'specifications.bodyType': new RegExp(search, 'i') },
+            { 'specifications.fuelType': new RegExp(search, 'i') },
+            { 'specifications.transmission': new RegExp(search, 'i') },
+            { city: new RegExp(search, 'i') },
+            { cityArea: new RegExp(search, 'i') }
+        ];
+    }
+  
+    const options = {
+        skip: (page - 1) * limit,
+        limit: parseInt(limit, 10),
+        sort: {}
+    };
+  
+    if (sort === 'priceAsc') {
+        options.sort.price = 1;
+    } else if (sort === 'priceDesc') {
+        options.sort.price = -1;
+    } else {
+        options.sort.createdAt = -1;
+    }
+  
+    const [totalVehicles, vehicles] = await Promise.all([
+        Vehicle.countDocuments(filters),
+        Vehicle.find(filters, null, options).lean()
+    ]);
+  
+    const vehiclesResponse = {
+        results: vehicles,
+        count: totalVehicles,
+    };
+  
+    return response.ok(res, 'Vehicles retrieved successfully', vehiclesResponse);
+  });
+  
+  export default getListVehicles;
+  
 
 
 export {createVehicle, getBrowseByVehicles, getListVehicles}
