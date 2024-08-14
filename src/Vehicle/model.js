@@ -2,6 +2,23 @@ import mongoose from 'mongoose';
 
 const vehicleSchema = new mongoose.Schema({
 
+  make: {
+    type: String,
+    required: true,
+    index: true
+  },
+  model: {
+    type: String,
+    required: true,
+    index: true
+  },
+  year:{
+    type: Number,
+    required: true,
+    min: 1900,
+    max: new Date().getFullYear() + 1,
+    index: true,  // for faster searching
+  },
   type: {
     type: String,
     enum: ['car', 'bike', 'truck'],
@@ -17,11 +34,6 @@ const vehicleSchema = new mongoose.Schema({
     type: String,
     required: true,
     index: true,
-  },
-  carInfo: {
-    type: String,
-    required: true,
-    index: true, 
   },
   registeredIn: {
     type: String,
