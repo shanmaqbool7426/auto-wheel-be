@@ -10,11 +10,9 @@ import useListingFilter from "@/custom-hooks/useListingFilter";
 import { Pagination } from "@mantine/core";
 import Select from "@/components/Select"
 export default function Listing({ params }) {
-    console.log('ProductListing>>>', params.slug);
     const { fetchedData, filters, pagination, handlePaginationChange, handleFilterChange, resetFilters,handleSortChange } = useListingFilter({ type: params.slug });
 
     const [view, setView] = useState('grid');
-    console.log(fetchedData, "Test")
 
     let categoryTitle = '';
     const sortOptions = [
@@ -46,7 +44,7 @@ export default function Listing({ params }) {
                 <div className="container">
                     <div className="row">
                         <div className="col-lg-3">
-                            <ListingFilter filters={filters} handleFilterChange={handleFilterChange} resetFilters={resetFilters} />
+                            <ListingFilter type={params.slug} filters={filters} handleFilterChange={handleFilterChange} resetFilters={resetFilters} />
                         </div>
                         <div className="col-lg-9">
                             {/* Toolbox */}
