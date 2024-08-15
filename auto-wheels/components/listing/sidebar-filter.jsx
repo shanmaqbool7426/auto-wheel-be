@@ -1,6 +1,6 @@
 'use client';
 
-import React, { Fragment,useState } from "react";
+import React, { Fragment,useState ,useEffect} from "react";
 
 import { FaLocationDot,FaSearchengin } from "react-icons/fa6";
 import {  ResetFiltersIcon, SearchWithCar } from "@/components/Icons";
@@ -14,72 +14,76 @@ import { getBodyTypesByVehicleType, getMakeTypesByVehicleType, getVehicleModelsB
 import useListingFilter from "@/custom-hooks/useListingFilter";
 const ListingFilter = ({ type, handleFilterChange, resetFilters }) => {
   const router = useRouter();
-  const paramss = useParams()
+  const {slug} = useParams()
 
   // const [view, setView] = useState('grid');
-console.log('params>>>>>',paramss)
-  const [filters, setFilters] = useState({
-    city: [],
-    search: "",
-    condition: [],
-    make: [],
-    model: [],
-    mileage: [100, 2000000],
-    price: [1200000, 2000000],
-    year: [2000, 2024],
-    transmission: [],
-    drive: [],
-    exteriorColor: [],
-    fuelType: [],
-    bodyType: [],
-  });
+console.log('params>>>>>',slug)
+const [filters, setFilters] = useState({
+  city: [],
+  search: "",
+  condition: [],
+  make: [],
+  model: [],
+  mileage: [100, 2000000],
+  price: [1200000, 2000000],
+  year: [2000, 2024],
+  transmission: [],
+  drive: [],
+  exteriorColor: [],
+  fuelType: [],
+  bodyType: [],
+});
 
-  const handleCheckboxChange = (filterType, value, isChecked) => {
-    setFilters((prevFilters) => {
-      const updatedFilter = isChecked
-        ? [...prevFilters[filterType], value]  // Add the value
-        : prevFilters[filterType].filter(item => item !== value);  // Remove the value
-  
-      const newFilters = {
-        ...prevFilters,
-        [filterType]: updatedFilter,
-      };
-  
-      // Call updateCustomUrl with the updated filters
-      updateCustomUrl(newFilters);
-  
-      return newFilters;
+useEffect(() => {
+  if (slug && slug.length > 0) {
+    const initialFilters = { ...filters };
+    slug.forEach((item) => {
+      if (item.startsWith('mk_')) {
+        initialFilters.make.push(item.replace('mk_', ''));
+      }
+      if (item.startsWith('ct_')) {
+        initialFilters.city.push(item.replace('ct_', ''));
+      }
     });
-  };
-  
 
-  console.log('>>>>>> Processing',filters)
-  
-  const updateCustomUrl = (params) => {
-    let customUrl = '/listing/cars/search/-/';
+    setFilters(initialFilters);
+  }
+  // Empty dependency array ensures this runs only once
+}, []);
 
-    // Add cities
-    if (params.city && params.city.length > 0) {
-      params.city.forEach(city => {
-        customUrl += `ct_${city.toLowerCase()}/`;
-      });
-    }
 
-    // Add makes
-    console.log('params.make',params)
-    if (params.make && params.make.length > 0) {
-      params.make.forEach(make => {
-        customUrl += `mk_${make.toLowerCase()}/`;
-      });
-    }
 
-    console.log('custom',customUrl)
+const handleCheckboxChange = (filterType, value, isChecked) => {
+  setFilters((prevFilters) => {
+    const updatedFilter = isChecked
+      ? [...prevFilters[filterType], value] 
+      : prevFilters[filterType].filter(item => item !== value);  
+    const newFilters = {
+      ...prevFilters,
+      [filterType]: updatedFilter,
+    };
+    updateCustomUrl(newFilters);
+    return newFilters;
+  });
+};
 
-    // Add more filters similarly
-    // e.g., conditions, models, etc.
+const updateCustomUrl = (params) => {
+  let customUrl = '/listing/cars/search/-/';
+  if (params.city && params.city.length > 0) {
+    params.city.forEach(city => {
+      customUrl += `ct_${city.toLowerCase()}/`;
+    });
+  }
 
-    router.push(customUrl, { scroll: false });
-  };
+  if (params.make && params.make.length > 0) {
+    const uniqueMakes = [...new Set(params.make)];  
+    uniqueMakes.forEach(make => {
+      customUrl += `mk_${make.toLowerCase()}/`;
+    });
+  }
+  router.push(customUrl, { scroll: false });
+};
+
 
 
   return (

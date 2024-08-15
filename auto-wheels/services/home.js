@@ -1,4 +1,4 @@
-import { fetchAPI } from '../utils/fetchAPI';
+import { fetchAPI } from './fetchAPI';
 import { API_ENDPOINTS } from '@/constants/api-endpoints';
 
 export const fetcHomeData = async () => {

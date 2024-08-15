@@ -6,12 +6,22 @@ import { BsGridFill } from "react-icons/bs";
 import Link from "next/link";
 // import { useState } from "react";
 import VehicleFilters from "@/components/testFilters"
+import  {fetchVehiclsData} from "@/services/vehicles"
 import CarCard from "@/components/ui/CarCard";
 import useListingFilter from "@/custom-hooks/useListingFilter";
 import { Pagination } from "@mantine/core";
 import Select from "@/components/Select"
-export default function Listing({ params }) {
+export default async function Listing({ params }) {
+ const reorderSlug = (slug) => {
+    const basePath = slug[0];
+    const searchPath = slug[1];
+        const makes = slug.filter((item) => item.startsWith('mk_'));
+    return [basePath, ...makes, searchPath, ...makes];
+  };
 
+  const reorderedSlug = reorderSlug(params.slug);
+   console.log('>>>>>>', )
+   const dataofVehcles=await  fetchVehiclsData(`http://localhost:5000/api/vehicle${reorderedSlug}`)
     let categoryTitle = '';
     const sortOptions = [
         { value: 'latest', label: 'Date: Newest First' },
@@ -20,19 +30,15 @@ export default function Listing({ params }) {
       ];
     switch (params.slug) {
         case 'cars':
-            //   images = carImages;
             categoryTitle = 'Cars';
             break;
         case 'bikes':
-            //   images = bikeImages;
             categoryTitle = 'Bikes';
             break;
         case 'trucks':
-            //   images = truckImages;
             categoryTitle = 'Trucks';
             break;
         default:
-            //   images = carImages;
             categoryTitle = 'Cars';
     }
 

@@ -2,7 +2,7 @@
 import React, { useState } from "react";
 import { Box, Pagination } from "@mantine/core";
 import CarCard from "@/components/ui/CarCard";
-import { fetchAPI } from '@/utils/fetchAPI';
+import { fetchAPI } from '@/services/fetchAPI';
 import { API_ENDPOINTS } from '@/constants/api-endpoints';
 
 const BrowseByType = ({ bg, pagination, vehicles:initialVehicles }) => {
