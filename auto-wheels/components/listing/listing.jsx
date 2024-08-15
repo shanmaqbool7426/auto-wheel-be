@@ -1,18 +1,16 @@
-'use client'
+
 import ListingFilter from "@/components/listing/sidebar-filter";
 import { FaList } from "react-icons/fa";
 import ListCardView from "@/components/ui/ListCardView";
 import { BsGridFill } from "react-icons/bs";
 import Link from "next/link";
-import { useState } from "react";
+// import { useState } from "react";
+import VehicleFilters from "@/components/testFilters"
 import CarCard from "@/components/ui/CarCard";
 import useListingFilter from "@/custom-hooks/useListingFilter";
 import { Pagination } from "@mantine/core";
 import Select from "@/components/Select"
 export default function Listing({ params }) {
-    const { fetchedData, filters, pagination, handlePaginationChange, handleFilterChange, resetFilters,handleSortChange } = useListingFilter({ type: params.slug });
-
-    const [view, setView] = useState('grid');
 
     let categoryTitle = '';
     const sortOptions = [
@@ -44,7 +42,8 @@ export default function Listing({ params }) {
                 <div className="container">
                     <div className="row">
                         <div className="col-lg-3">
-                            <ListingFilter type={params.slug} filters={filters} handleFilterChange={handleFilterChange} resetFilters={resetFilters} />
+                            <ListingFilter  />
+                            <VehicleFilters/>
                         </div>
                         <div className="col-lg-9">
                             {/* Toolbox */}
@@ -63,7 +62,7 @@ export default function Listing({ params }) {
                                             aria-label="Sort By"
                                             id="sort_by"
                                             options={sortOptions}
-                                            onChange={handleSortChange}
+                                            // onChange={handleSortChange}
                                             />
                                             {/* <select
                                                 className="form-select form-select-sm"
@@ -76,14 +75,14 @@ export default function Listing({ params }) {
                                             </select> */}
                                         </div>
                                     </div>
-                                    <div className="grid-sort-btns">
+                                    {/* <div className="grid-sort-btns">
                                         <button className="sort-grid active" onClick={() => setView("grid")}>
                                             <BsGridFill />
                                         </button>
                                         <button className="sort-grid" onClick={() => setView("list")}>
                                             <FaList />
                                         </button>
-                                    </div>
+                                    </div> */}
                                 </div>
                             </div>
 
@@ -97,7 +96,7 @@ export default function Listing({ params }) {
 
                             {/* Product View List */}
                             <div className="row">
-                                {fetchedData?.map((vehicle, index) => (
+                                {/* {fetchedData?.map((vehicle, index) => (
                                     <div key={index} className={view === 'grid' ? "col-lg-4" : "col-12"}>
                                         {view === 'grid' ? (
                                             <CarCard vehicle={vehicle} index={index} />
@@ -105,16 +104,16 @@ export default function Listing({ params }) {
                                             <ListCardView index={index} images={vehicle} />
                                         )}
                                     </div>
-                                ))}
+                                ))} */}
                             </div>
-                            <Pagination
+                            {/* <Pagination
                                 total={Math.ceil(pagination.count / pagination.limit)}
                                 page={pagination.page}
                                 onChange={handlePaginationChange}
                                 siblings={1}
                                 size="md"
                                 color="#E90808"
-                            />
+                            /> */}
                         </div>
                     </div>
                 </div>

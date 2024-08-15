@@ -5,15 +5,22 @@ import React, { Fragment,useState } from "react";
 import { FaLocationDot,FaSearchengin } from "react-icons/fa6";
 import {  ResetFiltersIcon, SearchWithCar } from "@/components/Icons";
 // const { fetchedData, filters, pagination, handlePaginationChange, handleFilterChange, resetFilters,handleSortChange } = useListingFilter({ type: 'params.slug' });
+import { useRouter } from 'next/navigation';
+import { useParams } from 'next/navigation'
 
 import { Accordion, RangeSlider } from '@mantine/core';
 import Image from "next/image";
 import { getBodyTypesByVehicleType, getMakeTypesByVehicleType, getVehicleModelsByMakeAndType, getVehiclePartsIconByVehicleType, vehicleConditionOptions, vehicleDriveOptions, vehicleExteriorColorOptions, vehicleFuelTypeOptions, vehicleTransmissionOptions } from "@/constants/vehicle-constants"
 import useListingFilter from "@/custom-hooks/useListingFilter";
 const ListingFilter = ({ type, handleFilterChange, resetFilters }) => {
+  const router = useRouter();
+  const paramss = useParams()
+
+  // const [view, setView] = useState('grid');
+console.log('params>>>>>',paramss)
   const [filters, setFilters] = useState({
     city: [],
-    search:"",
+    search: "",
     condition: [],
     make: [],
     model: [],
@@ -28,36 +35,52 @@ const ListingFilter = ({ type, handleFilterChange, resetFilters }) => {
   });
 
   const handleCheckboxChange = (filterType, value, isChecked) => {
-    const newFilters = { ...filters };
-    
-    if (isChecked) {
-      newFilters[filterType].push(value);
-    } else {
-      newFilters[filterType] = newFilters[filterType].filter(item => item !== value);
-    }
-
-    setFilters(newFilters);
-    updateCustomUrl(newFilters);
+    setFilters((prevFilters) => {
+      const updatedFilter = isChecked
+        ? [...prevFilters[filterType], value]  // Add the value
+        : prevFilters[filterType].filter(item => item !== value);  // Remove the value
+  
+      const newFilters = {
+        ...prevFilters,
+        [filterType]: updatedFilter,
+      };
+  
+      // Call updateCustomUrl with the updated filters
+      updateCustomUrl(newFilters);
+  
+      return newFilters;
+    });
   };
+  
 
+  console.log('>>>>>> Processing',filters)
+  
   const updateCustomUrl = (params) => {
     let customUrl = '/listing/cars/search/-/';
-    
+
     // Add cities
-    if (params.cities.length) {
-      params.cities.forEach(city => {
+    if (params.city && params.city.length > 0) {
+      params.city.forEach(city => {
         customUrl += `ct_${city.toLowerCase()}/`;
       });
     }
 
-    // Add areas
-    if (params.areas.length) {
-      params.areas.forEach(area => {
-        customUrl += `ca_${area.toLowerCase().replace(/ /g, '-')}/`;
+    // Add makes
+    console.log('params.make',params)
+    if (params.make && params.make.length > 0) {
+      params.make.forEach(make => {
+        customUrl += `mk_${make.toLowerCase()}/`;
       });
     }
+
+    console.log('custom',customUrl)
+
+    // Add more filters similarly
+    // e.g., conditions, models, etc.
+
     router.push(customUrl, { scroll: false });
   };
+
 
   return (
     <Fragment>
@@ -90,7 +113,7 @@ const ListingFilter = ({ type, handleFilterChange, resetFilters }) => {
               placeholder="Enter your city"
               className="location-input form-control"
               value={filters.city}
-              onChange={(e) => handleCheckboxChange("cities", e.target.value, e.target.checked)}
+              // onChange={(e) => handleCheckboxChange("cities", e.target.value, e.target.checked)}
             />
             {/* handleCheckboxChange('cities', 'Islamabad', e.target.checked) */}
           </div>
@@ -114,7 +137,7 @@ const ListingFilter = ({ type, handleFilterChange, resetFilters }) => {
             <Accordion.Item size='sm' value='Make' style={{ background: 'white', borderColor:'#E3E3E3' }}>
               <Accordion.Control>Make</Accordion.Control>
               <Accordion.Panel>          <div className="checkbox-group-filters">
-                {getMakeTypesByVehicleType(type)?.map(make => (
+                {getMakeTypesByVehicleType('cars')?.map(make => (
                   <div className="form-check" key={make.value}>
                     <input
                       className="form-check-input"
@@ -122,6 +145,7 @@ const ListingFilter = ({ type, handleFilterChange, resetFilters }) => {
                       id={make.label}
                       checked={filters.make.includes(make.value)}
                       // onChange={() => handleFilterChange("make", make.value)}
+                      onChange={(e) => handleCheckboxChange("make", make.value, e.target.checked)}
                     />
                     <label className="form-check-label" htmlFor={make.label}>
                       {make.label}
@@ -356,9 +380,9 @@ const ListingFilter = ({ type, handleFilterChange, resetFilters }) => {
           </div>
           {/* Reset Filters Button */}
           <div className="text-center mt-4">
-            <button className="btn btn-danger" onClick={resetFilters}>
+            {/* <button className="btn btn-danger" onClick={resetFilters}>
               <ResetFiltersIcon /> Reset Filters
-            </button>
+            </button> */}
           </div>
         </div>
       </div>
