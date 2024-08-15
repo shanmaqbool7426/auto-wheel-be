@@ -12,7 +12,7 @@ import { upload } from "../Middleware/multer.js"
 
 const router = express.Router();
 
-router.get('/', getListVehicles);
+router.get('/*', getListVehicles);
 router.get('/vehicles-by-type', getBrowseByVehicles);
 // router.get('/:id', getVehicleById);
 router.post('/', upload.fields([

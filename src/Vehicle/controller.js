@@ -110,14 +110,14 @@ const createVehicle = asyncHandler(async (req, res) => {
  
 
   const getListVehicles = asyncHandler(async (req, res) => {
-    const pathSegments = req.params[0].split('/'); // Split the dynamic path into segments
+    const pathSegments = req.params[0].split('/'); 
     const filters = {};
   
     pathSegments.forEach(segment => {
-      const [key, value] = segment.split('_'); // Split each segment by the underscore
+      const [key, value] = segment.split('_');
       switch (key) {
-        case 'mk':
-          filters.make = value;
+        case 'mk':   mk_honda
+          filters.make = honda;
           break;
         case 'ct':
           // For multiple cities, use an array
@@ -142,7 +142,6 @@ const createVehicle = asyncHandler(async (req, res) => {
       sort: {}
     };
   
-    // Handle sorting logic if needed
     const sort = req.query.sort;
     if (sort === 'priceAsc') {
       options.sort.price = 1;
@@ -157,7 +156,6 @@ const createVehicle = asyncHandler(async (req, res) => {
       Vehicle.find(filters, null, options).lean()
     ]);
   
-    // Aggregation pipeline to get counts for each filter type
     const aggregationPipeline = [
       { $match: filters },
       {
@@ -165,7 +163,7 @@ const createVehicle = asyncHandler(async (req, res) => {
           typeCounts: [{ $group: { _id: '$type', count: { $sum: 1 } } }],
           cityCounts: [{ $group: { _id: '$city', count: { $sum: 1 } } }],
           makeCounts: [{ $group: { _id: '$make', count: { $sum: 1 } } }],
-          modelCounts: [{ $group: { _id: '$model', count: { $sum: 1 } } }],
+          modelCounts: [{ $group: { _id: '$x`', count: { $sum: 1 } } }],
           yearCounts: [{ $group: { _id: '$year', count: { $sum: 1 } } }],
           bodyTypeCounts: [{ $group: { _id: '$specifications.bodyType', count: { $sum: 1 } } }],
           fuelTypeCounts: [{ $group: { _id: '$specifications.fuelType', count: { $sum: 1 } } }],
