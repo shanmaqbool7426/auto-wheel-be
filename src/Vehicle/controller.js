@@ -108,82 +108,42 @@ const createVehicle = asyncHandler(async (req, res) => {
 
  
  
+
   const getListVehicles = asyncHandler(async (req, res) => {
-    const {
-      type,
-      city,
-      make,
-      model,
-      year,
-      minYear,
-      maxYear,
-      cityArea,
-      registeredIn,
-      priceMin,
-      priceMax,
-      bodyType,
-      fuelType,
-      transmission,
-      exteriorColor,
-      drive,
-      mileageMin,
-      mileageMax,
-      search = '',
-      page = 1,
-      limit = 10,
-      sort
-    } = req.query;
-  
+    const pathSegments = req.params[0].split('/'); // Split the dynamic path into segments
     const filters = {};
   
-    if (type) filters.type = type;
-    if (city) filters.city = city;
-    if (make) filters.make = new RegExp(make, 'i');
-    if (model) filters.model = new RegExp(model, 'i');
-    if (year) filters.year = year;
-    if (minYear || maxYear) {
-      filters.year = {};
-      if (minYear) filters.year.$gte = parseInt(minYear, 10);
-      if (maxYear) filters.year.$lte = parseInt(maxYear, 10);
-    }
-    if (cityArea) filters.cityArea = cityArea;
-    if (registeredIn) filters.registeredIn = registeredIn;
-    if (priceMin || priceMax) {
-      filters.price = {};
-      if (priceMin) filters.price.$gte = priceMin;
-      if (priceMax) filters.price.$lte = priceMax;
-    }
-    if (bodyType) filters['specifications.bodyType'] = bodyType;
-    if (fuelType) filters['specifications.fuelType'] = fuelType;
-    if (transmission) filters['specifications.transmission'] = transmission;
-    if (exteriorColor) filters['specifications.exteriorColor'] = exteriorColor;
-    if (drive) filters['specifications.drive'] = drive;
-    if (mileageMin || mileageMax) {
-      filters['specifications.mileage'] = {};
-      if (mileageMin) filters['specifications.mileage'].$gte = mileageMin;
-      if (mileageMax) filters['specifications.mileage'].$lte = mileageMax;
-    }
-  
-    if (search) {
-      filters.$or = [
-        { carInfo: new RegExp(search, 'i') },
-        { description: new RegExp(search, 'i') },
-        { make: new RegExp(search, 'i') },
-        { model: new RegExp(search, 'i') },
-        { 'specifications.bodyType': new RegExp(search, 'i') },
-        { 'specifications.fuelType': new RegExp(search, 'i') },
-        { 'specifications.transmission': new RegExp(search, 'i') },
-        { city: new RegExp(search, 'i') },
-        { cityArea: new RegExp(search, 'i') }
-      ];
-    }
+    pathSegments.forEach(segment => {
+      const [key, value] = segment.split('_'); // Split each segment by the underscore
+      switch (key) {
+        case 'mk':
+          filters.make = value;
+          break;
+        case 'ct':
+          // For multiple cities, use an array
+          if (filters.city) {
+            filters.city.$in.push(value);
+          } else {
+            filters.city = { $in: [value] };
+          }
+          break;
+        case 'ca':
+          filters.cityArea = value;
+          break;
+        // Add more cases as needed
+        default:
+          break;
+      }
+    });
   
     const options = {
-      skip: (page - 1) * limit,
-      limit: parseInt(limit, 10),
+      limit: parseInt(req.query.limit, 10) || 10,
+      skip: (parseInt(req.query.page, 10) - 1) * (parseInt(req.query.limit, 10) || 10),
       sort: {}
     };
   
+    // Handle sorting logic if needed
+    const sort = req.query.sort;
     if (sort === 'priceAsc') {
       options.sort.price = 1;
     } else if (sort === 'priceDesc') {
@@ -192,13 +152,12 @@ const createVehicle = asyncHandler(async (req, res) => {
       options.sort.createdAt = -1;
     }
   
-    // Get the list of vehicles with pagination and sorting
     const [totalVehicles, vehicles] = await Promise.all([
       Vehicle.countDocuments(filters),
       Vehicle.find(filters, null, options).lean()
     ]);
   
-    // Aggregation to get counts for each field
+    // Aggregation pipeline to get counts for each filter type
     const aggregationPipeline = [
       { $match: filters },
       {
@@ -221,17 +180,17 @@ const createVehicle = asyncHandler(async (req, res) => {
     const [aggregationResult] = await Vehicle.aggregate(aggregationPipeline);
   
     const counts = {
-      type: aggregationResult.typeCounts || [],
-      city: aggregationResult.cityCounts || [],
-      make: aggregationResult.makeCounts || [],
-      model: aggregationResult.modelCounts || [],
-      year: aggregationResult.yearCounts || [],
-      bodyType: aggregationResult.bodyTypeCounts || [],
-      fuelType: aggregationResult.fuelTypeCounts || [],
-      transmission: aggregationResult.transmissionCounts || [],
-      exteriorColor: aggregationResult.exteriorColorCounts || [],
-      drive: aggregationResult.driveCounts || [],
-      cityArea: aggregationResult.cityAreaCounts || []
+      typeCounts: aggregationResult.typeCounts || [],
+      cityCounts: aggregationResult.cityCounts || [],
+      makeCounts: aggregationResult.makeCounts || [],
+      modelCounts: aggregationResult.modelCounts || [],
+      yearCounts: aggregationResult.yearCounts || [],
+      bodyTypeCounts: aggregationResult.bodyTypeCounts || [],
+      fuelTypeCounts: aggregationResult.fuelTypeCounts || [],
+      transmissionCounts: aggregationResult.transmissionCounts || [],
+      exteriorColorCounts: aggregationResult.exteriorColorCounts || [],
+      driveCounts: aggregationResult.driveCounts || [],
+      cityAreaCounts: aggregationResult.cityAreaCounts || []
     };
   
     const vehiclesResponse = {
@@ -244,5 +203,6 @@ const createVehicle = asyncHandler(async (req, res) => {
   });
   
   export default getListVehicles;
+  
 
 export {createVehicle, getBrowseByVehicles, getListVehicles}
