@@ -6,15 +6,16 @@ import {
   getBrowseByVehicles,
   //   updateVehicle,
   //   deleteVehicle,
-  getListVehicles
+  getListVehicles,
+  getVehicleById
 } from "./controller.js"
 import { upload } from "../Middleware/multer.js"
 
 const router = express.Router();
 
-router.get('/*', getListVehicles);
 router.get('/vehicles-by-type', getBrowseByVehicles);
-// router.get('/:id', getVehicleById);
+router.get('/:id', getVehicleById);
+router.get('/*', getListVehicles);
 router.post('/', upload.fields([
   {
     name: "images",
