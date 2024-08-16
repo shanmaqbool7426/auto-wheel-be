@@ -14,3 +14,17 @@ export const fetchVehiclsData = async (params) => {
     };
   }
 };
+
+
+export const fetchVehiclDetail = async (url) => {
+  try {
+     const vehicl= await fetchAPI(url)
+     console.log('vehicl>>>',vehicl)
+     return vehicl
+  } catch (error) {
+    console.error('Error fetching dashboard data:', error);
+    return {
+    vehicls:[]
+    };
+  }
+};

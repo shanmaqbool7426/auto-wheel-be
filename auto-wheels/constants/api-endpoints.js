@@ -3,7 +3,7 @@
 const BASE_URL = 'http://localhost:5000'
 
 export const API_ENDPOINTS = {
-    MAKES: `${BASE_URL}/api/browes-by-make`,
+    MAKES: `${BASE_URL}/api/browes-by-make?type=car`,
     BODIES: `${BASE_URL}/api/browes-by-body`,
     VEHICLES_TYPE: (type) => {
       let url = `${BASE_URL}/api/vehicle/vehicles-by-type`;
@@ -13,6 +13,7 @@ export const API_ENDPOINTS = {
       return url;
     },
     VEHICLES_Listing:`${BASE_URL}/api/vehicle`,
+    VEHICLE_DETAIL:`${BASE_URL}/api/vehicle`,
     COMPARISONS: 'https://fakestoreapi.com/products',
     INSTANT_USED_CARS: 'https://fakestoreapi.com/products',
     VIDEOS: 'https://fakestoreapi.com/products',

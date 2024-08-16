@@ -1,4 +1,4 @@
-"use client";
+
 
 import {
   CalendarIcon,
@@ -46,15 +46,17 @@ import {
   Title,
 } from "@mantine/core";
 import Link from "next/link";
+import {fetchVehiclDetail} from '@/services/vehicles'
 import { FaCheckCircle } from "react-icons/fa";
-import { useState } from "react";
+// import { useState } from "react";
 import NextImage from "next/image";
 import { FaCalendarDays, FaClock, FaLocationDot } from "react-icons/fa6";
-
-export default function ProductDetail() {
-  const [value, setValue] = useState(50);
-  const [endValue, setEndValue] = useState(50);
-
+import { API_ENDPOINTS } from "@/constants/api-endpoints";
+export default async function ProductDetail() {
+  // const [value, setValue] = useState(50);
+  // const [endValue, setEndValue] = useState(50);
+ const detail= await fetchVehiclDetail(`${API_ENDPOINTS.VEHICLE_DETAIL}/66bb97d4933cfe6cdd01eca1`)
+console.log('Detail??????',detail)
   return (
     <>
       <section className="product-detail py-5">
@@ -383,16 +385,16 @@ export default function ProductDetail() {
                               thumbSize={25}
                               size="xs"
                               color="#EB2321"
-                              value={value}
-                              onChange={setValue}
-                              onChangeEnd={setEndValue}
+                              value={89}
+                              // onChange={setValue}
+                              // onChangeEnd={setEndValue}
                             />
                             <Group justify="space-between" align="center">
                               <Text mt="xs" size="lg" fw={600}>
-                                Rs {value}
+                                Rs {34545}
                               </Text>
                               <Text mt="xs" size="lg" fw={600}>
-                                Rs {endValue}
+                                Rs {2222222}
                               </Text>
                             </Group>
                           </div>
@@ -412,16 +414,16 @@ export default function ProductDetail() {
                               thumbSize={25}
                               size="xs"
                               color="#EB2321"
-                              value={value}
-                              onChange={setValue}
-                              onChangeEnd={setEndValue}
+                              value={44444444}
+                              // onChange={setValue}
+                              // onChangeEnd={eee}
                             />
                             <Group justify="space-between" align="center">
                               <Text mt="xs" size="lg" fw={600}>
-                                {value}%
+                                {444444}%
                               </Text>
                               <Text mt="xs" size="lg" fw={600}>
-                                {endValue}%
+                                {33333}%
                               </Text>
                             </Group>
                           </div>

@@ -80,7 +80,7 @@ const CarCard = ({ vehicle, index }) => {
       <div className="card-body">
         <div className="product-content">
           <Link href={"#"} className="d-inline-block w-50 lc-2 product-title">
-            {vehicle?.name}
+            {`${vehicle?.year}  ${vehicle?.make} ${vehicle?.model}`}
           </Link>
           <div className="product-price">Rs {vehicle?.price}</div>
         </div>
