@@ -10,6 +10,10 @@ import browesByMakeRoutes from './BrowesByMake/route.js'
 import browesByBodyRoutes from './BrowseByBody/route.js'
 import vehicleRoutes from './Vehicle/route.js'
 import {errorHandler} from "./Middleware/errorHandler.js"
+import { uploadOnCloudinary } from "./Utils/cloudinary.js";
+
+import responses from "./Utils/response.js";
+import { upload } from "./Middleware/multer.js";
 // const { errorHandler, notFound } = require('./middleware/errorMiddleware');
 
 dotenv.config();
@@ -26,7 +30,7 @@ app.use(helmet());
 
 const corsOptions = {
   "/": {
-    origin:["http://localhost:5000"], 
+    origin:["http://localhost:5000","http://localhost:3000"], 
     credentials: true,
   }}
 app.use(cors(corsOptions));
@@ -40,7 +44,13 @@ app.use('/api/user', authRoutes);
 app.use('/api/browes-by-make', browesByMakeRoutes);
 app.use('/api/browes-by-body', browesByBodyRoutes);
 app.use('/api/vehicle', vehicleRoutes);
+const imageUploader=async(req,res)=>{
+  console.log('Uploading image',req.file)
+  const url = await uploadOnCloudinary(req.file?.path)
+  return responses.created(res, 'image received', url);
 
+}
+app.use('/upload-image',upload.single("image"), imageUploader)
 // app.use(notFound); 
 
 app.use(errorHandler);
