@@ -54,7 +54,7 @@ const OfferPriceModal = ({ opened, open, close }) => {
               <Button bg="#EB2321" autoContrast w={rem(150)} fw={500} size="md">
                 Request
               </Button>
-            </Box> 
+            </Box>
           </Box>
         </Box>
       </Modal>
