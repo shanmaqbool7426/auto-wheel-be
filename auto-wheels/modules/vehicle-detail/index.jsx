@@ -43,6 +43,7 @@ import Calculator from "./calculator"
 import SocialCards from "./socialCards"
 import MessageToDealer from "./messageToDealer"
 import SocialContact from "./socialContact"
+import Gellary from "./imagesGellary"
 import { FaCheckCircle } from "react-icons/fa";
 // import { useState } from "react";
 import NextImage from "next/image";
@@ -87,7 +88,7 @@ export default async function vehicleDetailModule() {
         { icon: <TrustCar />, title: "Trusted by thousands", content: "Department maintains your car to stay safe" },
     ];
 
-  
+
 
 
     return (
@@ -155,7 +156,7 @@ export default async function vehicleDetailModule() {
                             </section>
                             {/* Product Image Section */}
                             <section className="product-image-section my-5">
-                                <h1>Image to be placed Here</h1>
+                                <Gellary />
                             </section>
                             {/* Product Image Section */}
 
@@ -251,11 +252,11 @@ export default async function vehicleDetailModule() {
                                         </div>
                                     </div>
                                 </div>
-                             
 
 
 
-                             <SocialCards detail={detail}/>
+
+                                <SocialCards detail={detail} />
                                 <div className="col-12">
                                     <div className="card address-card mb-3">
                                         <div className="card-body gap-2 align-items-center text-primary">
@@ -359,7 +360,7 @@ export default async function vehicleDetailModule() {
                                             </div>
                                         </div>
 
-                                        <SocialContact  detail={detail}/>
+                                        <SocialContact detail={detail} />
 
 
 
