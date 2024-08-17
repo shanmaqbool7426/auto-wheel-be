@@ -1,9 +1,7 @@
-import React from 'react'
-import VehicleDetailModule from "@/modules/vehicle-detail"
+import React from "react";
+import VehicleDetailModule from "@/modules/vehicle-detail";
 const VehicleDetailPage = () => {
-  return (
-    <VehicleDetailModule />
-  )
-}
+  return <VehicleDetailModule />;
+};
 
-export default VehicleDetailPage
+export default VehicleDetailPage;
