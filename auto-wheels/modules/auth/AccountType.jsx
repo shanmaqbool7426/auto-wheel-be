@@ -1,72 +1,81 @@
 import React, { useState } from "react";
-import { Modal, Text } from "@mantine/core";
+import { Modal, Text, Title } from "@mantine/core";
 import Image from "next/image";
 import personal from "../../public/auth/personal.svg";
 import dealer_icon from "../../public/auth/dealer_icon.svg";
 import SocialsLogin from "./SocialsLogins";
 
 const AccountTypeModal = ({ opened, onClose }) => {
-  const [activeType, setActiveType] = useState('personal');
+  const [activeType, setActiveType] = useState("personal");
   const [modalOpened, setModalOpened] = useState(false);
 
   const handleAccountTypeClick = (type) => {
-    setModalOpened(true)
+    setModalOpened(true);
     setActiveType(type);
-    onClose()
+    onClose();
   };
   return (
     <>
-    <Modal
-      opened={opened}
-      onClose={onClose}
-      withCloseButton={false}
-      title=""
-      centered
-      size="auto"
-      overlayopacity={0.55}
-      overlayblur={3}
-    >
-      {/* <h5 className="m-4 ms-4">Choose Account Type</h5> */}
-      <Text fw={700} fz="lg" size="md" className="mt-5 mb-1  ms-4 ps-1">Choose Account Type</Text>
+      <Modal
+        opened={opened}
+        onClose={onClose}
+        withCloseButton={true}
+        title={
+          <Title order={5} fw={600}>
+            Choose Account Type
+          </Title>
+        }
+        centered
+        size="md"
+      >
+        <div className="account-type-container">
+          <div
+            className={`account-type-box ${
+              activeType === "personal" ? "active" : ""
+            }`}
+            onClick={() => handleAccountTypeClick("personal")}
+          >
+            <Image
+              src={personal}
+              width={30}
+              height={30}
+              alt="Personal Account"
+              className="account-type-icon"
+            />
+            <Text fw={700} size="sm">
+              Personal Account
+            </Text>
+            <Text size="sm">
+              If you work individual or Want to Browse Listings
+            </Text>
+          </div>
 
-      <div className="account-type-container ">
-        <div
-          className={`account-type-box ${activeType === 'personal' ? 'active' : ''}`}
-          onClick={() => handleAccountTypeClick('personal')}
-        >
-          <Image
-            src={personal}
-            width={30}
-            height={30}
-            alt="Personal Account"
-            className="account-type-icon"
-          />
-          <div>
-            <Text fw={700} size="sm">Personal Account</Text>
-            <Text size="sm">If you work individual or Want to Browse Listings</Text>
+          <div
+            className={`account-type-box ${
+              activeType === "dealer" ? "active" : ""
+            }`}
+            onClick={() => handleAccountTypeClick("dealer")}
+          >
+            <Image
+              src={dealer_icon}
+              width={30}
+              height={30}
+              alt="Dealer Account"
+              className="account-type-icon"
+            />
+            <div>
+              <Text fw={700} size="sm">
+                Dealer Account
+              </Text>
+              <Text size="sm">
+                For Official or Private Dealers who have bulk Listings
+              </Text>
+            </div>
           </div>
         </div>
+      </Modal>
 
-        <div
-          className={`account-type-box ${activeType === 'dealer' ? 'active' : ''}`}
-          onClick={() => handleAccountTypeClick('dealer')}
-        >
-          <Image
-            src={dealer_icon}
-            width={30}
-            height={30}
-            alt="Dealer Account"
-            className="account-type-icon"
-          />
-          <div>
-            <Text fw={700} size="sm">Dealer Account</Text>
-            <Text size="sm">For Official or Private Dealers who have bulk Listings</Text>
-          </div>
-        </div>
-      </div>
-    </Modal>
-
-    <SocialsLogin
+      <SocialsLogin
         socialOpened={modalOpened}
         socialOnClose={() => setModalOpened(false)}
       />

@@ -31,6 +31,8 @@ import {
   VerifiedUser,
   WhatsappIcon,
 } from "@/components/Icons";
+import OfferPriceModal from "@/components/ui/OfferPrice";
+import ViewLoanBreakup from "@/components/ui/ViewLoanBreakup";
 import { BsStarFill, BsStar } from "react-icons/bs";
 import {
   Badge,
@@ -50,8 +52,10 @@ import { FaCheckCircle } from "react-icons/fa";
 import { useState } from "react";
 import NextImage from "next/image";
 import { FaCalendarDays, FaClock, FaLocationDot } from "react-icons/fa6";
+import { useDisclosure } from "@mantine/hooks";
 
 export default function ProductDetail() {
+  const [opened, { open, close }] = useDisclosure(false);
   const [value, setValue] = useState(50);
   const [endValue, setEndValue] = useState(50);
 
@@ -450,13 +454,7 @@ export default function ProductDetail() {
                                   </Title>
                                 </div>
                                 <div className="right">
-                                  <Button
-                                    variant="transparent"
-                                    color="#E90808"
-                                    size="md"
-                                  >
-                                    View Breakup
-                                  </Button>
+                                  <ViewLoanBreakup />
                                 </div>
                               </div>
                             </div>
@@ -547,28 +545,52 @@ export default function ProductDetail() {
                   <div className="col-12">
                     <div className="card whatsapp-icon mb-3">
                       <div className="card-body gap-2 align-items-center">
-                        <WhatsappIcon />
-                        <h5 className="fw-bold mb-0">CHAT VIA WHATSAPP</h5>
+                        <Button
+                          p={0}
+                          h="auto"
+                          bg="none"
+                          c="dark"
+                          leftSection={<WhatsappIcon />}
+                        >
+                          <Text ff="heading" fw={500}>
+                            Chat via Whatsapp
+                          </Text>
+                        </Button>
                       </div>
                     </div>
                   </div>
                   <div className="col-12">
                     <div className="card whatsapp-icon mb-3">
                       <div className="card-body gap-2 align-items-center">
-                        <MessageIcon />
-                        <h5 className="fw-bold mb-0 text-uppercase">
-                          Message To Dealer
-                        </h5>
+                        <Button
+                          p={0}
+                          h="auto"
+                          bg="none"
+                          c="dark"
+                          leftSection={<MessageIcon />}
+                        >
+                          <Text ff="heading" fw={500}>
+                            Message To Dealer
+                          </Text>
+                        </Button>
                       </div>
                     </div>
                   </div>
                   <div className="col-12">
                     <div className="card whatsapp-icon mb-3">
                       <div className="card-body gap-2 align-items-center">
-                        <DollarIcon />
-                        <h5 className="fw-bold mb-0 text-uppercase">
-                          Make an offer price
-                        </h5>
+                        <Button
+                          onClick={open}
+                          p={0}
+                          h="auto"
+                          bg="none"
+                          c="dark"
+                          leftSection={<DollarIcon />}
+                        >
+                          <Text ff="heading" fw={500}>
+                            Make an offer price
+                          </Text>
+                        </Button>
                       </div>
                     </div>
                   </div>
@@ -851,6 +873,7 @@ export default function ProductDetail() {
           </div>
         </div>
       </section>
+      <OfferPriceModal opened={opened} open={open} close={close} />
     </>
   );
 }

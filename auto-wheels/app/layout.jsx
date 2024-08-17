@@ -7,10 +7,6 @@ import classes from "./styles/Demo.module.scss";
 import {
   ColorSchemeScript,
   MantineProvider,
-  Button,
-  TextInput,
-  Input,
-  Checkbox,
 } from "@mantine/core";
 import { SessionProvider } from "next-auth/react";
 

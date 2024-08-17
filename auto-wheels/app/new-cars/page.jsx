@@ -17,7 +17,6 @@ import {
   rem,
   Grid,
   Tabs,
-  SimpleGrid,
 } from "@mantine/core";
 import {
   CarComparisonSmall,
@@ -25,6 +24,7 @@ import {
   GearsHandle,
   SmallReviewIcon,
 } from "@/components/Icons";
+import WriteReviewModal from "@/components/ui/WriteReviewModal";
 import QuickLinks from "@/components/QuickLinks";
 
 import { IconSearch } from "@tabler/icons-react";
@@ -33,9 +33,11 @@ import ComparisonProducts from "@/modules/home/ComparisonProducts";
 import BrowseVideos from "@/modules/home/BrowseVideos";
 import BrowseBlogs from "@/modules/home/BrowseBlogs";
 import { Carousel } from "@mantine/carousel";
-import Link from "next/link";
+import { useDisclosure } from "@mantine/hooks";
 
 const NewCarsFindSection = () => {
+  const [opened, { open, close }] = useDisclosure(false);
+
   const tagsArray = [
     { name: "All (601)", isSelected: true },
     { name: "Service (39)" },
@@ -442,11 +444,9 @@ const NewCarsFindSection = () => {
                     </Box>
                   </Grid.Col>
                   <Grid.Col span={4}>
-                    <Box>
-                      <Button color="#EB2321" size="lg" fullWidth>
-                        Write a Review
-                      </Button>
-                    </Box>
+                    <Button color="#EB2321" size="lg" fullWidth onClick={open}>
+                      Write a Review
+                    </Button>
                   </Grid.Col>
                 </Grid>
               </Box>
@@ -540,6 +540,7 @@ const NewCarsFindSection = () => {
 
         <QuickLinks />
       </section>
+      <WriteReviewModal opened={opened} close={close} />
     </>
   );
 };

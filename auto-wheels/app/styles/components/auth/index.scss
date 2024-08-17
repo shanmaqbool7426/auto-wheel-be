@@ -1,57 +1,57 @@
-.account-type-container {
-  display: flex;
-  justify-content: space-between;
-  width: 511px;
-  padding: 30px;
-  margin-bottom: 41px !important;
-}
+// .account-type-container {
+//   display        : flex;
+//   justify-content: space-between;
+//   width          : 511px;
+//   padding        : 30px;
+//   margin-bottom  : 41px !important;
+// }
 
 .signup-modal {
-  width: 450px;
+  width  : 450px;
   padding: 0px 65px;
 }
 
-.account-type-box {
-  display: flex;
-  align-items: center;
-  padding: 10px;
-  height: 103px;
-  width: 213px;
-  border: 1px solid silver;
-  margin-bottom: 30px;
-  border-radius: 8px;
-  cursor: pointer;
-  transition: border-color 0.3s ease, background-color 0.3s ease;
+// .account-type-box {
+//   display      : flex;
+//   align-items  : center;
+//   padding      : 10px;
+//   height       : 103px;
+//   width        : 213px;
+//   border       : 1px solid silver;
+//   margin-bottom: 30px;
+//   border-radius: 8px;
+//   cursor       : pointer;
+//   transition   : border-color 0.3s ease, background-color 0.3s ease;
 
-  &.active {
-    border: 2px dotted #ff8f8f;
-    background: #ff000014;
+//   &.active {
+//     border    : 2px dotted #ff8f8f;
+//     background: #ff000014;
 
-    .account-type-icon {
-      filter: invert(33%) sepia(99%) saturate(7470%) hue-rotate(354deg) brightness(92%) contrast(110%);
-    }
-  }
-}
+//     .account-type-icon {
+//       filter: invert(33%) sepia(99%) saturate(7470%) hue-rotate(354deg) brightness(92%) contrast(110%);
+//     }
+//   }
+// }
 
 .account-type-icon {
   margin-right: 15px;
-  transition: filter 0.3s ease;
-  filter: invert(76%) sepia(2%) saturate(0%) hue-rotate(182deg) brightness(75%) contrast(84%);
+  transition  : filter 0.3s ease;
+  filter      : invert(76%) sepia(2%) saturate(0%) hue-rotate(182deg) brightness(75%) contrast(84%);
 }
 
 
 .social-login-main {
-  width: 100%;
-  padding: 50px;
-  display: flex;
-  flex-direction: column;
+  width          : 100%;
+  padding        : 50px;
+  display        : flex;
+  flex-direction : column;
   justify-content: center;
 }
 
 .login-buttons {
-  display: flex;
+  display       : flex;
   flex-direction: column;
-  margin: 7px 30px;
+  margin        : 7px 30px;
 }
 
 .socials-btns {
