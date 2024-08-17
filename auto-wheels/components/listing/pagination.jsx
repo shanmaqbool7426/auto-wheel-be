@@ -1,34 +1,15 @@
-// "use client"
-// import React, { useState } from 'react'
-// import { Pagination } from '@mantine/core'
-// export const ListingPagination = (data) => {
-//     const [pagination,setPagination] = useState({
-//         page:1,
-//         limit:10
-//     })
-//     return (
-//         <Pagination
-//             total={Math.ceil(data?.count / pagination?.limit)}
-//             page={pagination?.page}
-//             onChange={(val)=>handleFilterChange('page',val)}
-//             siblings={1}
-//             size="md"
-//             color="#E90808"
-//         />
-//     )
-// }
 "use client"
 import React, { useState, useEffect } from 'react';
 import { Pagination } from '@mantine/core';
-import { useRouter,useParams } from 'next/navigation';
+import { useRouter, useParams } from 'next/navigation';
 
 export const ListingPagination = ({ data }) => {
     const router = useRouter();
     const { slug } = useParams();
 
-    const pathSegments = slug || [];
-    const pageSegment = pathSegments.find(segment => segment.startsWith('page_'));
-    const currentPage = pageSegment ? parseInt(pageSegment.replace('page_', ''), 10) : 1;
+    const pathSegments = slug ? [...slug] : [];
+    const pageSegmentIndex = pathSegments.findIndex(segment => segment.startsWith('page_'));
+    const currentPage = pageSegmentIndex > -1 ? parseInt(pathSegments[pageSegmentIndex].replace('page_', ''), 10) : 1;
 
     const [pagination, setPagination] = useState({
         page: currentPage,
@@ -47,26 +28,25 @@ export const ListingPagination = ({ data }) => {
     const updatePaginationInUrl = (newPage) => {
         let updatedPathSegments = [...pathSegments];
 
-        if (pageSegment) {
-            updatedPathSegments = updatedPathSegments.map(segment =>
-                segment.startsWith('page_') ? `page_${newPage}` : segment
-            );
+        if (pageSegmentIndex > -1) {
+            updatedPathSegments[pageSegmentIndex] = `page_${newPage}`;
         } else {
             updatedPathSegments.push(`page_${newPage}`);
         }
+
         const updatedPath = updatedPathSegments.join('/');
         console.log('updatedPath', updatedPath);
 
-        router.push(`listing/${updatedPath}`, { scroll: false });
+        router.push(`/listing/${updatedPath}`, { scroll: false });
     };
 
     useEffect(() => {
-        if (pageSegment && parseInt(pageSegment.replace('page_', ''), 10) !== pagination.page) {
+        if (pageSegmentIndex > -1 && parseInt(pathSegments[pageSegmentIndex].replace('page_', ''), 10) !== pagination.page) {
             setPagination((prev) => ({
                 ...prev,
-                page: parseInt(pageSegment.replace('page_', ''), 10),
+                page: parseInt(pathSegments[pageSegmentIndex].replace('page_', ''), 10),
             }));
-        } else if (!pageSegment) {
+        } else if (pageSegmentIndex === -1) {
             updatePaginationInUrl(1);
         }
     }, []);
@@ -82,7 +62,3 @@ export const ListingPagination = ({ data }) => {
         />
     );
 };
-
-
-
-
