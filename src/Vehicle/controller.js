@@ -110,46 +110,101 @@ const getBrowseByVehicles = asyncHandler(async (req, res) => {
 
 
 const getListVehicles = asyncHandler(async (req, res) => {
-  const pathSegments = req.params[0].split('/');
+  const pathSegments = req.params[0].split('/'); 
   const filters = {};
+  const options = {
+    limit: parseInt(req.query.limit, 10) || 10,
+    sort: {}
+  };
 
+  let page = 1;
+
+  let cities = [];
+  let makes = [];
+  let models = [];
+  let bodyTypes = [];
   pathSegments.forEach(segment => {
-    const [key, value] = segment.split('_');
+    const [key, ...rest] = segment.split('_');
+    const value = rest.join('_'); 
+    
     switch (key) {
-      case 'mk': mk_honda
-        filters.make = honda;
+      case 't':
+        filters.type = value;
+        break;
+      case 'mk':
+        makes.push(value);
+        break;
+      case 'md':
+        models.push(value);
         break;
       case 'ct':
-        // For multiple cities, use an array
-        if (filters.city) {
-          filters.city.$in.push(value);
+        cities.push(value);
+        break;
+      case 'bt':
+        bodyTypes.push(value);
+        break;
+      case 'pr':
+        const [minPrice, maxPrice] = value.split('_').map(Number);
+        filters.price = { $gte: minPrice, $lte: maxPrice };
+        break;
+      case 'yr':
+        const [minYear, maxYear] = value.split('_').map(Number);
+        filters.year = { $gte: minYear, $lte: maxYear };
+        break;
+      case 'ml':
+        const [minMileage, maxMileage] = value.split('_').map(Number);
+        filters['specifications.mileage'] = { $gte: minMileage, $lte: maxMileage };
+        break;
+        case 'tr':
+          filters['specifications.transmission'] = { $regex: value, $options: 'i' };
+          break;
+        case 'cl':
+          filters['specifications.exteriorColor'] = { $regex: value, $options: 'i' };
+          break;
+        case 'ft':
+          filters['specifications.fuelType'] = { $regex: value, $options: 'i' };
+          break;          
+      case 'cn':
+        filters.condition = { $regex: value, $options: 'i' };
+        break;
+      case 'sb':
+        if (value === 'price-asc') {
+          options.sort.price = 1;
+        } else if (value === 'price-desc') {
+          options.sort.price = -1;
+        } else if (value === 'year-asc') {
+          options.sort.year = 1;
+        } else if (value === 'year-desc') {
+          options.sort.year = -1;
         } else {
-          filters.city = { $in: [value] };
+          options.sort.createdAt = -1;
         }
         break;
-      case 'ca':
-        filters.cityArea = value;
+      case 'page':
+        page = parseInt(rest[0], 10);
         break;
-      // Add more cases as needed
       default:
         break;
     }
   });
-
-  const options = {
-    limit: parseInt(req.query.limit, 10) || 10,
-    skip: (parseInt(req.query.page, 10) - 1) * (parseInt(req.query.limit, 10) || 10),
-    sort: {}
-  };
-
-  const sort = req.query.sort;
-  if (sort === 'priceAsc') {
-    options.sort.price = 1;
-  } else if (sort === 'priceDesc') {
-    options.sort.price = -1;
-  } else {
-    options.sort.createdAt = -1;
+  
+  if (cities.length > 0) {
+    filters.city = { $in: cities.map(city => new RegExp(`${city.trim()}`, 'i')) };
   }
+  
+  if (makes.length > 0) {
+    filters.make = { $in: makes.map(make => new RegExp(`${make.trim()}`, 'i')) };
+  }
+  
+  if (models.length > 0) {
+    filters.model = { $in: models.map(model => new RegExp(`${model.trim()}`, 'i')) };
+  }
+  
+  if (bodyTypes.length > 0) {
+    filters['specifications.bodyType'] = { $in: bodyTypes.map(bodyType => new RegExp(`${bodyType.trim()}`, 'i')) };
+  }
+  
+  options.skip = (page - 1) * options.limit;
 
   const [totalVehicles, vehicles] = await Promise.all([
     Vehicle.countDocuments(filters),
@@ -163,7 +218,7 @@ const getListVehicles = asyncHandler(async (req, res) => {
         typeCounts: [{ $group: { _id: '$type', count: { $sum: 1 } } }],
         cityCounts: [{ $group: { _id: '$city', count: { $sum: 1 } } }],
         makeCounts: [{ $group: { _id: '$make', count: { $sum: 1 } } }],
-        modelCounts: [{ $group: { _id: '$x`', count: { $sum: 1 } } }],
+        modelCounts: [{ $group: { _id: '$model', count: { $sum: 1 } } }],
         yearCounts: [{ $group: { _id: '$year', count: { $sum: 1 } } }],
         bodyTypeCounts: [{ $group: { _id: '$specifications.bodyType', count: { $sum: 1 } } }],
         fuelTypeCounts: [{ $group: { _id: '$specifications.fuelType', count: { $sum: 1 } } }],
