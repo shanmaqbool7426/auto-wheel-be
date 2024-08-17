@@ -67,10 +67,6 @@ const CarCard = ({ vehicle, index }) => {
         src={vehicle?.defaultImage ? vehicle?.defaultImage : "/products/product-placeholder.png"}
         alt="..."
         style={{objectFit:'cover',maxHeight:'160px',minHeight:'160px'}}
-        onError={(e) => {
-          e.target.onerror = null;
-          e.target.src = "/products/product-placeholder.png";
-        }}
       />
       <div className="progress-bars">
         <span className="single-bar active"></span>

@@ -18,7 +18,6 @@ export const cities = [
     { value: 'sukkur', label: 'Sukkur' },
     { value: 'hyderabad', label: 'Hyderabad' },
     { value: 'gujranwala', label: 'Gujranwala' },
-    { value: 'sargodha', label: 'Sargodha' },
     { value: 'bahawalpur', label: 'Bahawalpur' },
     { value: 'sahiwal', label: 'Sahiwal' },
     { value: 'rahimyarKhan', label: 'Rahim Yar Khan' },

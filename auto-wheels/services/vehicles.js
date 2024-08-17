@@ -4,7 +4,7 @@ import { API_ENDPOINTS } from '@/constants/api-endpoints';
 export const fetchVehiclsData = async (params) => {
   try {
     console.log('>>>>>>>>>>>>>>>>>>>>>complete url',`http://localhost:5000/api/vehicle/${params}`)
-     const vehicls= await fetchAPI(`http://localhost:5000/api/vehicle/${params}`)
+     const vehicls= await fetchAPI(`http://localhost:5000/api/vehicle/vehicles-listing/${params}`)
   
      return vehicls
   } catch (error) {
@@ -14,7 +14,17 @@ export const fetchVehiclsData = async (params) => {
     };
   }
 };
-
+export const fetchMakesByType=async(type)=>{
+  try {
+    const makes= await fetchAPI(`${API_ENDPOINTS.MAKES}?type=${type}`)
+    return makes
+  } catch (error) {
+    console.error('Error fetching dashboard data:', error);
+    return {
+    makes:[]
+    };
+  }
+}
 
 export const fetchVehiclDetail = async (url) => {
   try {
