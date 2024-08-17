@@ -204,6 +204,7 @@ export default getListVehicles;
 
 const getVehicleById = asyncHandler(async (req, res) => {
   const { id } = req.params
+  console.log('id:', id)
   const vehicleDetail = await Vehicle.findById(id)
   return response.ok(res, 'Vehicle detail retrieved successfully', vehicleDetail);
 
