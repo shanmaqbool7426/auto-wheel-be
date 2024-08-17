@@ -16,7 +16,7 @@ const router = express.Router();
 
 router.get('/:id', getVehicleById);
 router.get('/vehicles-by-type', getBrowseByVehicles);
-router.get('/*', getListVehicles);
+router.get('/vehicles-listing/*', getListVehicles);
 router.post('/', upload.fields([
   {
     name: "images",
