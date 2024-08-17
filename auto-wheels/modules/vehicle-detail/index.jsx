@@ -33,20 +33,20 @@ import OfferPriceModal from "@/components/ui/OfferPrice";
 import { BsStarFill, BsStar } from "react-icons/bs";
 import { Card, Image, Title } from "@mantine/core";
 import Link from "next/link";
-import { fetchVehiclDetail } from "@/services/vehicles";
-import Calculator from "./calculator";
-import SocialCards from "./socialCards";
-import MessageToDealer from "./messageToDealer";
-import SocialContact from "./socialContact";
-import Gellary from "./imagesGellary";
+import { fetchVehiclDetail } from '@/services/vehicles'
+import Calculator from "./calculator"
+import SocialCards from "./socialCards"
+import MessageToDealer from "./messageToDealer"
+import SocialContact from "./socialContact"
+import SharedFeatures from "./sharedFeatures"
+import Gellary from "./imagesGellary"
 import { FaCheckCircle } from "react-icons/fa";
-// import { useState } from "react";
+import {formatPrice} from "@/utils/index" 
 import NextImage from "next/image";
 import { FaCalendarDays, FaClock, FaLocationDot } from "react-icons/fa6";
 import { API_ENDPOINTS } from "@/constants/api-endpoints";
 import { useDisclosure } from "@mantine/hooks";
 export default async function vehicleDetailModule() {
-  const [opened, { open, close }] = useDisclosure(false);
 
   // const [value, setValue] = useState(50);
   // const [endValue, setEndValue] = useState(50);
@@ -254,7 +254,7 @@ export default async function vehicleDetailModule() {
                   Sellers Notes
                 </h4>
                 <p>{detail?.data?.sellerNotes}</p>
-                <Calculator />
+                <Calculator detail={detail?.data}/>
               </section>
               {/* Seller Section */}
             </div>
@@ -482,7 +482,7 @@ export default async function vehicleDetailModule() {
           </div>
         </div>
       </section>
-      <OfferPriceModal opened={opened} open={open} close={close} />
+      <OfferPriceModal  />
     </>
   );
 }

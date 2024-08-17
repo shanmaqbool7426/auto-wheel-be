@@ -13,8 +13,10 @@ import {
 } from "@mantine/core";
 import React from "react";
 import { DollarIcon } from "../Icons";
+import { useDisclosure } from "@mantine/hooks";
 
-const OfferPriceModal = ({ opened, open, close }) => {
+const OfferPriceModal = ({  }) => {
+  const [opened, { open, close }] = useDisclosure(false);
   return (
     <>
       <Modal
