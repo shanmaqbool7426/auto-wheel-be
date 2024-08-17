@@ -7,7 +7,8 @@ import {
   //   updateVehicle,
   //   deleteVehicle,
   getListVehicles,
-  getVehicleById
+  getVehicleById,
+  // imageUploader
 } from "./controller.js"
 import { upload } from "../Middleware/multer.js"
 
@@ -28,5 +29,7 @@ router.post('/', upload.fields([
 ]), createVehicle); // Assuming authentication middleware is applied
 // router.put('/:id', updateVehicle);
 // router.delete('/:id', deleteVehicle); 
+
+// router.post('/upload-image', upload.single("image"), imageUploader);
 
 export default router;
