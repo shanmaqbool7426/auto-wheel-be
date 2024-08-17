@@ -47,13 +47,13 @@ console.log('>>>',session?.user?.image);
               <div className="header-navigation text-center">
                 <ul className="list-unstyled list-inline mb-0 mx-auto">
                   <li className="list-inline-item dropdown">
-                    <Link href={"/listing/cars"}>Cars</Link>
+                    <Link href={"/listing/cars/search/-/"}>Cars</Link>
                   </li>
                   <li className="list-inline-item dropdown">
-                    <Link href={"/listing/bikes"}>Bike</Link>
+                    <Link href={"/listing/bikes/search/-/"}>Bike</Link>
                   </li>
                   <li className="list-inline-item dropdown">
-                    <Link href={"/listing/trucks"}>Truck</Link>
+                    <Link href={"/listing/trucks/search/-/"}>Truck</Link>
                   </li>
                   <li className="list-inline-item dropdown">
                     <Link href={"/blogs"}>Blogs</Link>

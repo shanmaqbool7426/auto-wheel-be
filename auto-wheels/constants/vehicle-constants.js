@@ -5,31 +5,79 @@ const typeMapping = {
     bikes: 'bike',
     trucks: 'truck',
 };
+export const cities = [
+    { value: 'karachi', label: 'Karachi' },
+    { value: 'lahore', label: 'Lahore' },
+    { value: 'islamabad', label: 'Islamabad' },
+    { value: 'rawalpindi', label: 'Rawalpindi' },
+    { value: 'faisalabad', label: 'Faisalabad' },
+    { value: 'multan', label: 'Multan' },
+    { value: 'peshawar', label: 'Peshawar' },
+    { value: 'quetta', label: 'Quetta' },
+    { value: 'sialkot', label: 'Sialkot' },
+    { value: 'sukkur', label: 'Sukkur' },
+    { value: 'hyderabad', label: 'Hyderabad' },
+    { value: 'gujranwala', label: 'Gujranwala' },
+    { value: 'sargodha', label: 'Sargodha' },
+    { value: 'bahawalpur', label: 'Bahawalpur' },
+    { value: 'sahiwal', label: 'Sahiwal' },
+    { value: 'rahimyarKhan', label: 'Rahim Yar Khan' },
+    { value: 'abbottabad', label: 'Abbottabad' },
+    { value: 'swat', label: 'Swat' },
+    { value: 'mansehra', label: 'Mansehra' },
+    { value: 'mardan', label: 'Mardan' },
+    { value: 'deraGhaziKhan', label: 'Dera Ghazi Khan' },
+    { value: 'deraIsmailKhan', label: 'Dera Ismail Khan' },
+    { value: 'nawabshah', label: 'Nawabshah' },
+    { value: 'mirpurkhas', label: 'Mirpurkhas' },
+    { value: 'larkana', label: 'Larkana' },
+    { value: 'kasur', label: 'Kasur' },
+    { value: 'sheikhupura', label: 'Sheikhupura' },
+    { value: 'sargodha', label: 'Sargodha' },
+    { value: 'gujrat', label: 'Gujrat' },
+    { value: 'jhang', label: 'Jhang' },
+    { value: 'bhakkar', label: 'Bhakkar' },
+    { value: 'attock', label: 'Attock' },
+    { value: 'chakwal', label: 'Chakwal' },
+    { value: 'jehlum', label: 'Jehlum' },
+    { value: 'murree', label: 'Murree' },
+    { value: 'kohat', label: 'Kohat' },
+    { value: 'bannu', label: 'Bannu' },
+    { value: 'chaman', label: 'Chaman' },
+    { value: 'zhob', label: 'Zhob' },
+    { value: 'gwadar', label: 'Gwadar' },
+    { value: 'sibi', label: 'Sibi' },
+    { value: 'gilgit', label: 'Gilgit' },
+    { value: 'skardu', label: 'Skardu' },
+    { value: 'mirpur', label: 'Mirpur' },
+    { value: 'muzaffarabad', label: 'Muzaffarabad' },
+];
+
 export const vehicleConditionOptions=[
-    { value: 'certified', label: 'Certified User' },
-    { value: 'new', label: 'New' },
-    { value: 'used', label: 'Used' },
+    { value: 'cn_certified', label: 'Certified User' },
+    { value: 'cn_new', label: 'New' },
+    { value: 'cn_used', label: 'Used' },
 ]
 export const vehicleTransmissionOptions=[
-    { value: 'automatic', label: 'Automatic' },
-    { value: 'manual', label: 'Manual' },
-    { value: 'cvt', label: 'CVT' },
+    { value: 'tr_automatic', label: 'Automatic' },
+    { value: 'tr_manual', label: 'Manual' },
+    { value: 'tr_cvt', label: 'CVT' },
 ]
 export const vehicleDriveOptions=[
-    { value: 'AWD', label: 'AWD' },
-    { value: 'FWD', label: 'FWD' },
-    { value: 'RWD', label: 'RWD' },
+    { value: 'dr_awd', label: 'AWD' },
+    { value: 'dr_fwd', label: 'FWD' },
+    { value: 'dr_rwd', label: 'RWD' },
 ]
 export const vehicleFuelTypeOptions=[
-    { value: 'petrol', label: 'Petrol' },
-    { value: 'diesel', label: 'Diesel' },
-    { value: 'electric', label: 'Electric' },
+    { value: 'ft_petrol', label: 'Petrol' },
+    { value: 'ft_diesel', label: 'Diesel' },
+    { value: 'ft_electric', label: 'Electric' },
 ]
 export const vehicleExteriorColorOptions=[
-    { value: 'red', label: 'Red' },
-    { value: 'blue', label: 'Blue' },
-    { value: 'black', label: 'Black' },
-    { value: 'grey', label: 'Grey' },
+    { value: 'cl_red', label: 'Red' },
+    { value: 'cl_blue', label: 'Blue' },
+    { value: 'cl_black', label: 'Black' },
+    { value: 'cl_grey', label: 'Grey' },
 ]
 export const carMakes = [
     { value: 'suzuki', label: 'Suzuki' },
@@ -77,34 +125,46 @@ export const truckBodyTypes = [
 ];
 
 export const getVehicleModelsByMakeAndType = (makeArray, type) => {
-  const vehicleData = {
-    car: {
-      Honda: ['Civic', 'City', 'BR-V', 'Accord', 'CR-V'],
-      Kia: ['Sportage', 'Picanto', 'Sorento', 'Stonic'],
-      Toyota: ['Corolla', 'Yaris', 'Fortuner', 'Hilux', 'Camry'],
-      Suzuki: ['Alto', 'Cultus', 'Swift', 'Wagon R', 'Bolan'],
-      Hyundai: ['Tucson', 'Elantra', 'Sonata', 'Santro'],
-      Mercedes: ['C-Class', 'E-Class', 'GLA', 'GLE'],
-      BMW: ['3 Series', '5 Series', 'X1', 'X3'],
-    },
-    bike: {
-      Honda: ['CD 70', 'CG 125', 'CB 150F', 'CBR 500R'],
-      Suzuki: ['GS 150', 'GR 150', 'GD 110S'],
-      Yamaha: ['YBR 125', 'YBR 125G', 'YBZ 125'],
-    },
-    truck: {
-      Hino: ['300 Series', '500 Series', '700 Series'],
-      Isuzu: ['N Series', 'F Series', 'Giga'],
-      Master: ['Foton', 'Hyundai Mighty'],
-    },
-  };
-
-  let result = [];
-
-  if (Array.isArray(makeArray) && vehicleData[typeMapping[type]]) {
-    makeArray.forEach(make => {
-      Object.keys(vehicleData[typeMapping[type]]).forEach(vehicleMake => {
-        if (make.toLowerCase() === vehicleMake.toLowerCase()) {
+    const vehicleData = {
+      car: {
+        Honda: ['Civic', 'City', 'BR-V', 'Accord', 'CR-V'],
+        Kia: ['Sportage', 'Picanto', 'Sorento', 'Stonic'],
+        Toyota: ['Corolla', 'Yaris', 'Fortuner', 'Hilux', 'Camry'],
+        Suzuki: ['Alto', 'Cultus', 'Swift', 'WagonR', 'Bolan'],
+        Hyundai: ['Tucson', 'Elantra', 'Sonata', 'Santro'],
+        Mercedes: ['C-Class', 'E-Class', 'GLA', 'GLE'],
+        BMW: ['3Series', '5Series', 'X1', 'X3'],
+      },
+      bike: {
+        Honda: ['CD70', 'CG125', 'CB150F', 'CBR500R'],
+        Suzuki: ['GS150', 'GR150', 'GD110S'],
+        Yamaha: ['YBR125', 'YBR 125G', 'YBZ125'],
+      },
+      truck: {
+        Hino: ['300Series', '500Series', '700Series'],
+        Isuzu: ['NSeries', 'FSeries', 'Giga'],
+        Master: ['Foton', 'HyundaiMighty'],
+      },
+    };
+  
+    const typeMapping = {
+      cars: 'car',
+      bikes: 'bike',
+      trucks: 'truck',
+    };
+  
+    let result = [];
+  
+    if (Array.isArray(makeArray) && vehicleData[typeMapping[type]]) {
+      // Create a unique set of makes to avoid processing duplicates
+      const uniqueMakes = new Set(makeArray.map(make => make.toLowerCase()));
+  
+      uniqueMakes.forEach(make => {
+        const vehicleMake = Object.keys(vehicleData[typeMapping[type]]).find(
+          vehicleMake => vehicleMake.toLowerCase() === make
+        );
+  
+        if (vehicleMake) {
           const models = vehicleData[typeMapping[type]][vehicleMake].map(model => ({
             value: model.toLowerCase(),
             label: model,
@@ -112,11 +172,11 @@ export const getVehicleModelsByMakeAndType = (makeArray, type) => {
           result = result.concat(models);
         }
       });
-    });
-  }
-
-  return result;
-};
+    }
+  
+    return result;
+  };
+  
 
   
 export function getBodyTypesByVehicleType(type) {
