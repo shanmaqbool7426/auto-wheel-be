@@ -11,7 +11,7 @@ import browesByBodyRoutes from './BrowseByBody/route.js'
 import vehicleRoutes from './Vehicle/route.js'
 import {errorHandler} from "./Middleware/errorHandler.js"
 import { uploadOnCloudinary } from "./Utils/cloudinary.js";
-
+import morgan from "morgan"
 import responses from "./Utils/response.js";
 import { upload } from "./Middleware/multer.js";
 // const { errorHandler, notFound } = require('./middleware/errorMiddleware');
@@ -36,6 +36,7 @@ const corsOptions = {
 app.use(cors(corsOptions));
 
 // app.use(compression());
+app.use(morgan('combined'))
 
 app.use(express.json());
 app.use(express.urlencoded({limit: '50mb'}));
