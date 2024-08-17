@@ -13,7 +13,9 @@ import { Carousel } from "@mantine/carousel";
 import { IconArrowRight, IconArrowLeft } from "@tabler/icons-react";
 import "@mantine/carousel/styles.css";
 import SignUp from "./SignUp";
+import { signIn } from 'next-auth/react';
 
+// import { signIn } from 'next-auth/react';
 
 import classes from "../../app/styles/Demo.module.scss";
 const SocialsLogin = ({ socialOpened, socialOnClose }) => {
@@ -91,7 +93,7 @@ const SocialsLogin = ({ socialOpened, socialOnClose }) => {
             {/* ...other slides */}
           </Carousel>
           <div className="login-buttons">
-            <Button className="socials-btns google-btn m-2 " variant="default" type="submit" name="action" value={"google"} onClick={() => signIn('google')}>
+            <Button className="socials-btns google-btn m-2 " variant="default" type="submit" name="action" value={"google"} onClick={() => signIn('google', {redirectTo: '/dashboard'})}>
               <div className="socials-btns-inner">
                 <Image width={30} height={30} src={google_icon} alt="Google" />
                 <div>Continue with Google</div>
@@ -101,6 +103,7 @@ const SocialsLogin = ({ socialOpened, socialOnClose }) => {
             <Button
               className="socials-btns facebook-btn m-2 "
               variant="default"
+              onClick={() => signIn('facebook', {redirectTo: '/dashboard'})}
             >
               <div className="socials-btns-inner">
                 <Image

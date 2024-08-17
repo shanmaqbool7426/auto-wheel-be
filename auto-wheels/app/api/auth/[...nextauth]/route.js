@@ -33,37 +33,37 @@ export const authOptions = {
     //   },
     //   from: process.env.EMAIL_FROM
     // }),
-    Credentials({
-      name: "Credentials",
-      credentials: {
-        phone: {},
-        password: {},
-      },
-      async authorize(credentials) {
-        const res = await axios.post<LoginResponse>(
-          process.env.API_BASE_URL + "api/v1/auth/login",
-          credentials,
-          {
-            headers: {
-              Accept: "application/json",
-              "Content-Type": "application/json",
-            },
-          }
-        );
-        if (res.status === 200) {
-          const { name, id, phone, role, picture } = res.data.user;
-          const user = {
-            id,
-            name,
-            phone,
-            role,
-            picture,
-            token: res.data.token,
-          };
-          return user; // User interface we declared in next-auth.d.ts
-        } else throw new Error("Login failed");
-      },
-    })
+    // Credentials({
+    //   name: "Credentials",
+    //   credentials: {
+    //     phone: {},
+    //     password: {},
+    //   },
+    //   async authorize(credentials) {
+    //     const res = await axios.post<LoginResponse>(
+    //       process.env.API_BASE_URL + "api/v1/auth/login",
+    //       credentials,
+    //       {
+    //         headers: {
+    //           Accept: "application/json",
+    //           "Content-Type": "application/json",
+    //         },
+    //       }
+    //     );
+    //     if (res.status === 200) {
+    //       const { name, id, phone, role, picture } = res.data.user;
+    //       const user = {
+    //         id,
+    //         name,
+    //         phone,
+    //         role,
+    //         picture,
+    //         token: res.data.token,
+    //       };
+    //       return user; // User interface we declared in next-auth.d.ts
+    //     } else throw new Error("Login failed");
+    //   },
+    // })
   ],
   secret: '739d95146513d67502b0ba4776a5cae8',
   callbacks: {

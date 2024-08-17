@@ -10,7 +10,7 @@ import {fetcHomeData} from "../../services/home"
 export default async  function HomeModule() {
  const res= await fetcHomeData()
 
- console.log('res>>>>', res?.vehiclesTypes)
+ console.log('data>>>>>>>>>', res.vehiclesTypes)
   return (
     <>
       <Hero />

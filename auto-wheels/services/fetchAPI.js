@@ -1,5 +1,5 @@
 export const fetchAPI = async (url) => {
-    const response = await fetch(url,{ next: { revalidate: 60 }});
+    const response = await fetch(url,{ cache: 'no-store' });
     if (!response.ok) {
       throw new Error(`Failed to fetch ${url}`);
     }
