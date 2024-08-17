@@ -25,6 +25,12 @@ const vehicleSchema = new mongoose.Schema({
     required: true,
     index: true
   },
+  condition: {
+    type: String,
+    enum: ['used', 'new', 'certified'],
+    required: true,
+    index: true
+  },
   city: {
     type: String,
     required: true,
