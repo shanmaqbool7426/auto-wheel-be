@@ -43,9 +43,10 @@ import Calculator from "./calculator"
 import SocialCards from "./socialCards"
 import MessageToDealer from "./messageToDealer"
 import SocialContact from "./socialContact"
+import SharedFeatures from "./sharedFeatures"
 import Gellary from "./imagesGellary"
 import { FaCheckCircle } from "react-icons/fa";
-// import { useState } from "react";
+import {formatPrice} from "@/utils/index" 
 import NextImage from "next/image";
 import { FaCalendarDays, FaClock, FaLocationDot } from "react-icons/fa6";
 import { API_ENDPOINTS } from "@/constants/api-endpoints";
@@ -122,7 +123,7 @@ export default async function vehicleDetailModule() {
                                         </div>
                                         <div className="main-title fs-1 fw-bold">{`${detail?.data?.year}  ${detail?.data?.make} ${detail?.data?.model}`}</div>
                                     </div>
-                                    <div className="price-field">Rs {detail?.data?.price}</div>
+                                    <div className="price-field">Rs {formatPrice(detail?.data?.price) }</div>
                                 </div>
 
                                 <div className="features-section">
@@ -130,23 +131,7 @@ export default async function vehicleDetailModule() {
                                         <ClockIcon /> (Updated 1 month ago)
                                     </div>
                                     <div className="featured my-3">
-                                        <ul className="list-unstyled list-inline m-0">
-                                            <li className="list-inline-item">
-                                                <DocumentSquareIcon />
-                                            </li>
-                                            <li className="list-inline-item">
-                                                <RatingIcon />
-                                            </li>
-                                            <li className="list-inline-item">
-                                                <SteeringIcon />
-                                            </li>
-                                            <li className="list-inline-item">
-                                                <ShareSquareIcon />
-                                            </li>
-                                            <li className="list-inline-item">
-                                                <MeterSquareIcon />
-                                            </li>
-                                        </ul>
+                                    <SharedFeatures/>
                                         <div className="featrured-tag text-primary ms-auto text-uppercase fw-semibold">
                                             <FeaturedCrownIcon />
                                             <span className="ms-2">featured listing</span>
@@ -206,7 +191,7 @@ export default async function vehicleDetailModule() {
                                 <p>
                                     {detail?.data?.sellerNotes}
                                 </p>
-                                <Calculator />
+                                <Calculator data={ detail?.data}/>
                             </section>
                             {/* Seller Section */}
                         </div>
@@ -262,7 +247,7 @@ export default async function vehicleDetailModule() {
                                         <div className="card-body gap-2 align-items-center text-primary">
                                             <LocationPinIcon />
                                             <div className="text-muted address-info">
-                                                Gare Du Nord, Rue de Maubeuge, Paris, France
+                                                {detail?.data?.cityArea} , {detail?.data?.city}
                                                 <ul className="list-unstyled mb-0 text-muted mt-2">
                                                     <li>
                                                         Mon to Fri
