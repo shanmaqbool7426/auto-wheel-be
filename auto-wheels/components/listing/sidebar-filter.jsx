@@ -6,8 +6,8 @@ import { ResetFiltersIcon, SearchWithCar } from "@/components/Icons";
 import { useRouter, useSearchParams, useParams } from 'next/navigation';
 import { Accordion, RangeSlider } from '@mantine/core';
 import Image from "next/image";
-import { cities, getBodyTypesByVehicleType, getVehiclePartsIconByVehicleType, vehicleConditionOptions, vehicleDriveOptions, vehicleExteriorColorOptions, vehicleFuelTypeOptions, vehicleTransmissionOptions } from "@/constants/vehicle-constants"
-const ListingFilter = ({ type, makes }) => {
+import { cities, getVehiclePartsIconByVehicleType, vehicleConditionOptions, vehicleDriveOptions, vehicleExteriorColorOptions, vehicleFuelTypeOptions, vehicleTransmissionOptions } from "@/constants/vehicle-constants"
+const ListingFilter = ({ type, makes ,bodies,vehicles}) => {
   const searchParams = useSearchParams();
   const [filters, setFilters] = useState({
     query: "",
@@ -116,7 +116,6 @@ const ListingFilter = ({ type, makes }) => {
         if (["condition", "transmission", "drive", "exteriorColor", "fuelType"].includes(key)) {
           customUrl += `${value}/`;
         }
-        if (key === "order") customUrl += `od_${value}/`;
         if (key === "view") customUrl += `view_${value}/`;
       } else if (typeof value === "number") {
         if (key === "page") customUrl += `page_${value}/`;
@@ -130,10 +129,11 @@ const ListingFilter = ({ type, makes }) => {
       let updatedFilterValue;
 
       if (["make", "city", "model", "bodyType"].includes(filterName)) {
+        const encodedValue = encodeURIComponent(value);
         if (isChecked) {
-          updatedFilterValue = Array.from(new Set([...prevFilters[filterName], value]));
+          updatedFilterValue = Array.from(new Set([...prevFilters[filterName], encodedValue]));
         } else {
-          updatedFilterValue = prevFilters[filterName].filter(item => item !== value);
+          updatedFilterValue = prevFilters[filterName].filter(item => item !== encodedValue);
         }
       } else {
         updatedFilterValue = value;
@@ -187,6 +187,17 @@ const ListingFilter = ({ type, makes }) => {
 
     return selectedModels;
   }
+  const getCountByTypeAndKey=( countType, key)=> {
+    if (!vehicles?.counts[countType]) {
+        return null;
+    }
+    const normalizedKey = key.toLowerCase();
+    const entry = vehicles?.counts[countType].find(item => item._id.toLowerCase() === normalizedKey);
+    console.log(entry)
+    return entry ? entry.count : null;
+}
+  const decodedFilterModel = filters.model.map((model) => decodeURIComponent(model).toLowerCase());
+  const decodedFilterBodies = filters.bodyType.map((body) => decodeURIComponent(body).toLowerCase());
   return (
     <Fragment>
       <div className="card filter-card mb-4">
@@ -226,7 +237,10 @@ const ListingFilter = ({ type, makes }) => {
                       <label className="form-check-label" htmlFor={city.label}>
                         {city.label}
                       </label>
-                      <div className="count">17,556</div>
+                      {
+                        getCountByTypeAndKey('cityCounts',city.label)&&
+                      <div className="count">{getCountByTypeAndKey('cityCounts',city.label)}</div>
+                      }
                     </div>
                   ))}
                 </div>
@@ -279,7 +293,10 @@ const ListingFilter = ({ type, makes }) => {
                       <label className="form-check-label" htmlFor={make.name}>
                         {make.name}
                       </label>
-                      <div className="count">17,556</div>
+                      {
+                        getCountByTypeAndKey('makeCounts',make.name)&&
+                      <div className="count">{getCountByTypeAndKey('makeCounts',make.name)}</div>
+                      }
                     </div>
                   ))}
                 </div>
@@ -299,13 +316,16 @@ const ListingFilter = ({ type, makes }) => {
                         className="form-check-input"
                         type="checkbox"
                         id={model.name}
-                        checked={filters.model.includes(model.name?.toLowerCase())}
+                        checked={decodedFilterModel.includes(model.name?.toLowerCase())}
                         onChange={(e) => handleFilterChange("model", model.name?.toLowerCase(), e.target.checked)}
                       />
                       <label className="form-check-label" htmlFor={model.name}>
                         {model.name}
                       </label>
-                      <div className="count">17,556</div>
+                      {
+                        getCountByTypeAndKey('modelCounts',model.name)&&
+                      <div className="count">{getCountByTypeAndKey('modelCounts',model.name)}</div>
+                      }
                     </div>
                   ))}
                 </div></Accordion.Panel>
@@ -530,24 +550,24 @@ const ListingFilter = ({ type, makes }) => {
         </div>
         <div className="card-body">
           <div className="row">
-            {getBodyTypesByVehicleType(type).map((bodyType) => (
-              <div className="col-md-6" key={bodyType.label}>
+            {bodies?.data?.map((bodyType) => (
+              <div className="col-md-6" key={bodyType.name}>
                 <div className="single-brand-item selected-brand-item text-center">
-                  <label className={`text-decoration-none ${filters.bodyType.includes(bodyType.value) ? 'checked' : ''}`}>
+                  <label className={`text-decoration-none ${decodedFilterBodies.includes(bodyType?.name?.toLowerCase()) ? 'checked' : ''}`}>
                     <input
                       type="checkbox"
                       name="bodyType"
-                      value={bodyType.label}
-                      checked={filters.bodyType.includes(bodyType.value)}
-                      onChange={(e) => handleFilterChange("bodyType", bodyType.value, e.target.checked)}
+                      value={bodyType.name?.toLowerCase()}
+                      checked={decodedFilterBodies.includes(bodyType?.name?.toLowerCase())}
+                      onChange={(e) => handleFilterChange("bodyType", bodyType.name?.toLowerCase(), e.target.checked)}
                     />
                     <Image
                       width={100}
                       height={80}
-                      src={bodyType.src}
+                      src={bodyType.bodyImage}
                       className="mx-auto text-center"
                     />
-                    <h6 className="mb-0 text-dark">{bodyType.label}</h6>
+                    <h6 className="mb-0 text-dark">{bodyType.name}</h6>
                   </label>
                 </div>
               </div>

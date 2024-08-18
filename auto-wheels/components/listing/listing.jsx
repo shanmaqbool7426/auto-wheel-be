@@ -6,7 +6,7 @@ import ListCardView from "@/components/ui/ListCardView";
 import CarCard from "@/components/ui/CarCard";
 import Link from "next/link";
 import { LoadingOverlay } from '@mantine/core';
-import { fetchMakesByType, fetchVehiclsData } from "@/services/vehicles"
+import { fetchBodiesByType, fetchMakesByType, fetchVehiclsData } from "@/services/vehicles"
 export default async function Listing({ params, searchParams }) {
     const view = searchParams.view;
     const typeMapping = {
@@ -58,6 +58,8 @@ export default async function Listing({ params, searchParams }) {
     let loading = true;
     const dataofVehcles = await fetchVehiclsData(reorderedSlug);
     const vehicleMakes = await fetchMakesByType(typeMapping[params.slug[0]]);
+    const vehicleBodies = await fetchBodiesByType(typeMapping[params.slug[0]]);
+    
     loading = false;
     return (
         <>
@@ -73,7 +75,7 @@ export default async function Listing({ params, searchParams }) {
                 <div className="container">
                     <div className="row">
                         <div className="col-lg-3">
-                            <ListingFilter type={params.slug[0]} makes={vehicleMakes} />
+                            <ListingFilter type={params.slug[0]} makes={vehicleMakes} bodies={vehicleBodies} vehicles={dataofVehcles?.data}/>
                         </div>
                         <div className="col-lg-9">
                             {/* Toolbox */}

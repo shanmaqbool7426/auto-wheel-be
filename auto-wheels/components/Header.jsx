@@ -267,7 +267,7 @@ const Header = () => {
                 withinPortal
               >
                 <HoverCard.Target>
-                  <Link href="#" className="link">
+                  <Link href="/listing/cars/search/-/" className="link">
                     <Center inline>
                       <Box component="span" mr={3}>
                         Car
@@ -305,7 +305,7 @@ const Header = () => {
                 withinPortal
               >
                 <HoverCard.Target>
-                  <Link href="#" className="link">
+                  <Link href="/listing/bikes/search/-/" className="link">
                     <Center inline>
                       <Box component="span" mr={3}>
                         Bike
@@ -343,7 +343,7 @@ const Header = () => {
                 withinPortal
               >
                 <HoverCard.Target>
-                  <Link href="#" className="link">
+                  <Link href="/listing/trucks/search/-/" className="link">
                     <Center inline>
                       <Box component="span" mr={3}>
                         Truck

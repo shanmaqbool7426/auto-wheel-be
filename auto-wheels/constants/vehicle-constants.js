@@ -77,6 +77,8 @@ export const vehicleExteriorColorOptions=[
     { value: 'cl_blue', label: 'Blue' },
     { value: 'cl_black', label: 'Black' },
     { value: 'cl_grey', label: 'Grey' },
+    { value: 'cl_orange', label: 'Orange' },
+    { value: 'cl_yellow', label: 'Yellow' },
 ]
 export const carMakes = [
     { value: 'suzuki', label: 'Suzuki' },
