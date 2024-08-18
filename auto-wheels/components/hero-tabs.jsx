@@ -1,102 +1,297 @@
 import React from "react";
 import { CarFrontView, MotorBike, Truck } from "@/components/Icons";
+import {
+  Anchor,
+  Box,
+  Button,
+  Center,
+  Grid,
+  Group,
+  Image,
+  Input,
+  List,
+  Modal,
+  Paper,
+  ScrollArea,
+  Tabs,
+  Title,
+} from "@mantine/core";
+import { BsArrowRight, BsSearch } from "react-icons/bs";
+import { useDisclosure } from "@mantine/hooks";
 import Link from "next/link";
-import { BsArrowRight } from "react-icons/bs";
 
 const HeroTabs = () => {
+  const [opened, { open, close }] = useDisclosure(false);
+
   return (
-    <div>
-      <ul className="nav nav-tabs" id="myTab" role="tablist">
-        <li className="nav-item flex-fill">
-          <span
-            data-bs-toggle="tab"
-            className="nav-link d-flex flex-column justify-content-center align-items-center"
-            data-bs-target="#home-tab-pane"
-          >
-            <CarFrontView />
+    <>
+      <Tabs color="pink" radius="xs" defaultValue="cars" autoContrast>
+        <Tabs.List grow justify="center">
+          <Tabs.Tab value="cars" leftSection={<CarFrontView />} c="#6c757d">
             Car
-          </span>
-        </li>
-        <li className="nav-item flex-fill">
-          <span
-            className="nav-link d-flex flex-column justify-content-center align-items-center"
-            data-bs-toggle="tab"
-            data-bs-target="#profile-tab-pane"
+          </Tabs.Tab>
+          <Tabs.Tab
+            value="bikes"
+            leftSection={<MotorBike />}
+            c="#6c757d"
+            onClick={open}
           >
-            <MotorBike />
-            Bikes
-          </span>
-        </li>
-        <li className="nav-item flex-fill">
-          <span
-            className="nav-link d-flex flex-column justify-content-center align-items-center"
-            data-bs-toggle="tab"
-            data-bs-target="#contact-tab-pane"
+            Bike
+          </Tabs.Tab>
+          <Tabs.Tab value="trucks" leftSection={<Truck />} c="#6c757d">
+            Truck
+          </Tabs.Tab>
+        </Tabs.List>
+
+        <Tabs.Panel value="cars" p="xs">
+          <Input placeholder="Car Make or Model" size="md" mt="lg" />
+          <Input placeholder="Enter Your Location" size="md" mt="lg" />
+          <Button
+            mt="lg"
+            fullWidth
+            size="md"
+            ff="heading"
+            tt="uppercase"
+            color="#E90808"
           >
-            <Truck />
-            Contact
-          </span>
-        </li>
-      </ul>
-      <div className="tab-content" id="myTabContent">
-        <div
-          className="tab-pane fade show active"
-          id="home-tab-pane"
-          role="tabpanel"
-          aria-labelledby="home-tab"
-          tabindex="0"
-        >
-          <form>
-            <div className="form-group mb-4 mt-4">
-              <input
-                type="text"
-                placeholder="Car Make or Model"
-                className="form-control"
-              />
-            </div>
-            <div className="form-group mb-4">
-              <input
-                type="text"
-                placeholder="Enter Your Location"
-                className="form-control"
-              />
-            </div>
-            <div className="d-grid gap-2">
-              <button className="btn btn-primary btn-lg mb-3 rounded-2">
-                Search
-              </button>
-            </div>
-            <Link
-              href={"#"}
-              className="btn btn-link text-right float-end text-decoration-none fw-medium"
+            Search
+          </Button>
+          <Group justify="end" mt="sm">
+            <Button
+              component={Link}
+              href="#"
+              rightSection={<BsArrowRight />}
+              variant="transparent"
+              px={0}
+              fw={500}
+              tt="uppercase"
+              color="#E90808"
+              ff="heading"
             >
-              Advanced Search
-              <span className="ms-1">
-                <BsArrowRight />
-              </span>
-            </Link>
-          </form>
-        </div>
-        {/* <div
-          className="tab-pane fade"
-          id="profile-tab-pane"
-          role="tabpanel"
-          aria-labelledby="profile-tab"
-          tabindex="0"
+              Advance Search
+            </Button>
+          </Group>
+        </Tabs.Panel>
+        <Tabs.Panel value="bikes" p="xs">
+          <Input placeholder="Car Make or Model" size="md" mt="lg" />
+          <Input placeholder="Enter Your Location" size="md" mt="lg" />
+          <Button
+            mt="lg"
+            fullWidth
+            size="md"
+            ff="heading"
+            tt="uppercase"
+            color="#E90808"
+          >
+            Search
+          </Button>
+          <Group justify="end" mt="sm">
+            <Button
+              component={Link}
+              href="#"
+              rightSection={<BsArrowRight />}
+              variant="transparent"
+              px={0}
+              fw={500}
+              tt="uppercase"
+              color="#E90808"
+              ff="heading"
+            >
+              Advance Search
+            </Button>
+          </Group>
+        </Tabs.Panel>
+        <Tabs.Panel value="trucks" p="xs">
+          <Input placeholder="Car Make or Model" size="md" mt="lg" />
+          <Input placeholder="Enter Your Location" size="md" mt="lg" />
+          <Button
+            mt="lg"
+            fullWidth
+            size="md"
+            ff="heading"
+            tt="uppercase"
+            color="#E90808"
+          >
+            Search
+          </Button>
+          <Group justify="end" mt="sm">
+            <Button
+              component={Link}
+              href="#"
+              rightSection={<BsArrowRight />}
+              variant="transparent"
+              px={0}
+              fw={500}
+              tt="uppercase"
+              color="#E90808"
+              ff="heading"
+            >
+              Advance Search
+            </Button>
+          </Group>
+        </Tabs.Panel>
+      </Tabs>
+      <Modal
+        opened={opened}
+        onClose={close}
+        withCloseButton={false}
+        size="50%"
+        padding={0}
+      >
+        <Paper
+          clasName="saerch-modal-header"
+          p="xs"
+          shadow="0px 2px 5px 0px #00000014"
         >
-          ...
-        </div>
-        <div
-          className="tab-pane fade"
-          id="contact-tab-pane"
-          role="tabpanel"
-          aria-labelledby="contact-tab"
-          tabindex="0"
-        >
-          ...
-        </div> */}
-      </div>
-    </div>
+          <Center>
+            <Button color="#E90808" size="xs" mr="md">
+              Make
+            </Button>
+            <Button
+              variant="subtle"
+              bg="#F3F3F3"
+              color="#878787"
+              size="xs"
+              mr="md"
+              autoContrast
+            >
+              Model
+            </Button>
+            <Button
+              variant="subtle"
+              bg="#F3F3F3"
+              color="#878787"
+              size="xs"
+              mr="md"
+              autoContrast
+            >
+              Variants
+            </Button>
+          </Center>
+        </Paper>
+        <Grid gutter={0}>
+          <Grid.Col span={4} p="md" pt="xl" className="border-end">
+            <Input
+              placeholder="Search by Car Make"
+              leftSection={<BsSearch />}
+            />
+            <Title order={5} my="sm" fw={600}>
+              Popular
+            </Title>
+            <ScrollArea
+              h={250}
+              offsetScrollbars
+              scrollbarSize={5}
+              scrollHideDelay={500}
+              scrollbars="y"
+            >
+              <List className="search-dropdown-lists" listStyleType="none">
+                <List.Item
+                  className="search-dropdown-lists__item"
+                  icon={<Image src="/megamenu/search-menu/honda-sm.svg" />}
+                >
+                  Honda <BsArrowRight />
+                </List.Item>
+                <List.Item
+                  className="search-dropdown-lists__item"
+                  icon={<Image src="/megamenu/search-menu/kia-sm.svg" />}
+                >
+                  Kia <BsArrowRight />
+                </List.Item>
+                <List.Item
+                  className="search-dropdown-lists__item"
+                  icon={<Image src="/megamenu/search-menu/bmw-sm.svg" />}
+                >
+                  BMW <BsArrowRight />
+                </List.Item>
+                <List.Item
+                  className="search-dropdown-lists__item"
+                  icon={<Image src="/megamenu/search-menu/hyundai-sm.svg" />}
+                >
+                  Hyundai <BsArrowRight />
+                </List.Item>
+                <List.Item
+                  className="search-dropdown-lists__item"
+                  icon={<Image src="/megamenu/search-menu/acura-sm.svg" />}
+                >
+                  Acura <BsArrowRight />
+                </List.Item>
+                <List.Item
+                  className="search-dropdown-lists__item"
+                  icon={<Image src="/megamenu/search-menu/nissan-sm.svg" />}
+                >
+                  Toyota <BsArrowRight />
+                </List.Item>
+              </List>
+            </ScrollArea>
+          </Grid.Col>
+          <Grid.Col span={4} p="md" pt="xl" className="border-end">
+            <Input
+              placeholder="Search by Car Model"
+              leftSection={<BsSearch />}
+            />
+            <Title order={5} my="sm" fw={600}>
+              All Models
+            </Title>
+            <ScrollArea
+              h={250}
+              offsetScrollbars
+              scrollbarSize={5}
+              scrollHideDelay={500}
+              scrollbars="y"
+            >
+              <List className="search-dropdown-lists" listStyleType="none">
+                <List.Item className="search-dropdown-lists__item">
+                  Honda Civic <BsArrowRight />
+                </List.Item>
+                <List.Item className="search-dropdown-lists__item">
+                  Honda City <BsArrowRight />
+                </List.Item>
+                <List.Item className="search-dropdown-lists__item">
+                  Honda BR-V <BsArrowRight />
+                </List.Item>
+                <List.Item className="search-dropdown-lists__item">
+                  Honda HR-V <BsArrowRight />
+                </List.Item>
+                <List.Item className="search-dropdown-lists__item">
+                  Honda Accord <BsArrowRight />
+                </List.Item>
+                <List.Item className="search-dropdown-lists__item">
+                  Honda Accord <BsArrowRight />
+                </List.Item>
+              </List>
+            </ScrollArea>
+          </Grid.Col>
+          <Grid.Col span={4} p="md" pt="xl" className="border-end">
+            <Input
+              placeholder="Search by Car Variant"
+              leftSection={<BsSearch />}
+            />
+            <Title order={5} my="sm" fw={600}>
+              2022-2023
+            </Title>
+            <ScrollArea
+              offsetScrollbars
+              scrollbarSize={5}
+              scrollHideDelay={500}
+              scrollbars="y"
+            >
+              <List className="search-dropdown-lists" listStyleType="none">
+                <List.Item className="search-dropdown-lists__item">
+                  Standard <BsArrowRight />
+                </List.Item>
+                <List.Item className="search-dropdown-lists__item">
+                  RS <BsArrowRight />
+                </List.Item>
+                <List.Item className="search-dropdown-lists__item">
+                  Oriel <BsArrowRight />
+                </List.Item>
+              </List>
+            </ScrollArea>
+          </Grid.Col>
+        </Grid>
+      </Modal>
+    </>
   );
 };
 

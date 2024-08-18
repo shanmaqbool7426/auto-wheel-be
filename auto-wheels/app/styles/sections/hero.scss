@@ -11,33 +11,22 @@
         justify-content: space-evenly;
         align-items    : flex-start;
         flex-direction : column;
-
-        .car-lists-slider {
-            display        : flex;
-            justify-content: space-between;
-            align-items    : center;
-            gap            : 1rem;
-
-            margin-bottom: 0;
-            font-weight  : 500;
-
-            li {
-                padding-bottom: .8rem;
-                border-bottom : 2px solid #FFFFFFB2;
-                cursor        : pointer;
-                color         : #FFFFFFB2;
-
-                &.active {
-                    color              : $white;
-                    border-bottom-color: $white;
-                }
-            }
-        }
     }
 
-    button,
-    .btn {
-        letter-spacing: -0.125px;
+    .car-lists-slider {
+        gap: 15px;
+
+        li {
+            padding-bottom: .8rem;
+            border-bottom : 2px solid #FFFFFFB2;
+            cursor        : pointer;
+            color         : #FFFFFFB2;
+
+            &.active {
+                color              : $white;
+                border-bottom-color: $white;
+            }
+        }
     }
 
     .hero-title {
@@ -75,29 +64,40 @@
             font-weight   : 500;
         }
 
+        // .nav.nav-tabs {
+        //     border-bottom: none;
 
-        .nav.nav-tabs {
-            border-bottom: none;
+        //     .nav-link {
+        //         border       : 0;
+        //         border-radius: 0;
+        //         text-align   : center;
+        //         padding      : 0 0 1rem 0;
+        //         color        : $gray-600;
+        //         cursor       : pointer;
+        //         border-bottom: 2px solid $gray-200;
 
-            .nav-link {
-                border       : 0;
-                border-radius: 0;
-                text-align   : center;
-                padding      : 0 0 1rem 0;
-                color        : $gray-600;
-                cursor       : pointer;
-                border-bottom: 2px solid $gray-200;
+        //         svg {
+        //             width : 50px;
+        //             height: 50px;
+        //         }
 
-                svg {
-                    width : 50px;
-                    height: 50px;
-                }
+        //         &.active {
+        //             color              : $primary;
+        //             border-bottom-color: $primary;
+        //         }
+        //     }
+        // }
+    }
 
-                &.active {
-                    color              : $primary;
-                    border-bottom-color: $primary;
-                }
-            }
+    .mantine-Card-root {
+        .mantine-Tabs-tab {
+            flex-direction: column !important;
+            gap           : 10px;
+        }
+
+        .mantine-Tabs-tabSection {
+            margin: 0 !important;
         }
     }
+
 }
