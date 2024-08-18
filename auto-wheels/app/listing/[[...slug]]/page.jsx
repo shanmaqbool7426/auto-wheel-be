@@ -1,10 +1,10 @@
 
 import Listing from "@/components/listing/listing";
-export default function ProductListing({ params }) {
+export default function ProductListing({ params ,searchParams}) {
   
   return (
     <>
-    <Listing params={params}/>
+    <Listing params={params} searchParams={searchParams}/>
     </>
   );
 }

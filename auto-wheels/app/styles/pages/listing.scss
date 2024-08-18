@@ -269,6 +269,10 @@
         }
 
         .product-actions {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            flex-wrap: wrap;
             button {
                 border: 1px solid #CCCCCC;
                 text-transform: uppercase;

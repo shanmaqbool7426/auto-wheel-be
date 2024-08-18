@@ -3,7 +3,8 @@ import { API_ENDPOINTS } from '@/constants/api-endpoints';
 
 export const fetcHomeData = async () => {
   const results = await Promise.allSettled([
-    fetchAPI(API_ENDPOINTS.MAKES),
+    fetchAPI(`${API_ENDPOINTS.MAKES}?type=car`),
+
     fetchAPI(API_ENDPOINTS.BODIES),
     fetchAPI(API_ENDPOINTS.VEHICLES_TYPE()),
     fetchAPI(API_ENDPOINTS.COMPARISONS),

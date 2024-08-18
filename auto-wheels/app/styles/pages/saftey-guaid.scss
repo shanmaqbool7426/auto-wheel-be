@@ -1,0 +1,46 @@
+.safety-guide-container {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 20px;
+    background-color: #f8f9fa;
+  }
+  
+  .safety-guide-heading {
+    color: #E90808;
+    font-size: 24px;
+    margin-bottom: 20px;
+    text-align: left;
+  }
+  
+  .safety-guide-section {
+    margin-bottom: 20px;
+  }
+  
+  .section-heading {
+    color: #E90808;
+    font-size: 20px;
+    margin-bottom: 10px;
+  }
+  
+  .safety-guide-list {
+    list-style: none;
+    padding-left: 20px;
+  }
+  
+  .list-item {
+    font-size: 16px;
+    line-height: 1.6;
+    position: relative;
+    padding-left: 25px;
+    margin-bottom: 10px;
+  }
+  
+  .list-item:before {
+    content: '✔';
+    color: green;
+    font-size: 18px;
+    position: absolute;
+    left: 0;
+    top: 0;
+  }
+  

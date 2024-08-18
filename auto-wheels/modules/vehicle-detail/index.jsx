@@ -38,6 +38,7 @@ import Calculator from "./calculator"
 import SocialCards from "./socialCards"
 import MessageToDealer from "./messageToDealer"
 import SocialContact from "./socialContact"
+import ReportAdd from "./report-add"
 import SharedFeatures from "./sharedFeatures"
 import Gellary from "./imagesGellary"
 import { FaCheckCircle } from "react-icons/fa";
@@ -45,7 +46,6 @@ import {formatPrice} from "@/utils/index"
 import NextImage from "next/image";
 import { FaCalendarDays, FaClock, FaLocationDot } from "react-icons/fa6";
 import { API_ENDPOINTS } from "@/constants/api-endpoints";
-import { useDisclosure } from "@mantine/hooks";
 export default async function vehicleDetailModule() {
 
   // const [value, setValue] = useState(50);
@@ -334,7 +334,7 @@ export default async function vehicleDetailModule() {
                         <li>Beware of unrealistic offers</li>
                       </ol>
                       <Link
-                        href={"#"}
+                        href={"/safety-guide"}
                         className="text-decoration-none d-block float-end"
                       >
                         Learn More
@@ -342,16 +342,12 @@ export default async function vehicleDetailModule() {
                     </div>
                   </div>
                 </div>
-                <div className="col-12">
-                  <div className="card mb-3">
-                    <div className="card-body gap-2 align-items-center justify-content-center text-uppercase">
-                      <ReportFlag />
-                      <h5 className="mb-0 fw-semibold text-primary">
-                        Report this ad
-                      </h5>
-                    </div>
-                  </div>
-                </div>
+          
+
+
+<ReportAdd/>
+
+
               </div>
             </div>
           </div>
@@ -482,7 +478,7 @@ export default async function vehicleDetailModule() {
           </div>
         </div>
       </section>
-      <OfferPriceModal  />
+      {/* <OfferPriceModal opened={opened} open={open} close={close} /> */}
     </>
   );
 }

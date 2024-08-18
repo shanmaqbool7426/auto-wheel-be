@@ -1,9 +1,9 @@
 
-const BASE_URL = 'https://auto-wheel-be.vercel.app'
-// const BASE_URL = 'http://localhost:5000'
+// const BASE_URL = 'https://auto-wheel-be.vercel.app'
+const BASE_URL = 'http://localhost:5000'
 
 export const API_ENDPOINTS = {
-    MAKES: `${BASE_URL}/api/browes-by-make?type=car`,
+    MAKES: `${BASE_URL}/api/browes-by-make`,
     BODIES: `${BASE_URL}/api/browes-by-body`,
     VEHICLES_TYPE: (type) => {
       let url = `${BASE_URL}/api/vehicle/vehicles-by-type`;
@@ -12,7 +12,7 @@ export const API_ENDPOINTS = {
       }
       return url;
     },
-    VEHICLES_Listing:`${BASE_URL}/api/vehicle`,
+    VEHICLES_Listing:`${BASE_URL}/api/vehicle/vehicles-listing`,
     VEHICLE_DETAIL:`${BASE_URL}/api/vehicle`,
     COMPARISONS: 'https://fakestoreapi.com/products',
     INSTANT_USED_CARS: 'https://fakestoreapi.com/products',

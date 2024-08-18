@@ -13,11 +13,12 @@ import {
   Text,
   Title,
 } from "@mantine/core";
+
 import { useDisclosure } from "@mantine/hooks";
 import React from "react";
 
-const ViewLoanBreakup = () => {
-  const [opened, { open, close }] = useDisclosure(false);
+const ViewLoanBreakup = ({opened, close}) => {
+  // const [opened, { open, close }] = useDisclosure(false);
 
   return (
     <>
