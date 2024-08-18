@@ -25,6 +25,17 @@ export const fetchMakesByType=async(type)=>{
     };
   }
 }
+export const fetchBodiesByType=async(type)=>{
+  try {
+    const makes= await fetchAPI(`${API_ENDPOINTS.BODIES}/${type}`)
+    return makes
+  } catch (error) {
+    console.error('Error fetching dashboard data:', error);
+    return {
+    makes:[]
+    };
+  }
+}
 
 export const fetchVehiclDetail = async (url) => {
   try {
