@@ -1,6 +1,17 @@
 import React, { useState } from "react";
-import { Modal, Text, Title } from "@mantine/core";
-import Image from "next/image";
+import {
+  Box,
+  Flex,
+  Grid,
+  Image,
+  Modal,
+  Paper,
+  rem,
+  Text,
+  ThemeIcon,
+  Title,
+} from "@mantine/core";
+import NextImage from "next/image";
 import personal from "../../public/auth/personal.svg";
 import dealer_icon from "../../public/auth/dealer_icon.svg";
 import SocialsLogin from "./SocialsLogins";
@@ -19,60 +30,72 @@ const AccountTypeModal = ({ opened, onClose }) => {
       <Modal
         opened={opened}
         onClose={onClose}
-        withCloseButton={true}
-        title={
-          <Title order={5} fw={600}>
-            Choose Account Type
-          </Title>
-        }
+        withCloseButton={false}
         centered
-        size="md"
+        size="35%"
+        padding="xl"
       >
-        <div className="account-type-container">
-          <div
-            className={`account-type-box ${
-              activeType === "personal" ? "active" : ""
-            }`}
-            onClick={() => handleAccountTypeClick("personal")}
-          >
-            <Image
-              src={personal}
-              width={30}
-              height={30}
-              alt="Personal Account"
-              className="account-type-icon"
-            />
-            <Text fw={700} size="sm">
-              Personal Account
-            </Text>
-            <Text size="sm">
-              If you work individual or Want to Browse Listings
-            </Text>
-          </div>
+        <Title order={3} fw={600} tt="uppercase" ta="center" pb="lg">
+          Choose Account Type
+        </Title>
+        <Grid>
+          <Grid.Col span={6}>
+            <Paper
+              p="lg"
+              radius="md"
+              // className={`account-type-box ${
+              //   activeType === "personal" ? "active" : ""
+              // }`}
+              className="account-type-box"
+              onClick={() => handleAccountTypeClick("personal")}
+            >
+              <Flex align="flex-start" gap="md">
+                <NextImage
+                  src={personal}
+                  alt="Personal Account"
+                  width={30}
+                  height={30}
+                />
 
-          <div
-            className={`account-type-box ${
-              activeType === "dealer" ? "active" : ""
-            }`}
-            onClick={() => handleAccountTypeClick("dealer")}
-          >
-            <Image
-              src={dealer_icon}
-              width={30}
-              height={30}
-              alt="Dealer Account"
-              className="account-type-icon"
-            />
-            <div>
-              <Text fw={700} size="sm">
-                Dealer Account
-              </Text>
-              <Text size="sm">
-                For Official or Private Dealers who have bulk Listings
-              </Text>
-            </div>
-          </div>
-        </div>
+                <Box>
+                  <Title fw={600} order={5}>
+                    Personal Account
+                  </Title>
+                  <Text size="sm" mt="3">
+                    If you work individual or Want to Browse Listings
+                  </Text>
+                </Box>
+              </Flex>
+            </Paper>
+          </Grid.Col>
+
+          <Grid.Col span={6}>
+            <Paper
+              onClick={() => handleAccountTypeClick("dealer")}
+              className="account-type-box"
+              p="lg"
+              radius="md"
+            >
+              <Flex align="flex-start" gap="md">
+                <NextImage
+                  src={dealer_icon}
+                  alt="Personal Account"
+                  width={30}
+                  height={30}
+                />
+
+                <Box>
+                  <Title fw={600} order={5}>
+                    Dealer Account
+                  </Title>
+                  <Text size="sm" mt="3">
+                    For Official or Private Dealers who have bulk Listings
+                  </Text>
+                </Box>
+              </Flex>
+            </Paper>
+          </Grid.Col>
+        </Grid>
       </Modal>
 
       <SocialsLogin

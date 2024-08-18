@@ -158,28 +158,36 @@ const Header = () => {
   // Show a loading spinner while session is being fetched
   if (status === "loading") {
     return (
-      <header className="site-header bg-white py-3 theme-header">
-        <nav className="container">
-          <div className="row align-items-center">
-            <div className="col-lg-2">
-              <Link href="/" className="p-1">
-                <Image
-                  width={163}
-                  height={27}
-                  src="/logo.png"
-                  quality={100}
-                  alt="Logo"
-                />
-              </Link>
-            </div>
-            <div className="col-lg-10">
-              <div className="text-end">
-                <Loader size="sm" />
-              </div>
-            </div>
-          </div>
-        </nav>
-      </header>
+      <Box component="header" className="header">
+        <Box className="container h-100">
+          <Group justify="space-between" h="100%" wrap="nowrap">
+            <Image src="/logo.png" alt="Logo" />
+            <Loader size="sm" />
+          </Group>
+        </Box>
+      </Box>
+      //     <header className="site-header bg-white py-3 theme-header">
+      //   <nav className="container">
+      //     <div className="row align-items-center">
+      //       <div className="col-lg-2">
+      //         <Link href="/" className="p-1">
+      //           <Image
+      //             width={163}
+      //             height={27}
+      //             src="/logo.png"
+      //             quality={100}
+      //             alt="Logo"
+      //           />
+      //         </Link>
+      //       </div>
+      //       <div className="col-lg-10">
+      //         <div className="text-end">
+      //           <Loader size="sm" />
+      //         </div>
+      //       </div>
+      //     </div>
+      //   </nav>
+      // </header>
     );
   }
 
@@ -376,6 +384,7 @@ const Header = () => {
                 color="#E90808"
                 autoContrast
                 ff="heading"
+                onClick={() => setModalOpened(true)}
               >
                 Login
               </Button>

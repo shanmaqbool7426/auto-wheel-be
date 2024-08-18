@@ -65,7 +65,7 @@ const Hero = () => {
                     color="#E90808"
                     variant="filled"
                     fw={500}
-                    size="md"
+                    size="lg"
                     tt="uppercase"
                     ff="heading"
                   >

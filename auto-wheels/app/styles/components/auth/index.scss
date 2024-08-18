@@ -6,37 +6,40 @@
 //   margin-bottom  : 41px !important;
 // }
 
-.signup-modal {
-  width  : 450px;
-  padding: 0px 65px;
-}
-
-// .account-type-box {
-//   display      : flex;
-//   align-items  : center;
-//   padding      : 10px;
-//   height       : 103px;
-//   width        : 213px;
-//   border       : 1px solid silver;
-//   margin-bottom: 30px;
-//   border-radius: 8px;
-//   cursor       : pointer;
-//   transition   : border-color 0.3s ease, background-color 0.3s ease;
-
-//   &.active {
-//     border    : 2px dotted #ff8f8f;
-//     background: #ff000014;
-
-//     .account-type-icon {
-//       filter: invert(33%) sepia(99%) saturate(7470%) hue-rotate(354deg) brightness(92%) contrast(110%);
-//     }
-//   }
+// .signup-modal {
+//   width  : 450px;
+//   padding: 0px 65px;
 // }
 
+.account-type-box {
+  cursor    : pointer;
+  border    : 2px dashed #ff8f8f !important;
+  transition: border-color 0.3s ease, background-color 0.3s ease, -webkit-filter 0.3s ease;
+  transition: filter 0.3s ease, border-color 0.3s ease, background-color 0.3s ease;
+  transition: filter 0.3s ease, border-color 0.3s ease, background-color 0.3s ease, -webkit-filter 0.3s ease;
+
+  img {
+    -webkit-filter: invert(76%) sepia(2%) saturate(0%) hue-rotate(182deg) brightness(75%) contrast(84%);
+    filter        : invert(76%) sepia(2%) saturate(0%) hue-rotate(182deg) brightness(75%) contrast(84%);
+  }
+
+  &.active,
+  &:hover {
+    background-color: #ff00000d !important;
+
+    img {
+      -webkit-filter: invert(50%) sepia(100%) saturate(7470%) hue-rotate(354deg) brightness(80%) contrast(100%);
+      filter        : invert(50%) sepia(100%) saturate(7470%) hue-rotate(354deg) brightness(80%) contrast(100%);
+    }
+  }
+}
+
 .account-type-icon {
-  margin-right: 15px;
-  transition  : filter 0.3s ease;
-  filter      : invert(76%) sepia(2%) saturate(0%) hue-rotate(182deg) brightness(75%) contrast(84%);
+  transition    : -webkit-filter 0.3s ease;
+  transition    : filter 0.3s ease;
+  transition    : filter 0.3s ease, -webkit-filter 0.3s ease;
+  -webkit-filter: invert(76%) sepia(2%) saturate(0%) hue-rotate(182deg) brightness(75%) contrast(84%);
+  filter        : invert(76%) sepia(2%) saturate(0%) hue-rotate(182deg) brightness(75%) contrast(84%);
 }
 
 
