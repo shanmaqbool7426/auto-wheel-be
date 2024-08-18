@@ -1,13 +1,15 @@
 'use client'
 import { useState, useEffect } from 'react';
 import { Group, Title, Badge, Slider, Text, Button, Image } from '@mantine/core';
-
-function EMICalculator({ data }) {
+import OfferPriceModal from '@/components/ui/OfferPrice';
+import ViewLoanBreakup from '@/components/ui/ViewLoanBreakup';
+function EMICalculator({ data }) {  
   const [loanAmount, setLoanAmount] = useState(0); // Initial value for loan amount
   const [interestRate, setInterestRate] = useState(14); // Default interest rate set to 14%
   const [duration, setDuration] = useState(4); // Default duration in years
   const [emi, setEmi] = useState(0);
-
+  // const [opened, { open, close }] = useDisclosure(false);
+const [showModel, setshowModel] = useState(false)
   // Utility function to format price
   const formatPrice = (price) => price.toLocaleString('en-IN');
 
@@ -27,6 +29,7 @@ function EMICalculator({ data }) {
   }, [loanAmount, interestRate, duration]);
 
   return (
+    <>
     <div className="calc-container mt-4">
       <div className="card border-0">
         <div className="row">
@@ -118,8 +121,9 @@ function EMICalculator({ data }) {
                         Rs {formatPrice(emi.toFixed(2))}
                       </Title>
                     </div>
-                    <div className="right">
+                    <div className="right" >
                       <Button
+                      onClick={()=>setshowModel(true)}
                         variant="transparent"
                         color="#E90808"
                         size="md"
@@ -155,6 +159,9 @@ function EMICalculator({ data }) {
         </div>
       </div>
     </div>
+    {/* <OfferPriceModal opened={showModel} close={()=>setshowModel(false)} /> */}
+  <ViewLoanBreakup opened={showModel} close={()=>setshowModel(false)} />
+    </>
   );
 }
 

@@ -41,6 +41,7 @@ body {
 @import "./pages/comparison-detail";
 @import "./pages/post-an-ad";
 @import "./pages/new-car-detail";
+@import "./pages/saftey-guaid";
 
 // Import Theme Component Styles
 @import "./theme/compnents/tabs";
@@ -113,50 +114,3 @@ footer ul>li a {
 
 
 
-
-
-
-
-
-// .safety-guide-container {
-//   margin-top: 300px;
-//   max-width: 800px;
-//   margin: 0 auto;
-//   padding: 20px;
-//   background-color: #f8f9fa;
-// }
-
-// h2 {
-//   color: #1a2a44;
-//   font-size: 24px;
-//   margin-bottom: 20px;
-//   text-align: left;
-// }
-
-// h3 {
-//   color: #1a2a44;
-//   font-size: 20px;
-//   margin-bottom: 10px;
-// }
-
-// ul {
-//   list-style: none;
-//   padding-left: 20px;
-// }
-
-// ul li {
-//   font-size: 16px;
-//   line-height: 1.6;
-//   position: relative;
-//   padding-left: 25px;
-//   margin-bottom: 10px;
-// }
-
-// ul li:before {
-//   content: '✔';
-//   color: green;
-//   font-size: 18px;
-//   position: absolute;
-//   left: 0;
-//   top: 0;
-// }
