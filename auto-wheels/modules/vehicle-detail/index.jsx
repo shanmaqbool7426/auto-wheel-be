@@ -33,20 +33,20 @@ import OfferPriceModal from "@/components/ui/OfferPrice";
 import { BsStarFill, BsStar } from "react-icons/bs";
 import { Card, Image, Title } from "@mantine/core";
 import Link from "next/link";
-import { fetchVehiclDetail } from "@/services/vehicles";
-import Calculator from "./calculator";
-import SocialCards from "./socialCards";
-import MessageToDealer from "./messageToDealer";
-import SocialContact from "./socialContact";
-import Gellary from "./imagesGellary";
+import { fetchVehiclDetail } from '@/services/vehicles'
+import Calculator from "./calculator"
+import SocialCards from "./socialCards"
+import MessageToDealer from "./messageToDealer"
+import SocialContact from "./socialContact"
+import ReportAdd from "./report-add"
+import SharedFeatures from "./sharedFeatures"
+import Gellary from "./imagesGellary"
 import { FaCheckCircle } from "react-icons/fa";
-// import { useState } from "react";
+import {formatPrice} from "@/utils/index" 
 import NextImage from "next/image";
 import { FaCalendarDays, FaClock, FaLocationDot } from "react-icons/fa6";
 import { API_ENDPOINTS } from "@/constants/api-endpoints";
-import { useDisclosure } from "@mantine/hooks";
 export default async function vehicleDetailModule() {
-  const [opened, { open, close }] = useDisclosure(false);
 
   // const [value, setValue] = useState(50);
   // const [endValue, setEndValue] = useState(50);
@@ -254,7 +254,7 @@ export default async function vehicleDetailModule() {
                   Sellers Notes
                 </h4>
                 <p>{detail?.data?.sellerNotes}</p>
-                <Calculator />
+                <Calculator detail={detail?.data}/>
               </section>
               {/* Seller Section */}
             </div>
@@ -334,7 +334,7 @@ export default async function vehicleDetailModule() {
                         <li>Beware of unrealistic offers</li>
                       </ol>
                       <Link
-                        href={"#"}
+                        href={"/safety-guide"}
                         className="text-decoration-none d-block float-end"
                       >
                         Learn More
@@ -342,16 +342,12 @@ export default async function vehicleDetailModule() {
                     </div>
                   </div>
                 </div>
-                <div className="col-12">
-                  <div className="card mb-3">
-                    <div className="card-body gap-2 align-items-center justify-content-center text-uppercase">
-                      <ReportFlag />
-                      <h5 className="mb-0 fw-semibold text-primary">
-                        Report this ad
-                      </h5>
-                    </div>
-                  </div>
-                </div>
+          
+
+
+<ReportAdd/>
+
+
               </div>
             </div>
           </div>
@@ -482,7 +478,7 @@ export default async function vehicleDetailModule() {
           </div>
         </div>
       </section>
-      <OfferPriceModal opened={opened} open={open} close={close} />
+      {/* <OfferPriceModal opened={opened} open={open} close={close} /> */}
     </>
   );
 }

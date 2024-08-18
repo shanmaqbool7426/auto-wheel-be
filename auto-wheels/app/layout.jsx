@@ -1,11 +1,8 @@
 "use client";
 import { Inter, Poppins, Roboto } from "next/font/google";
 import "./styles/globals.scss";
-import NextTopLoader from 'nextjs-toploader';
-import {
-  ColorSchemeScript,
-  MantineProvider,
-} from "@mantine/core";
+import NextTopLoader from "nextjs-toploader";
+import { ColorSchemeScript, MantineProvider } from "@mantine/core";
 import { SessionProvider } from "next-auth/react";
 
 import "@mantine/core/styles.css";
@@ -50,7 +47,7 @@ export default function RootLayout({ children }) {
         />
       </head>
       <body>
-        <NextTopLoader 
+        <NextTopLoader
           color="#E90808"
           initialPosition={0.08}
           crawlSpeed={200}

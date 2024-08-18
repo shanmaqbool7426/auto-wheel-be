@@ -1,6 +1,6 @@
-$primary       :#E90808;
-$enable-shadows:true;
-$text-muted    :#878787;
+$primary :#E90808;
+$enable-shadows: true;
+$text-muted :#878787;
 
 :root {
   --mantine-color-dimmed: $text-muted;
@@ -9,8 +9,8 @@ $text-muted    :#878787;
 
 html,
 body {
-  overflow         : auto !important;
-  max-height       : 100% !important;
+  overflow: auto !important;
+  max-height: 100% !important;
   // letter-spacing: -0.5px;
   // font-size     : 90%;
 }
@@ -41,12 +41,14 @@ body {
 @import "./pages/comparison-detail";
 @import "./pages/post-an-ad";
 @import "./pages/new-car-detail";
+@import "./pages/saftey-guaid";
 
 // Import Theme Component Styles
 @import "./theme/compnents/tabs";
 @import "./theme/compnents/pagination";
 @import "./components/product-card";
 @import "./components/modal";
+@import "./theme-header.scss";
 
 .theme-header {
   border-bottom: 2px solid #f8f9fa;
@@ -72,21 +74,21 @@ footer ul>li a {
 .root {
   &[data-variant='danger'] {
     background-color: var(--mantine-color-red-9);
-    color           : var(--mantine-color-red-0);
+    color: var(--mantine-color-red-0);
   }
 
   &[data-variant='primary'] {
-    background  : linear-gradient(45deg, #4b6cb7 10%, #253b67 90%);
-    color       : var(--mantine-color-white);
+    background: linear-gradient(45deg, #4b6cb7 10%, #253b67 90%);
+    color: var(--mantine-color-white);
     border-width: 0;
   }
 }
 
 .socials-btns-inner {
-  display        : flex;
+  display: flex;
   justify-content: space-around;
-  width          : 222px !important;
-  align-items    : center;
+  width: 222px !important;
+  align-items: center;
 }
 
 .primary {
@@ -96,7 +98,20 @@ footer ul>li a {
 .cursor {
   cursor: pointer;
 }
-.mantine-Accordion-label{
+
+.mantine-Accordion-label {
   padding-top: 0.4rem !important;
   padding-bottom: 0.4rem !important;
 }
+
+.image-gallery-left-nav .image-gallery-svg,
+.image-gallery-right-nav .image-gallery-svg {
+  height: 30px !important;
+  width: 30px !important;
+  background: red;
+  border-radius: 50% !important;
+}
+
+
+
+

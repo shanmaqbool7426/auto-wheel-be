@@ -3,8 +3,8 @@ import { API_ENDPOINTS } from '@/constants/api-endpoints';
 
 export const fetchVehiclsData = async (params) => {
   try {
-    console.log('>>>>>>>>>>>>>>>>>>>>>complete url',`http://localhost:5000/api/vehicle/${params}`)
-     const vehicls= await fetchAPI(`http://localhost:5000/api/vehicle/vehicles-listing/${params}`)
+    console.log('>>>>>>>>>>>>>>>>>>>>>complete url',`http://localhost:5000/api/vehicles-listing${params}`)
+     const vehicls= await fetchAPI(`http://localhost:5000/api/vehicle/vehicles-listing${params}`)
   
      return vehicls
   } catch (error) {
