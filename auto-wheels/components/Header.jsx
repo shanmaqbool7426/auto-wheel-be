@@ -25,6 +25,7 @@ import {
   Title,
   Image,
   NavLink,
+  Menu,
 } from "@mantine/core";
 import { useState } from "react";
 import { useSession } from "next-auth/react";
@@ -247,14 +248,8 @@ const Header = () => {
       </header> */}
       <Box component="header" className="header">
         <Box className="container h-100">
-          <Group justify="space-between" h="100%">
-            <Image
-              width={163}
-              height={27}
-              src="/logo.png"
-              quality={100}
-              alt="Logo"
-            />
+          <Group justify="space-between" h="100%" wrap="nowrap">
+            <Image src="/logo.png" alt="Logo" />
             <Group h="100%" gap={0} visibleFrom="sm">
               <HoverCard
                 withArrow
@@ -384,9 +379,23 @@ const Header = () => {
               >
                 Login
               </Button>
-              <Button color="#E90808" autoContrast ff="heading" tt="uppercase">
-                Post an Ad
-              </Button>
+              <Menu shadow="0px 4px 20px 0px #00000014" radius="sm">
+                <Menu.Target>
+                  <Button
+                    color="#E90808"
+                    autoContrast
+                    ff="heading"
+                    tt="uppercase"
+                  >
+                    Post an Ad
+                  </Button>
+                </Menu.Target>
+                <Menu.Dropdown>
+                  <Menu.Item>Sell Your Car</Menu.Item>
+                  <Menu.Item>Sell Your Bike</Menu.Item>
+                  <Menu.Item>Sell Your Truck</Menu.Item>
+                </Menu.Dropdown>
+              </Menu>
             </Group>
             <Burger
               opened={drawerOpened}
