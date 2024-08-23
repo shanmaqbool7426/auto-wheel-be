@@ -9,6 +9,10 @@ import authRoutes from './User/route.js'
 import browesByMakeRoutes from './BrowesByMake/route.js'
 import browesByBodyRoutes from './BrowseByBody/route.js'
 import vehicleRoutes from './Vehicle/route.js'
+import categoryRoutes from './Category/route.js'
+import commentRoutes from './Comment/route.js'
+import tagRoutes from './Tag/route.js'
+import blogRoutes from './Blog/route.js'
 import {errorHandler} from "./Middleware/errorHandler.js"
 import { uploadOnCloudinary } from "./Utils/cloudinary.js";
 import morgan from "morgan"
@@ -45,6 +49,11 @@ app.use('/api/user', authRoutes);
 app.use('/api/browes-by-make', browesByMakeRoutes);
 app.use('/api/browes-by-body', browesByBodyRoutes);
 app.use('/api/vehicle', vehicleRoutes);
+app.use('/api/category', categoryRoutes);
+app.use('/api/comment', commentRoutes);
+app.use('/api/tag', tagRoutes);
+app.use('/api/blog', blogRoutes);
+
 const imageUploader=async(req,res)=>{
   console.log('Uploading image',req.file)
   const url = await uploadOnCloudinary(req.file?.path)
