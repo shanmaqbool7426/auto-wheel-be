@@ -196,6 +196,7 @@ const ListingFilter = ({ type, makes ,bodies,vehicles}) => {
     console.log(entry)
     return entry ? entry.count : null;
 }
+  const decodedFilterMake = filters.make.map((make) => decodeURIComponent(make).toLowerCase());
   const decodedFilterModel = filters.model.map((model) => decodeURIComponent(model).toLowerCase());
   const decodedFilterBodies = filters.bodyType.map((body) => decodeURIComponent(body).toLowerCase());
   return (
@@ -287,7 +288,7 @@ const ListingFilter = ({ type, makes ,bodies,vehicles}) => {
                         className="form-check-input"
                         type="checkbox"
                         id={make.name}
-                        checked={filters.make.includes(make?.name?.toLowerCase())}
+                        checked={decodedFilterMake.includes(make?.name?.toLowerCase())}
                         onChange={(e) => handleFilterChange("make", make?.name?.toLowerCase(), e.target.checked)}
                       />
                       <label className="form-check-label" htmlFor={make.name}>
