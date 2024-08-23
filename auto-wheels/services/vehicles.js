@@ -37,6 +37,18 @@ export const fetchBodiesByType=async(type)=>{
   }
 }
 
+export const fetchVehiclesByType=async(type)=>{
+  try {
+    const vehicles= await fetchAPI(`${API_ENDPOINTS.VEHICLES_TYPE(type?type:'')}`)
+    return vehicles
+  } catch (error) {
+    console.error('Error fetching dashboard data:', error);
+    return {
+    vehicles:[]
+    };
+  }
+}
+
 export const fetchVehiclDetail = async (url) => {
   try {
     console.log('vehicl>>>',url)

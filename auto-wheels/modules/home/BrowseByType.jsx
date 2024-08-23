@@ -52,7 +52,7 @@ const BrowseByType = ({ bg, pagination, vehicles: initialVehicles }) => {
             <Box className="tab-content mt-4" id="pills-tabContent">
               <Box className="tab-pane fade show active" id="pills-home">
                 <Box className="row">
-                  {vehicles?.data?.results.map((vehicle, index) => (
+                  {vehicles?.data?.results?.map((vehicle, index) => (
                     <Box className="col-lg-4" key={index}>
                       <CarCard index={index} vehicle={vehicle} />
                     </Box>

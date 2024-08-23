@@ -373,9 +373,11 @@ const Header = () => {
                   </SimpleGrid>
                 </HoverCard.Dropdown>
               </HoverCard>
-              <Anchor component={Link} href="#" className="link">
+              <Link href="/blog" className="link">
                 <Center inline>Blog</Center>
-              </Anchor>
+              </Link>
+              {/* <Anchor component={Link} href="#" className="link">
+              </Anchor> */}
             </Group>
             <Group visibleFrom="sm">
               <Button
