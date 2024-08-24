@@ -1,6 +1,7 @@
 import mongoose from 'mongoose';
 import bcrypt from 'bcryptjs';
 
+
 const userSchema = mongoose.Schema(
   {
     fullName: { type: String, required: true },
@@ -14,7 +15,8 @@ const userSchema = mongoose.Schema(
     verificationCodeExpire: { type: String },
     resetPasswordToken: {type:  String},
     resetPasswordExpires: {type: Date},
-  },
+    reports:[{vehicle: { type: mongoose.Schema.Types.ObjectId, ref:"Vehicle"} , reason:{type: String}}] 
+    },
   { timestamps: true }
 );
 
