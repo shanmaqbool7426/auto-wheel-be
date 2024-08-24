@@ -53,6 +53,7 @@ const login = asyncHandler(async (req, res) => {
   }
 });
 
+
 const verifyUser = asyncHandler(async (req, res) => {
   const { userId, code } = req.body;
 
@@ -129,9 +130,37 @@ const resetPassword = asyncHandler(async (req, res) => {
     responses.ok(res,'Password has been reset');
 });
 
+
+const addReport = asyncHandler(async (req, res) => {
+  // const { error } = addReportValidation(req.body);
+  // if (error) return responses.badRequest(res, error.details[0].message);
+
+  const { vehicleId, reason } = req.body;
+
+  const user = await User.findById(req.user._id);
+  if (!user) return responses.notFound(res, 'User not found');
+
+  await user.reports.push(vehicleId, reason);
+  user.save()
+  return responses.ok(res, 'Report added successfully');
+});
+
+
+const getReports = asyncHandler(async (req, res) => {
+  const user = await User.findById(req.user._id);
+  if (!user) return responses.notFound(res, 'User not found');
+
+  const reports = await user.getReports();
+
+  return responses.ok(res, 'Reports retrieved successfully', reports);
+});
+
+
 export {
   registerUser,
   login,
+  addReport,
+  getReports,
   verifyUser,
   requestPasswordReset,
   resetPassword,

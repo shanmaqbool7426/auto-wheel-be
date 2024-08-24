@@ -9,7 +9,9 @@ import {
   // forgotPassword,
   resetPassword,
   requestPasswordReset,
-  verifyUser
+  verifyUser,
+  addReport,
+  getReports
 } from './controller.js';
 
 const upload = multer({ storage: multer.memoryStorage() });
@@ -24,6 +26,8 @@ router.post('/password-reset-request', requestPasswordReset);
 // router.put('/profile', updateProfile); // Assuming authentication middleware is applied
 // router.post('/forgot-password', forgotPassword);
 router.post('/reset-password', resetPassword);
+router.post('/report', addReport);
+router.get('/reports', getReports);
 
 export default router;
 
