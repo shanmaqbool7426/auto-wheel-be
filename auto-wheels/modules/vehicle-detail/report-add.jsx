@@ -26,14 +26,14 @@ const ReportModal = ({ opened, onClose }) => {
         orientation="vertical"
         mt="md"
       >
-        <Radio value="duplicate" label="Duplicate: There's already a listing posted just like this one." />
-        <Radio value="spam" label="Spam: It's a Junk Ad." />
-        <Radio value="wrongContactInfo" label="Wrong Contact Info: Contact info is incorrect." />
+        <Radio value="duplicate" label="Duplicate: There's already a listing posted just like this one." className='my-1'/>
+        <Radio value="spam" label="Spam: It's a Junk Ad." className='my-1'/>
+        <Radio value="wrongContactInfo" label="Wrong Contact Info: Contact info is incorrect." className='my-1'/>
         <Radio value="soldAlready" label="Sold Already: The seller has already sold this item." />
-        <Radio value="fakeAds" label="Fake Ads: Fake phone number, item doesn't exist, false details etc." />
+        <Radio value="fakeAds" label="Fake Ads: Fake phone number, item doesn't exist, false details etc." className='my-1'/>
         <Radio value="wrongCategory" label="Wrong Category: It doesn't belong in this category." />
-        <Radio value="prohibitedContent" label="Prohibited/Explicit Content: It's got abusive language, explicit/adult content etc." />
-        <Radio value="other" label="Other:" />
+        <Radio value="prohibitedContent" label="Prohibited/Explicit Content: It's got abusive language, explicit/adult content etc." className='my-1'/>
+        <Radio value="other" label="Other:" className='my-1'/>
       </Radio.Group>
 
       {value === 'other' && (

@@ -7,7 +7,7 @@ import {
     DollarIcon,
 } from "@/components/Icons";
 
-const SocialCards = ({ detail }) => {
+const SocialCards = ({ detail,scrollToMessage }) => {
     const [showPhone, setShowPhone] = useState(false);
 
     const socialsCards = [
@@ -27,6 +27,7 @@ const SocialCards = ({ detail }) => {
             icon: <MessageIcon />,
             title: "Message To Dealer",
             uppercase: true,
+            onClick:scrollToMessage
         },
         {
             icon: <DollarIcon />,

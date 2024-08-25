@@ -14,6 +14,7 @@ export const API_ENDPOINTS = {
     },
     VEHICLES_Listing:`${BASE_URL}/api/vehicle/vehicles-listing`,
     VEHICLE_DETAIL:`${BASE_URL}/api/vehicle`,
+    SIMILAR_VEHICLES:`${BASE_URL}/api/vehicle/getSimilarVehicles`,
     COMPARISONS: 'https://fakestoreapi.com/products',
     INSTANT_USED_CARS: 'https://fakestoreapi.com/products',
     VIDEOS: 'https://fakestoreapi.com/products',

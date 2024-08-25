@@ -1,3 +1,5 @@
+'use client'
+import React,{useRef} from "react";
 import {
   CalendarIcon,
   CarKey,
@@ -42,25 +44,21 @@ import ReportAdd from "./report-add"
 import SharedFeatures from "./sharedFeatures"
 import Gellary from "./imagesGellary"
 import { FaCheckCircle } from "react-icons/fa";
-import {formatPrice} from "@/utils/index" 
+import {formatPrice, getTimeAgo} from "@/utils/index" 
 import NextImage from "next/image";
 import { FaCalendarDays, FaClock, FaLocationDot } from "react-icons/fa6";
-import { API_ENDPOINTS } from "@/constants/api-endpoints";
-export default async function vehicleDetailModule() {
-
+import { API_ENDPOINTS } from "../../constants/api-endpoints";
+export default  function vehicleDetailModule({detail, listOfSimilarVehicles}) {
+  const messageRef = useRef(null);
+  const scrollToMessage = () => {
+    console.log('scrollToMessage')
+    messageRef.current.scrollIntoView({ behavior: 'smooth'  });
+  };
   // const [value, setValue] = useState(50);
   // const [endValue, setEndValue] = useState(50);
-  const detail = await fetchVehiclDetail(
-    `${API_ENDPOINTS.VEHICLE_DETAIL}/66bb97d4933cfe6cdd01eca1`
-  );
-  console.log("Detail??????", detail);
-
+console.log('>>>>>>>>>//',listOfSimilarVehicles)
   const carSummaryItems = [
-    {
-      icon: "#",
-      label: "Stock id",
-      value: detail?.data?.specifications?.stockId,
-    },
+   
     {
       icon: <FuelTank />,
       label: "Engine",
@@ -137,6 +135,8 @@ export default async function vehicleDetailModule() {
     },
   ];
 
+
+  console.log('>>>>.', listOfSimilarVehicles)
   return (
     <>
       <section className="product-detail py-5">
@@ -170,12 +170,11 @@ export default async function vehicleDetailModule() {
                     </div>
                     <div className="main-title fs-1 fw-bold">{`${detail?.data?.year}  ${detail?.data?.make} ${detail?.data?.model}`}</div>
                   </div>
-                  <div className="price-field">Rs {detail?.data?.price}</div>
+                  <div className="price-field">Rs {formatPrice( detail?.data?.price)}</div>
                 </div>
-
                 <div className="features-section">
                   <div className="text-dark d-flex gap-2 my-2">
-                    <ClockIcon /> (Updated 1 month ago)
+                    <ClockIcon /> {getTimeAgo(detail?.data?.updatedAt)}
                   </div>
                   <div className="featured my-3">
                     <ul className="list-unstyled list-inline m-0">
@@ -254,7 +253,7 @@ export default async function vehicleDetailModule() {
                   Sellers Notes
                 </h4>
                 <p>{detail?.data?.sellerNotes}</p>
-                <Calculator detail={detail?.data}/>
+                <Calculator data={detail?.data}/>
               </section>
               {/* Seller Section */}
             </div>
@@ -301,7 +300,7 @@ export default async function vehicleDetailModule() {
                   </div>
                 </div>
 
-                <SocialCards detail={detail} />
+                <SocialCards detail={detail} scrollToMessage={scrollToMessage}/>
                 <div className="col-12">
                   <div className="card address-card mb-3">
                     <div className="card-body gap-2 align-items-center text-primary">
@@ -343,11 +342,7 @@ export default async function vehicleDetailModule() {
                   </div>
                 </div>
           
-
-
-<ReportAdd/>
-
-
+      <ReportAdd/>
               </div>
             </div>
           </div>
@@ -374,7 +369,7 @@ export default async function vehicleDetailModule() {
                           />
                         </Card>
                       </div>
-                      <div className="col">
+                      <div className="col"  ref={messageRef}>
                         <div className="rating">
                           <div className="fs-5 text-warning d-flex align-items-center justify-content-center">
                             <span>
@@ -392,7 +387,7 @@ export default async function vehicleDetailModule() {
                             <span>
                               <BsStar />
                             </span>
-                            <span className="text-dark ms-2 fs-6">(3/5)</span>
+                            <span className="text-dark ms-2 fs-6" >(3/5)</span>
                           </div>
                           <span className="d-block text-muted mt-2">
                             (Review 15)
@@ -406,8 +401,8 @@ export default async function vehicleDetailModule() {
                 </div>
               </div>
             </div>
-            <div className="col-md-7">
-              <MessageToDealer />
+            <div className="col-md-7"  >
+              <MessageToDealer  />
             </div>
           </div>
         </div>
@@ -420,20 +415,30 @@ export default async function vehicleDetailModule() {
                 Similar Results
               </Title>
             </div>
-            {[1, 2, 3, 4].map((_, index) => {
+            {listOfSimilarVehicles?.data?.map((vehicle, index) => {
               return (
                 <div className="col-md-3" key={index}>
+                  {console.log('>>>',vehicle?.defaultImage)}
                   <div className="card product-card">
                     <div className="product-image position-relative">
                       <div className="featured-badge">Special</div>
-                      <div className="product-price">Rs 7,400,000</div>
-                      <NextImage
-                        src="/products/product-placeholder.png"
+                      <div className="product-price">{formatPrice(vehicle?.price)}</div>
+                    { vehicle.defaultImage &&  <Image
+                        component={NextImage}
                         className="card-img-top object-fit-cover img-fluid"
                         alt="Product Placeholder"
                         width={270}
                         height={160}
-                      />
+                        src={`${vehicle.defaultImage}`}
+                      />}
+
+{/* <Image
+                        component={NextImage}
+                        width={100}
+                        height={100}
+                        radius="sm"
+                        src="/blogs/blog-sm.png"
+                      /> */}
                     </div>
                     <div className="progress-bars">
                       <span className="single-bar active"></span>
@@ -446,27 +451,27 @@ export default async function vehicleDetailModule() {
                           href={"#"}
                           className="d-inline-block product-title"
                         >
-                          Used 3.0 L 2016 Mazda CX-30
+                          {vehicle?.condition} {vehicle?.specifications?.engine} {vehicle?.make} {vehicle?.model}
                         </Link>
                       </div>
                       <div className="product-meta">
                         <div className="meta-info d-flex justify-content-between align-items-center">
                           <span className="text-muted d-flex align-items-center gap-1">
-                            <RoadIcon /> 2500km
+                            <RoadIcon /> {vehicle?.specifications?.mileage}
                           </span>
                           <span className="text-muted d-flex align-items-center gap-1">
-                            <FuelTank /> 2.4 L
+                            <FuelTank /> {vehicle?.specifications?.engine}
                           </span>
                           <span className="text-muted d-flex align-items-center gap-1">
-                            <LocationPinIcon /> Lahore
+                            <LocationPinIcon /> {vehicle?.city}
                           </span>
                         </div>
                         <div className="stock-info d-flex justify-content-between align-items-center mt-2">
                           <span>
-                            <span className="text-muted">stock#</span> 324
+                            <span className="text-muted">stock#</span> {vehicle?.specifications?.stockId}
                           </span>
                           <span className="text-muted">
-                            <FaClock /> (Updated 1 month ago)
+                            <FaClock /> {getTimeAgo(new Date())}
                           </span>
                         </div>
                       </div>

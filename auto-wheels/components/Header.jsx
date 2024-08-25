@@ -26,6 +26,7 @@ import {
   Image,
   NavLink,
   Menu,
+  Avatar,
 } from "@mantine/core";
 import { useState } from "react";
 import { useSession } from "next-auth/react";
@@ -378,16 +379,29 @@ const Header = () => {
               </Anchor>
             </Group>
             <Group visibleFrom="sm">
-              <Button
-                tt="uppercase"
-                variant="outline"
-                color="#E90808"
-                autoContrast
-                ff="heading"
-                onClick={() => setModalOpened(true)}
-              >
-                Login
-              </Button>
+            {session ? (
+                  <>
+                    <Avatar
+                      src={session.user.image}
+                      alt={session.user.name}
+                      radius="xl"
+                      size="sm"
+                    />
+                    <span>{session.user.name}</span>
+                  </>
+                ) : (
+                  <Button
+                  tt="uppercase"
+                  variant="outline"
+                  color="#E90808"
+                  autoContrast
+                  ff="heading"
+                  onClick={() => setModalOpened(true)}
+                >
+                  Login
+                </Button>
+                )}
+           
               <Menu shadow="0px 4px 20px 0px #00000014" radius="sm">
                 <Menu.Target>
                   <Button

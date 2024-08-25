@@ -1,4 +1,5 @@
 "use client";
+import { formatPrice } from "@/utils";
 import {
   Box,
   Button,
@@ -13,18 +14,25 @@ import {
   Text,
   Title,
 } from "@mantine/core";
-
 import { useDisclosure } from "@mantine/hooks";
 import React from "react";
 
-const ViewLoanBreakup = ({opened, close}) => {
-  // const [opened, { open, close }] = useDisclosure(false);
-
+const ViewLoanBreakup = ({
+  opened,
+  close,
+  emiAmount,
+  interestRate,
+  tenureYears,
+  loanAmount,
+  downPayment,
+  loanPayment,
+  interestPayment,
+  payablePayment,
+  yearWiseEMI
+}) => {
   return (
     <>
-      <Button variant="transparent" color="#E90808" size="md" onClick={open}>
-        View Breakup
-      </Button>
+
       <Modal
         opened={opened}
         padding="xl"
@@ -39,7 +47,7 @@ const ViewLoanBreakup = ({opened, close}) => {
         <Tabs variant="pills" defaultValue="Breakup" color="#E90808">
           <Tabs.List>
             <Tabs.Tab value="Breakup">Breakup</Tabs.Tab>
-            <Tabs.Tab value="Year-wise">Year- wise</Tabs.Tab>
+            <Tabs.Tab value="Year-wise">Year-wise</Tabs.Tab>
           </Tabs.List>
 
           <Tabs.Panel value="Breakup">
@@ -48,10 +56,10 @@ const ViewLoanBreakup = ({opened, close}) => {
                 <Box component="left-section">
                   <Text size="sm">Your monthly EMI</Text>
                   <Text fw="bolder" size="xl">
-                    Rs 12,653
+                    Rs {emiAmount}
                   </Text>
                   <Text size="sm" c="dimmed">
-                    Rate of interest @ 14.5% for 4 years
+                    Rate of interest @ {interestRate}% for {tenureYears} years
                   </Text>
                 </Box>
                 <Box component="right-section">
@@ -76,7 +84,7 @@ const ViewLoanBreakup = ({opened, close}) => {
                   >
                     <Text c="dimmed">Down Payment</Text>
                   </List.Item>
-                  <Text c="dimmed">Rs 15,000</Text>
+                  <Text c="dimmed">Rs {formatPrice(downPayment) }</Text>
                 </Flex>
                 <Flex justify="space-between" mb="md">
                   <List.Item
@@ -93,9 +101,9 @@ const ViewLoanBreakup = ({opened, close}) => {
                       </svg>
                     }
                   >
-                    <Text c="dimmed"> Loan Payment</Text>
+                    <Text c="dimmed">Loan Payment</Text>
                   </List.Item>
-                  <Text c="dimmed">Rs 15,000</Text>
+                  <Text c="dimmed">Rs {formatPrice(loanPayment)}</Text>
                 </Flex>
                 <Flex justify="space-between" mb="md">
                   <List.Item
@@ -114,11 +122,11 @@ const ViewLoanBreakup = ({opened, close}) => {
                   >
                     <Text c="dimmed">Interest Payment</Text>
                   </List.Item>
-                  <Text c="dimmed">Rs 15,000</Text>
+                  <Text c="dimmed">Rs {formatPrice(interestPayment)}</Text>
                 </Flex>
                 <Flex justify="space-between">
                   <Text fw={600}>Payable Payment</Text>
-                  <Text fw={600}>Rs 45,000</Text>
+                  <Text fw={600}>Rs {formatPrice(loanPayment+interestPayment+downPayment)}</Text>
                 </Flex>
               </List>
             </Card>
@@ -132,7 +140,7 @@ const ViewLoanBreakup = ({opened, close}) => {
                 <Text c="dimmed">
                   For loan amount
                   <Text c="dark" span inherit ml="sm">
-                    Rs 3,450,000
+                    Rs {formatPrice(loanAmount)}
                   </Text>
                 </Text>
               </Box>
@@ -145,21 +153,13 @@ const ViewLoanBreakup = ({opened, close}) => {
                   </Table.Tr>
                 </Table.Thead>
                 <Table.Tbody>
-                  <Table.Tr key="1">
-                    <Table.Td>1 Years</Table.Td>
-                    <Table.Td>Rs 1,564,412</Table.Td>
-                    <Table.Td>4,768</Table.Td>
-                  </Table.Tr>
-                  <Table.Tr key="1">
-                    <Table.Td>1 Years</Table.Td>
-                    <Table.Td>Rs 1,564,412</Table.Td>
-                    <Table.Td>4,768</Table.Td>
-                  </Table.Tr>
-                  <Table.Tr key="1">
-                    <Table.Td>1 Years</Table.Td>
-                    <Table.Td>Rs 1,564,412</Table.Td>
-                    <Table.Td>4,768</Table.Td>
-                  </Table.Tr>
+                  {yearWiseEMI.map((item, index) => (
+                    <Table.Tr key={index}>
+                      <Table.Td>{formatPrice(item.tenure)} Years</Table.Td>
+                      <Table.Td>Rs {formatPrice(item.interestAmount)}</Table.Td>
+                      <Table.Td>Rs {formatPrice(item.emi)}</Table.Td>
+                    </Table.Tr>
+                  ))}
                 </Table.Tbody>
               </Table>
             </Card>
