@@ -7,6 +7,7 @@ import {
   //   updateVehicle,
   //   deleteVehicle,
   getListVehicles,
+  getSimilarVehicles,
   getVehicleById,
   // imageUploader
 } from "./controller.js"
@@ -16,6 +17,7 @@ const router = express.Router();
 
 router.get('/vehicles-by-type', getBrowseByVehicles);
 router.get('/:id', getVehicleById);
+router.get('/getSimilarVehicles/:vehicleId', getSimilarVehicles);
 router.get('/vehicles-listing/*', getListVehicles);
 router.post('/', upload.fields([
   {

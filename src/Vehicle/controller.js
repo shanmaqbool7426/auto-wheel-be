@@ -16,8 +16,8 @@ const createVehicle = asyncHandler(async (req, res) => {
     const parsedContactInfo = JSON.parse(contactInfo);
 
     let uploadedImages = [];
-    let defaultImageUrl = null;
-    console.log(req.files.images, '>>>>>>>>>>')
+    let defaultImageUrl = null;+
+    console.log(req.files.images, '')
     if (req.files) {
       const imageUploadPromises = [];
 
@@ -34,19 +34,7 @@ const createVehicle = asyncHandler(async (req, res) => {
 
 
 
-      const uploadResults = await Promise.all(imageUploadPromises);
-
-      uploadResults.forEach((uploadResult, index) => {
-        if (uploadResult && uploadResult.url) {
-          if (index < req.files.images?.length) {
-            uploadedImages.push(uploadResult.url);
-          } else {
-            defaultImageUrl = uploadResult.url;
-          }
-        } else {
-          throw new Error('Error uploading image to Cloudinary');
-        }
-      });
+     ;;
     }
 
     const vehicleData = {
@@ -266,6 +254,37 @@ const getVehicleById = asyncHandler(async (req, res) => {
 })
 
 
+const getSimilarVehicles = asyncHandler(async (req, res) => {
+  try {
+    const { vehicleId } = req.params;
+
+    const currentVehicle = await Vehicle.findById(vehicleId);
+    if (!currentVehicle) {
+      return response.badRequest(res, "Vehicle not found");
+    }
+
+    const similarVehicles = await Vehicle.find({
+      $and: [
+        { _id: { $ne: currentVehicle._id } }, 
+        {
+          $or: [
+            { make: currentVehicle.make, model: currentVehicle.model },
+            { make: currentVehicle.make }, 
+          ],
+        },
+      ],
+    })
+    .limit(10) 
+    .lean();
+
+    response.ok(res, "Similar vehicles fetched successfully", similarVehicles);
+  } catch (error) {
+    console.error("Error fetching similar vehicles:", error);
+    response.serverError(res, "An error occurred while fetching similar vehicles");
+  }
+});
 
 
-export { createVehicle, getBrowseByVehicles, getListVehicles, getVehicleById }
+
+
+export { createVehicle, getBrowseByVehicles, getListVehicles, getVehicleById, getSimilarVehicles }
