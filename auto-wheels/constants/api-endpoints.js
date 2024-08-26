@@ -18,7 +18,8 @@ export const API_ENDPOINTS = {
     COMPARISONS: 'https://fakestoreapi.com/products',
     INSTANT_USED_CARS: 'https://fakestoreapi.com/products',
     VIDEOS: 'https://fakestoreapi.com/products',
-    BLOGS: 'https://fakestoreapi.com/products',
+    BLOGS: `${BASE_URL}/api/blog/blog-listing/`,
+    TAGS:`${BASE_URL}/api/tag`,
     SIGNUP:`${BASE_URL}/api/user/register`,
     VERIFY_OTP:`${BASE_URL}/api/user/verify-user`
   };

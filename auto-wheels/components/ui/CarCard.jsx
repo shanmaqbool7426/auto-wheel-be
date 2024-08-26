@@ -89,7 +89,7 @@ const CarCard = ({ vehicle, index }) => {
               <GearsHandle />  {vehicle?.specifications?.transmission}
             </span>
             <span className="text-muted d-flex align-items-center gap-1">
-              <FaLocationDot /> {vehicle?.seller?.location}
+              <FaLocationDot /> {vehicle?.city}
             </span>
           </div>
           <div className="stock-info d-flex justify-content-between align-items-center mt-2">

@@ -33,7 +33,7 @@ const images = [
 
 const Gellary = () => {
   return (
- <ImageGallery items={images} />
+ <ImageGallery items={images}  showBullets={true}  showNav={false}/>
   )
 }
 

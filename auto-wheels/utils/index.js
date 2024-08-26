@@ -1,3 +1,10 @@
+const typeMapping = {
+  cars: 'car',
+  bikes: 'bike',
+  trucks: 'truck',
+};
+
+
 export const formatPrice = (price) => {
     return price?.toFixed()?.replace(/\B(?=(\d{3})+(?!\d))/g, ",");
   };
@@ -20,4 +27,47 @@ export const getTimeAgo = (lastUpdateDate) => {
   
     return "Updated just now";
   };
+
+  export const formatDate=(dateString)=> {
+    const date = new Date(dateString);
+    const options = { year: 'numeric', month: 'long', day: 'numeric' };
+    return new Intl.DateTimeFormat('en-US', options).format(date);
+}
   
+
+export const reorderSlug = (slug,view,sortBy) => {
+  const basePath = slug[0];
+  const makes = slug.filter((item) => item.startsWith('mk_'));
+  const models = slug.filter((item) => item.startsWith('md_'));
+  const cities = slug.filter((item) => item.startsWith('ct_'));
+  const bodyType = slug.filter((item) => item.startsWith('bt_'));
+  const page = slug.find((item) => item.startsWith('page_'));
+  const price = slug.find((item) => item.startsWith('pr_'));
+  const year = slug.find((item) => item.startsWith('yr_'));
+  const mileage = slug.find((item) => item.startsWith('ml_'));
+  const transmission = slug.find((item) => item.startsWith('tr_'));
+  const drive = slug.find((item) => item.startsWith('dr_'));
+  const exteriorColor = slug.find((item) => item.startsWith('cl_'));
+  const fuelType = slug.find((item) => item.startsWith('ft_'));
+  const condition = slug.find((item) => item.startsWith('cn_'));
+
+  const dynamicSlug = [
+      `t_${typeMapping[basePath]}`,
+      ...makes,
+      ...models,
+      ...cities,
+      ...bodyType,
+      page,
+      price,
+      year,
+      mileage,
+      transmission,
+      drive,
+      exteriorColor,
+      fuelType,
+      condition,
+      sortBy
+  ].filter(Boolean);
+
+  return `/${dynamicSlug.join('/')}`;
+};

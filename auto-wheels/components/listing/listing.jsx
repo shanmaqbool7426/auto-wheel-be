@@ -7,6 +7,7 @@ import CarCard from "@/components/ui/CarCard";
 import Link from "next/link";
 import { LoadingOverlay } from '@mantine/core';
 import { fetchBodiesByType, fetchMakesByType, fetchVehiclsData } from "@/services/vehicles"
+import { reorderSlug } from "@/utils";
 export default async function Listing({ params, searchParams }) {
     const view = searchParams.view;
     const typeMapping = {
@@ -14,52 +15,17 @@ export default async function Listing({ params, searchParams }) {
         bikes: 'bike',
         trucks: 'truck',
     };
-    const reorderSlug = (slug) => {
-        const basePath = slug[0];
-        const makes = slug.filter((item) => item.startsWith('mk_'));
-        const models = slug.filter((item) => item.startsWith('md_'));
-        const cities = slug.filter((item) => item.startsWith('ct_'));
-        const bodyType = slug.filter((item) => item.startsWith('bt_'));
-        const page = slug.find((item) => item.startsWith('page_'));
-        const price = slug.find((item) => item.startsWith('pr_'));
-        const year = slug.find((item) => item.startsWith('yr_'));
-        const mileage = slug.find((item) => item.startsWith('ml_'));
-        const transmission = slug.find((item) => item.startsWith('tr_'));
-        const drive = slug.find((item) => item.startsWith('dr_'));
-        const exteriorColor = slug.find((item) => item.startsWith('cl_'));
-        const fuelType = slug.find((item) => item.startsWith('ft_'));
-        const condition = slug.find((item) => item.startsWith('cn_'));
-        const sortBy = searchParams.sortBy ? `sb_${searchParams.sortBy}` : searchParams.sortBy;
-
-        const dynamicSlug = [
-            `t_${typeMapping[basePath]}`,
-            ...makes,
-            ...models,
-            ...cities,
-            ...bodyType,
-            page,
-            price,
-            year,
-            mileage,
-            transmission,
-            drive,
-            exteriorColor,
-            fuelType,
-            condition,
-            sortBy
-        ].filter(Boolean);
-
-        return `/${dynamicSlug.join('/')}`;
-    };
 
 
-    const reorderedSlug = reorderSlug(params.slug);
-    console.log('>>>>>>url', reorderedSlug)
+    const sortBy = searchParams.sortBy ? `sb_${searchParams.sortBy}` : searchParams.sortBy;
+    const reorderedSlug = reorderSlug(params.slug, view, sortBy);
     let loading = true;
+    console.log('<<<<<',reorderedSlug)
     const dataofVehcles = await fetchVehiclsData(reorderedSlug);
     const vehicleMakes = await fetchMakesByType(typeMapping[params.slug[0]]);
     const vehicleBodies = await fetchBodiesByType(typeMapping[params.slug[0]]);
-    
+    console.log('>>>>>>dataofVehcles', dataofVehcles)
+
     loading = false;
     return (
         <>
@@ -75,7 +41,7 @@ export default async function Listing({ params, searchParams }) {
                 <div className="container">
                     <div className="row">
                         <div className="col-lg-3">
-                            <ListingFilter type={params.slug[0]} makes={vehicleMakes} bodies={vehicleBodies} vehicles={dataofVehcles?.data}/>
+                            <ListingFilter type={params.slug[0]} makes={vehicleMakes} bodies={vehicleBodies} vehicles={dataofVehcles?.data} />
                         </div>
                         <div className="col-lg-9">
                             {/* Toolbox */}

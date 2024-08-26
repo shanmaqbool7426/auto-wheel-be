@@ -3,12 +3,9 @@ import { API_ENDPOINTS } from '@/constants/api-endpoints';
 
 export const fetchVehiclsData = async (params) => {
   try {
-    console.log('>>>>>>>>>>>>>>>>>>>>>complete url',`http://localhost:5000/api/vehicles-listing${params}`)
-     const vehicls= await fetchAPI(`https://auto-wheel-be.vercel.app/api/vehicle/vehicles-listing${params}`)
-  console.log('>>>>>>>>>>>>>>>>',vehicls.data.results[0])
+     const vehicls= await fetchAPI(`http://localhost:5000/api/vehicle/vehicles-listing${params}`)
      return vehicls
   } catch (error) {
-    console.error('Error fetching dashboard data:', error);
     return {
     vehicls:[]
     };
@@ -37,6 +34,18 @@ export const fetchBodiesByType=async(type)=>{
   }
 }
 
+export const fetchVehiclesByType=async(type)=>{
+  try {
+    const vehicles= await fetchAPI(`${API_ENDPOINTS.VEHICLES_TYPE(type?type:'')}`)
+    return vehicles
+  } catch (error) {
+    console.error('Error fetching dashboard data:', error);
+    return {
+    vehicles:[]
+    };
+  }
+}
+
 export const fetchVehiclDetail = async (url) => {
   try {
     console.log('vehicl>>>',url)
@@ -51,15 +60,22 @@ export const fetchVehiclDetail = async (url) => {
 };
 
 
-export const fetchSimilarVehicls = async (url) => {
-  try {
-    console.log('vehicl>>>',url)
-     const vehicl= await fetchAPI(url)
-     return vehicl
-  } catch (error) {
-    console.error('Error fetching dashboard data:', error);
-    return {
-    vehicls:[]
-    };
-  }
+export const fetchMakesAndBodies = async () => {
+
+  console.log('<<<<<',`${API_ENDPOINTS.MAKES}?type=car`)
+  const results = await Promise.allSettled([
+    fetchAPI(`${API_ENDPOINTS.MAKES}?type=car`),
+    fetchAPI(`${API_ENDPOINTS.BODIES}/car`),
+  ]);
+  const data = {
+    makes: results[0].status === 'fulfilled' ? results[0].value : [],
+    bodies: results[1].status === 'fulfilled' ? results[1].value : [],
+  };
+console.log('data results', data);
+  results.forEach((result, index) => {
+    if (result.status === 'rejected') {
+      console.error(`Error fetching ${Object.keys(data)[index]}:`, result.reason);
+    }
+  });
+  return data;
 };
