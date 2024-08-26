@@ -12,7 +12,7 @@ const vehicleSchema = new mongoose.Schema({
     required: true,
     index: true
   },
-  year:{
+  year: {
     type: Number,
     required: true,
     min: 1900,
@@ -34,7 +34,7 @@ const vehicleSchema = new mongoose.Schema({
   city: {
     type: String,
     required: true,
-    index: true, 
+    index: true,
   },
   cityArea: {
     type: String,
@@ -67,10 +67,10 @@ const vehicleSchema = new mongoose.Schema({
     vin: { type: String, index: true },
     exteriorColor: { type: String, index: true },
     interiorColor: { type: String, index: true },
-    doors: { type: Number, min: 2, max: 5 }, 
-    seats: { type: Number, min: 1, max: 9 }, 
-    engineCapacity: { type: Number, min: 50, max: 1500 }, 
-    payloadCapacity: { type: Number, min: 500, max: 50000 }, 
+    doors: { type: Number, min: 2, max: 5 },
+    seats: { type: Number, min: 1, max: 9 },
+    engineCapacity: { type: Number, min: 50, max: 1500 },
+    payloadCapacity: { type: Number, min: 500, max: 50000 },
   },
   features: {
     type: [String],
@@ -87,11 +87,34 @@ const vehicleSchema = new mongoose.Schema({
     type: [String]
   },
 
+  views: {
+    type: Number,
+    default: 0,
+  },
+  slug: {
+    type: String,
+    unique: true,
+    index: true,
+  },
+  releaseDate: {
+    type: Date,
+
+  },
+  startPrice:{
+    type: Number,
+    required: true,
+    min: 0,
+  },
+  endPrice:{
+    type: Number,
+    required: true,
+    min: 0,
+  },
   contactInfo: {
     mobileNumber: {
       type: String,
       required: true,
-      match: /^[0-9]{11}$/ 
+      match: /^[0-9]{11}$/
     },
     secondaryNumber: {
       type: String,
@@ -107,6 +130,14 @@ const vehicleSchema = new mongoose.Schema({
     ref: "User",
   }
 }, { timestamps: true });
+vehicleSchema.pre('save', function (next) {
+  if (!this.isModified('slug')) {
+    const baseSlug = `${this.make}-${this.model}-${this.year}`.toLowerCase().replace(/ /g, '-');
+    this.slug = `${baseSlug}-${this._id}`;
+    next();
+  }
+});
+
 
 vehicleSchema.index({ city: 1, carInfo: 1, 'specifications.fuelType': 1 });
 

@@ -16,7 +16,7 @@ const createVehicle = asyncHandler(async (req, res) => {
     const parsedContactInfo = JSON.parse(contactInfo);
 
     let uploadedImages = [];
-    let defaultImageUrl = null;+
+    let defaultImageUrl = null;
     console.log(req.files.images, '')
     if (req.files) {
       const imageUploadPromises = [];
@@ -30,8 +30,6 @@ const createVehicle = asyncHandler(async (req, res) => {
       if (req.files.defaultImage) {
         imageUploadPromises.push(uploadOnCloudinary(req.files.defaultImage[0].path));
       }
-
-
 
 
      ;;
@@ -86,7 +84,6 @@ const getBrowseByVehicles = asyncHandler(async (req, res) => {
         { $sample: { size: 8 } }
       ]);
     }
-    console.log('Retrieved vehicles:', vehicles);
     return response.ok(res, 'Vehicles retrieved successfully', vehicles);
   } catch (error) {
     return response.error(res, 'Error retrieving vehicles', error);
@@ -114,7 +111,7 @@ const getListVehicles = asyncHandler(async (req, res) => {
   pathSegments.forEach(segment => {
     const [key, ...rest] = segment.split('_');
     const value = rest.join('_'); 
-    
+    console.log('>>>>>',value)
     switch (key) {
       case 't':
         filters.type = value;
@@ -164,7 +161,11 @@ const getListVehicles = asyncHandler(async (req, res) => {
           options.sort.year = 1;
         } else if (value === 'year-desc') {
           options.sort.year = -1;
-        } else {
+        }
+        else if (value === 'popular') {
+          options.sort.views = -1;
+        }
+        else {
           options.sort.createdAt = -1;
         }
         break;
@@ -245,13 +246,23 @@ const getListVehicles = asyncHandler(async (req, res) => {
 
 export default getListVehicles;
 
-const getVehicleById = asyncHandler(async (req, res) => {
-  const { id } = req.params
-  console.log('id:', id)
-  const vehicleDetail = await Vehicle.findById(id)
-  return response.ok(res, 'Vehicle detail retrieved successfully', vehicleDetail);
+const getVehicleBySlug = asyncHandler(async (req, res) => {
+  const { slug } = req.params; 
+  console.log('slug:', slug);
 
-})
+  try {
+    const vehicleDetail = await Vehicle.findOne({ slug }); 
+    if (!vehicleDetail) {
+      return response.notFound(res, 'Vehicle not found');
+    }
+
+    return response.ok(res, 'Vehicle detail retrieved successfully', vehicleDetail);
+  } catch (error) {
+    console.error('Error retrieving vehicle detail:', error);
+    return response.serverError(res, 'An error occurred while retrieving vehicle details');
+  }
+});
+
 
 
 const getSimilarVehicles = asyncHandler(async (req, res) => {
@@ -287,4 +298,4 @@ const getSimilarVehicles = asyncHandler(async (req, res) => {
 
 
 
-export { createVehicle, getBrowseByVehicles, getListVehicles, getVehicleById, getSimilarVehicles }
+export { createVehicle, getBrowseByVehicles, getListVehicles, getVehicleBySlug, getSimilarVehicles }
