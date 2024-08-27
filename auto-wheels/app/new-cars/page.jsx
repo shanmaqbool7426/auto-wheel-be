@@ -5,10 +5,11 @@ const NewCarsPage =async (params) => {
   const makesAndBodies= await fetchMakesAndBodies()
   // const reorderedSlug = reorderSlug(params.slug);
   // let loading = true;
-  const popularVehicles = await fetchVehiclsData('/cn_new/sb_price-asc');
-  console.log('>>>> popularVehiclesnoo',popularVehicles)
+  const popularVehicles = await fetchVehiclsData('/t_car/cn_new/sb_price-asc');
+  const fetchUpComingVehicles = await fetchVehiclsData('/t_car/cn_new/sb_upcoming');
+console.log('FetchVehicles fetchVehicles',fetchUpComingVehicles)
   return (
-    <NewCarsModule makes={makesAndBodies?.makes} bodies={makesAndBodies?.bodies} popularVehicles={popularVehicles}/>
+    <NewCarsModule makes={makesAndBodies?.makes} bodies={makesAndBodies?.bodies} popularVehicles={popularVehicles} fetchUpComingVehicles={fetchUpComingVehicles}/>
   )
 }
 

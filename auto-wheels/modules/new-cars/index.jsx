@@ -27,6 +27,7 @@ import {
 import WriteReviewModal from "@/components/ui/WriteReviewModal";
 import QuickLinks from "@/components/QuickLinks";
 import SearchBar from "./SearchBar"
+import NewCarsCard from "@/components/ui/NewCarsCard"
 import { IconSearch } from "@tabler/icons-react";
 import BrowseByCategory from "@/modules/home/BrowseByCategory";
 import ComparisonProducts from "@/modules/home/ComparisonProducts";
@@ -37,7 +38,7 @@ import { useDisclosure } from "@mantine/hooks";
 
 import BrowseByMakeAndBodies from "@/components/sections/BrowseByMakeAndBodies"
 
-const NewCarsModule = ({makes,bodies,popularVehicles}) => {
+const NewCarsModule = ({makes,bodies,popularVehicles, fetchUpComingVehicles}) => {
 
 
   // const [opened, { open, close }] = useDisclosure(false);
@@ -135,10 +136,10 @@ const NewCarsModule = ({makes,bodies,popularVehicles}) => {
                   </Text>
                 </Title>
               </Box>
-              {popularVehicles?.data?.results?.map((_, index) => {
+              {popularVehicles?.data?.results?.map((vehicle, index) => {
                 return (
                   <Box className="col-md-3">
-                  
+                  <NewCarsCard vehicle={vehicle} isRating={true}/>
                   </Box>
                 );
               })}
@@ -156,37 +157,13 @@ const NewCarsModule = ({makes,bodies,popularVehicles}) => {
                   </Text>
                 </Title>
               </Box>
-              {[...Array(4).keys()].map((_, index) => {
-                return (
-                  <Box className="col-md-3">
-                    <Card
-                      shadow="0px 4px 20px 0px #00000014"
-                      pb="xl"
-                      pt="0"
-                      px="0"
-                      mb="xl"
-                    >
-                      <Image
-                        p="lg"
-                        pt="xl"
-                        src="/find-cars/img-square.png"
-                        height={130}
-                        alt="Mehran"
-                        className="img-fluid"
-                      />
+              {fetchUpComingVehicles?.data?.results.map((vehicle, index) => {
 
-                      <Flex direction="column" align="center" gap="xs">
-                        <Title order={5} fw={500} c="#E90808">
-                          Toyota Corolla
-                        </Title>
-                        <Text fw={600} fs="xl">
-                          Rs 54.79 - 75.49 Lacs
-                        </Text>
-                        <Text span inherit>
-                          (Launched Expected 2024*)
-                        </Text>
-                      </Flex>
-                    </Card>
+                console.log('>>>>>>',vehicle)
+                return (
+                  <Box className="col-md-3" key={index}>
+                    <NewCarsCard vehicle={vehicle} isRating={false}/>
+
                   </Box>
                 );
               })}
@@ -204,37 +181,10 @@ const NewCarsModule = ({makes,bodies,popularVehicles}) => {
                   </Text>
                 </Title>
               </Box>
-              {[...Array(8).keys()].map((_, index) => {
+              {fetchUpComingVehicles?.data?.results?.map((vehicle, index) => {
                 return (
-                  <Box className="col-md-3">
-                    <Card
-                      shadow="0px 4px 20px 0px #00000014"
-                      pb="xl"
-                      pt="0"
-                      px="0"
-                      mb="xl"
-                    >
-                      <Image
-                        p="lg"
-                        pt="xl"
-                        src="/find-cars/img-square.png"
-                        height={130}
-                        alt="Mehran"
-                        className="img-fluid"
-                      />
-
-                      <Flex direction="column" align="center" gap="xs">
-                        <Title order={5} fw={500} c="#E90808">
-                          Toyota Corolla
-                        </Title>
-                        <Text fw={600} fs="xl">
-                          Rs 54.79 - 75.49 Lacs
-                        </Text>
-                        <Text span inherit>
-                          (Launched Expected 2024*)
-                        </Text>
-                      </Flex>
-                    </Card>
+                  <Box className="col-md-3" key={index}>
+                  <NewCarsCard vehicle={vehicle} isRating={false}/>
                   </Box>
                 );
               })}
