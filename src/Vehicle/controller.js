@@ -3,9 +3,6 @@ import Vehicle from './model.js';
 import response from "../Utils/response.js";
 import { uploadOnCloudinary } from '../Utils/cloudinary.js';
 
-
-
-
 const createVehicle = asyncHandler(async (req, res) => {
   try {
     const { specifications, features, contactInfo, seller, ...rest } = req.body;
@@ -52,8 +49,6 @@ const createVehicle = asyncHandler(async (req, res) => {
   }
 });
 
-
-
 //   const getBrowseByVehicles = asyncHandler(async (req, res) => {
 //     try {
 //       const bikes = await Vehicle.find({ type: 'bike' }).limit(8);
@@ -89,10 +84,6 @@ const getBrowseByVehicles = asyncHandler(async (req, res) => {
     return response.error(res, 'Error retrieving vehicles', error);
   }
 });
-
-
-
-
 
 const getListVehicles = asyncHandler(async (req, res) => {
   const pathSegments = req.params[0].split('/'); 
@@ -162,6 +153,9 @@ const getListVehicles = asyncHandler(async (req, res) => {
         } else if (value === 'year-desc') {
           options.sort.year = -1;
         }
+        else if (value === 'upcoming') {
+          options.sort.releaseDate = 1;
+        }
         else if (value === 'popular') {
           options.sort.views = -1;
         }
@@ -176,7 +170,10 @@ const getListVehicles = asyncHandler(async (req, res) => {
         break;
     }
   });
-  
+if (filters.condition && filters.condition.$regex && filters.condition.$regex === 'new' && options.sort.releaseDate) {
+  filters.releaseDate = { $gte: new Date() };
+}
+
   if (cities.length > 0) {
     filters.city = { $in: cities.map(city => new RegExp(`${city.trim()}`, 'i')) };
   }
@@ -263,8 +260,6 @@ const getVehicleBySlug = asyncHandler(async (req, res) => {
   }
 });
 
-
-
 const getSimilarVehicles = asyncHandler(async (req, res) => {
   try {
     const { vehicleId } = req.params;
@@ -294,8 +289,5 @@ const getSimilarVehicles = asyncHandler(async (req, res) => {
     response.serverError(res, "An error occurred while fetching similar vehicles");
   }
 });
-
-
-
 
 export { createVehicle, getBrowseByVehicles, getListVehicles, getVehicleBySlug, getSimilarVehicles }

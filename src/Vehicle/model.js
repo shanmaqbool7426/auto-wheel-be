@@ -41,6 +41,14 @@ const vehicleSchema = new mongoose.Schema({
     required: true,
     index: true,
   },
+  releaseDate: {
+    type: Date,
+    default: new Date()
+  },
+  isUpcoming:{
+    type: Boolean,
+    default: false,
+  },
   registeredIn: {
     type: String,
     enum: ['Registered', 'Un-Registered'],
@@ -100,12 +108,12 @@ const vehicleSchema = new mongoose.Schema({
     type: Date,
 
   },
-  startPrice:{
+  startPrice: {
     type: Number,
     required: true,
     min: 0,
   },
-  endPrice:{
+  endPrice: {
     type: Number,
     required: true,
     min: 0,
