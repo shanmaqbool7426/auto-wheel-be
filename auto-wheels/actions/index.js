@@ -13,3 +13,23 @@ export const fetchMakesByTypeServer = async (type) => {
     };
   }
 };
+
+
+export const postDataToServer = async (data) => {
+  try {
+    const response = await fetchAPI(API_ENDPOINTS.VEHICLE_DETAIL, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(data),
+    });
+    return response;
+  } catch (error) {
+    console.error("Error posting data:", error);
+    return {
+      success: false,
+      message: 'Failed to post data',
+    };
+  }
+};

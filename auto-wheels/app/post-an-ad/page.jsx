@@ -20,8 +20,10 @@ import {
   NumberInput,
   Checkbox,
   Switch,
+
   ThemeIcon,
 } from "@mantine/core";
+
 import { BiMobileAlt, BiSolidUserRectangle } from "react-icons/bi";
 import {
   FaArrowLeftLong,
@@ -29,20 +31,67 @@ import {
   FaCar,
   FaWhatsapp,
 } from "react-icons/fa6";
+
 import { LightBulb } from "@/components/Icons";
 import ImageUploader from "@/components/ui/ImageUploader";
 import { IconCircleCheck } from "@tabler/icons-react";
 import { HiDocumentAdd } from "react-icons/hi";
 import { Dropzone, IMAGE_MIME_TYPE } from "@mantine/dropzone";
+import {cities ,colorOptions,registrationOptions,suburbs,carTags} from "@/mock-data/mock-array"
+import CustomModel from "@/constants/CustomModel"
+// import { cities } from "@/constants/vehicle-constants"; 
+
 
 const PostAnAd = () => {
-  const [activeStep, setActiveStep] = useState(1);
+  const [activeStep, setActiveStep] = useState(0);
+    const [files, setFiles] = useState([]);
+    const [isModalOpen, setIsModalOpen] = useState(false);
+    const [selection, setSelection] = useState({
+    make: '',
+    model: '',
+    variant: '',
+  });
+    const [formData, setFormData] = useState({
+    condition: '',
+    city: '',
+    suburb: '',
+    registeredIn:"",
+    rego: '',
+    exteriorColor: '',
+    milage:"",
+    price:"",
+    description:"",
+  });
+
+  
+  const openModal = () => setIsModalOpen(true);
+  const closeModal = () => setIsModalOpen(false);
+    console.log("🚀 ~ PostAnAd ~ files:", files)
+
+  console.log("formData---",formData)
+
+  
+
+    const handleChange = (value, field) => {
+    setFormData((prevData) => ({
+      ...prevData,
+      [field]: value
+    }));
+  };
+   const handleDescriptionClick = (template) => {
+    setFormData((prevData) => ({
+      ...prevData,
+      description: prevData.description + template
+    }));
+  };
+
+
+
   const nextStep = () =>
     setActiveStep((current) => (current < 3 ? current + 1 : current));
   const prevStep = () =>
     setActiveStep((current) => (current > 0 ? current - 1 : current));
 
-  const [files, setFiles] = useState([]);
 
   const previews = files.map((file, index) => {
     const imageUrl = URL.createObjectURL(file);
@@ -186,7 +235,9 @@ const PostAnAd = () => {
                         (All fields marked with * are mandatory)
                       </Text>
 
-                      <Box className="stepper-form" mt="xl">
+                    {/* step 1 start*/}
+
+                        <Box className="stepper-form" mt="xl">
                         <Box className="row align-items-center" mb="xl">
                           <Box className="col-md-2 text-lg-end mb-2 mb-lg-0">
                             <Input.Label required size="md">
@@ -195,12 +246,16 @@ const PostAnAd = () => {
                           </Box>
                           <Box className="col-md-7">
                             <Select
-                              size="md"
-                              placeholder="New"
-                              data={["React", "Angular", "Vue", "Svelte"]}
-                            />
+            size="md"
+            placeholder="New"
+            data={["New", "Used", "Refurbished"]}
+            value={formData.condition}
+               onChange={(value) => handleChange(value, 'condition')}
+           
+          />
                           </Box>
                         </Box>
+
                         <Box className="row align-items-center" mb="xl">
                           <Box className="col-md-2 text-lg-end mb-2 mb-lg-0">
                             <Input.Label required size="md">
@@ -208,11 +263,14 @@ const PostAnAd = () => {
                             </Input.Label>
                           </Box>
                           <Box className="col-md-7">
-                            <Select
-                              size="md"
-                              placeholder="City"
-                              data={["React", "Angular", "Vue", "Svelte"]}
-                            />
+                           <Select
+            size="md"
+            placeholder="City"
+            data={cities}
+            value={formData.city}
+             onChange={(value) => handleChange(value, 'city')}
+     
+          />
                           </Box>
                           <Box className="col-md-3 text-center">
                             <Group gap="xs" align="center">
@@ -223,6 +281,7 @@ const PostAnAd = () => {
                             </Group>
                           </Box>
                         </Box>
+
                         <Box className="row align-items-center" mb="xl">
                           <Box className="col-md-2 text-lg-end mb-2 mb-lg-0">
                             <Input.Label required size="md">
@@ -233,7 +292,10 @@ const PostAnAd = () => {
                             <Select
                               size="md"
                               placeholder="Suburb"
-                              data={["React", "Angular", "Vue", "Svelte"]}
+                              data={suburbs}
+                              value={formData.suburb}
+                               onChange={(value) => handleChange(value, 'suburb')}
+                             
                             />
                           </Box>
                         </Box>
@@ -243,11 +305,11 @@ const PostAnAd = () => {
                               Car Info
                             </Input.Label>
                           </Box>
-                          <Box className="col-md-7">
+                          <Box className="col-md-7" onClick={openModal} >
+                        
                             <Select
                               size="md"
                               placeholder="Car Info "
-                              data={["React", "Angular", "Vue", "Svelte"]}
                             />
                           </Box>
                         </Box>
@@ -261,7 +323,10 @@ const PostAnAd = () => {
                             <Select
                               size="md"
                               placeholder="Registered In"
-                              data={["React", "Angular", "Vue", "Svelte"]}
+                              data={registrationOptions}
+                              value={formData.registeredIn}
+                               onChange={(value) => handleChange(value, 'registeredIn')}
+                             
                             />
                           </Box>
                         </Box>
@@ -275,7 +340,9 @@ const PostAnAd = () => {
                             <Select
                               size="md"
                               placeholder="Rego"
-                              data={["React", "Angular", "Vue", "Svelte"]}
+                              data={registrationOptions}
+                                value={formData.rego}
+                              onChange={(value) => handleChange(value, 'rego')}
                             />
                           </Box>
                         </Box>
@@ -289,7 +356,10 @@ const PostAnAd = () => {
                             <Select
                               size="md"
                               placeholder="Exterior Color"
-                              data={["React", "Angular", "Vue", "Svelte"]}
+                              data={colorOptions}
+                                value={formData.exteriorColor}
+                                onChange={(value) => handleChange(value, 'exteriorColor')}
+                              
                             />
                           </Box>
                         </Box>
@@ -307,7 +377,11 @@ const PostAnAd = () => {
                                   KM
                                 </Text>
                               }
+                               type="number" 
                               size="md"
+                             value={formData.milage}
+                             onChange={(value) => handleChange(value.target.value, 'milage')}
+                           
                             />
                           </Box>
                           <Box className="col-md-3 text-start">
@@ -334,7 +408,10 @@ const PostAnAd = () => {
                                   PKR
                                 </Text>
                               }
+                             type="number" 
                               size="md"
+                               value={formData.price}
+                                onChange={(value) => handleChange(value.target.value, 'price')}
                             />
                           </Box>
                           <Box className="col-md-3 text-start">
@@ -360,6 +437,9 @@ const PostAnAd = () => {
                               autosize
                               minRows={6}
                               maxRows={6}
+                              fs={8}
+                              value={formData.description}
+                              onChange={(e) => handleChange(e.target.value,'description')}
                             />
                             <Group gap={0}>
                               <Text size="sm" c="dimmed" ml="auto">
@@ -377,7 +457,7 @@ const PostAnAd = () => {
                             </Group>
                           </Box>
                         </Box>
-                        <Box className="row align-items-start" mb="xl">
+                        <Box className="row align-items-start  " mb="xl">
                           <Box className="col-md-2 text-lg-end mb-2 mb-lg-0">
                             <Input.Label
                               required
@@ -387,14 +467,18 @@ const PostAnAd = () => {
                               Predefined Template
                             </Input.Label>
                           </Box>
-                          <Box className="col-md-7">
-                            <Textarea
-                              placeholder="Describe Your car: Example: Alloy rim, first owner, genuine parts, maintained by authorized workshop, excellent mileage, original paint etc."
-                              size="md"
-                              autosize
-                              minRows={6}
-                              maxRows={6}
-                            />
+                          <Box className="col-md-7 border p-2 cursor-pointer ">
+                          <Text size="sm">You can also use these suggestions</Text>
+                            <Box className=" d-flex flex-wrap flex-row	gap-1 mt-2  "  >
+                               {carTags.map((tag, index) => (
+                        <Box   className="border p-2  rounded  m-2"   key={index}
+
+            onClick={() => handleDescriptionClick(tag + ' ')} >
+                         <Text size="sm" >{tag}</Text>
+                        </Box>
+          
+        ))}
+                            </Box>
                           </Box>
                         </Box>
                         <Box className="row align-items-start" mb="xl">
@@ -424,6 +508,10 @@ const PostAnAd = () => {
                           </Box>
                         </Box>
                       </Box>
+
+                      {/* step 1 end*/}
+
+
                     </Card>
                   </Stepper.Step>
                   <Stepper.Step
@@ -660,6 +748,9 @@ const PostAnAd = () => {
           </Box>
         </Box>
       </Box>
+
+
+        <CustomModel isOpen={isModalOpen} selection={selection} setSelection={setSelection} onClose={closeModal} />
     </>
   );
 };
