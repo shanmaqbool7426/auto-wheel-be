@@ -19,6 +19,7 @@ export const API_ENDPOINTS = {
     INSTANT_USED_CARS: 'https://fakestoreapi.com/products',
     VIDEOS: 'https://fakestoreapi.com/products',
     BLOGS: `${BASE_URL}/api/blog/blog-listing/`,
+    BROWSE_BLOGS: `${BASE_URL}/api/blog/browse-blogs`,
     TAGS:`${BASE_URL}/api/tag`,
     SIGNUP:`${BASE_URL}/api/user/register`,
     VERIFY_OTP:`${BASE_URL}/api/user/verify-user`
