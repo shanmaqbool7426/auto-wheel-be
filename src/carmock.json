@@ -1,0 +1,566 @@
+[
+    {
+      "_id": { "$oid": "64bb97d4933cfe6cdd01ecb5" },
+      "city": "Karachi",
+      "type": "car",
+      "cityArea": "Clifton",
+      "carInfo": "Suzuki Swift 2024",
+      "registeredIn": "Registered",
+      "price": 2000000,
+      "description": "Brand new Suzuki Swift with latest features.",
+      "specifications": {
+        "stockId": "SS2024001",
+        "bodyType": "Hatchback",
+        "fuelType": "Petrol",
+        "engine": "1.2L",
+        "mileage": 0,
+        "transmission": "Automatic",
+        "drive": "Front-Wheel Drive",
+        "vin": "TSZK1234567890",
+        "exteriorColor": "Red",
+        "interiorColor": "Black",
+        "doors": 5,
+        "seats": 5
+      },
+      "features": [
+        "ABS",
+        "Air Bags",
+        "Air Conditioning",
+        "Power Steering",
+        "Navigation System"
+      ],
+      "sellerNotes": "Never driven, first owner.",
+      "defaultImage": "http://res.cloudinary.com/dcfpazr4b/image/upload/v1723902565/jdzzrybrpdpujogfxocy.webp",
+      "images": [
+        "http://res.cloudinary.com/dcfpazr4b/image/upload/v1723902565/jdzzrybrpdpujogfxocy.webp"
+      ],
+      "contactInfo": {
+        "mobileNumber": "03121234567",
+        "secondaryNumber": "03221234567",
+        "allowWhatsAppContact": true
+      },
+      "seller": "64d30dcf4f9d70c0f4e7b6f4",
+      "make": "Suzuki",
+      "model": "Swift",
+      "year": 2024,
+      "condition": "new"
+    },
+    {
+      "_id": { "$oid": "64bb97d4933cfe6cdd01ecb6" },
+      "city": "Lahore",
+      "type": "car",
+      "cityArea": "Model Town",
+      "carInfo": "Kia Sportage 2022",
+      "registeredIn": "Registered",
+      "price": 5000000,
+      "description": "Kia Sportage 2022 in pristine condition, fully loaded.",
+      "specifications": {
+        "stockId": "KS2022001",
+        "bodyType": "SUV",
+        "fuelType": "Petrol",
+        "engine": "2.0L",
+        "mileage": 8000,
+        "transmission": "Automatic",
+        "drive": "All-Wheel Drive",
+        "vin": "KIA2022SPORT",
+        "exteriorColor": "Blue",
+        "interiorColor": "Beige",
+        "doors": 5,
+        "seats": 5
+      },
+      "features": [
+        "ABS",
+        "Air Bags",
+        "Leather Seats",
+        "Navigation System",
+        "Sun Roof",
+        "Cruise Control"
+      ],
+      "sellerNotes": "One owner, no accidents.",
+      "defaultImage": "http://res.cloudinary.com/dcfpazr4b/image/upload/v1723902627/uit7vtja4bowbdkdigqr.webp",
+      "images": [
+        "http://res.cloudinary.com/dcfpazr4b/image/upload/v1723902627/uit7vtja4bowbdkdigqr.webp"
+      ],
+      "contactInfo": {
+        "mobileNumber": "03021234567",
+        "secondaryNumber": "03231234567",
+        "allowWhatsAppContact": true
+      },
+      "seller": "64d30dcf4f9d70c0f4e7b6f5",
+      "make": "Kia",
+      "model": "Sportage",
+      "year": 2022,
+      "condition": "used"
+    },
+    {
+      "_id": { "$oid": "64bb97d4933cfe6cdd01ecb7" },
+      "city": "Islamabad",
+      "type": "car",
+      "cityArea": "F-10",
+      "carInfo": "Honda HR-V 2023",
+      "registeredIn": "Registered",
+      "price": 4200000,
+      "description": "Honda HR-V 2023 with advanced safety features and great mileage.",
+      "specifications": {
+        "stockId": "HR2023001",
+        "bodyType": "SUV",
+        "fuelType": "Petrol",
+        "engine": "1.5L",
+        "mileage": 7000,
+        "transmission": "Automatic",
+        "drive": "All-Wheel Drive",
+        "vin": "HRV2023ISB",
+        "exteriorColor": "Grey",
+        "interiorColor": "Black",
+        "doors": 5,
+        "seats": 5
+      },
+      "features": [
+        "ABS",
+        "Air Bags",
+        "Air Conditioning",
+        "Leather Seats",
+        "Navigation System",
+        "Sun Roof"
+      ],
+      "sellerNotes": "Excellent condition, first owner.",
+      "defaultImage": "http://res.cloudinary.com/dcfpazr4b/image/upload/v1723902672/yzm3ajmc5gmorg0ayyl8.webp",
+      "images": [
+        "http://res.cloudinary.com/dcfpazr4b/image/upload/v1723902672/yzm3ajmc5gmorg0ayyl8.webp"
+      ],
+      "contactInfo": {
+        "mobileNumber": "03121234568",
+        "secondaryNumber": "03331234568",
+        "allowWhatsAppContact": true
+      },
+      "seller": "64d30dcf4f9d70c0f4e7b6f6",
+      "make": "Honda",
+      "model": "HR-V",
+      "year": 2023,
+      "condition": "new"
+    },
+    {
+      "_id": { "$oid": "64bb97d4933cfe6cdd01ecb8" },
+      "city": "Peshawar",
+      "type": "car",
+      "cityArea": "University Town",
+      "carInfo": "Toyota Fortuner 2021",
+      "registeredIn": "Registered",
+      "price": 5500000,
+      "description": "Toyota Fortuner 2021, perfect for off-road adventures.",
+      "specifications": {
+        "stockId": "TF2021001",
+        "bodyType": "SUV",
+        "fuelType": "Diesel",
+        "engine": "2.8L",
+        "mileage": 20000,
+        "transmission": "Automatic",
+        "drive": "Four-Wheel Drive",
+        "vin": "TF2021PESHAWAR",
+        "exteriorColor": "Black",
+        "interiorColor": "Beige",
+        "doors": 5,
+        "seats": 7
+      },
+      "features": [
+        "ABS",
+        "Air Bags",
+        "Leather Seats",
+        "Navigation System",
+        "Sun Roof",
+        "Cruise Control"
+      ],
+      "sellerNotes": "Well-maintained, no off-road use.",
+      "defaultImage": "http://res.cloudinary.com/dcfpazr4b/image/upload/v1723902717/qgrhozxk1d8vzjz1rq2m.webp",
+      "images": [
+        "http://res.cloudinary.com/dcfpazr4b/image/upload/v1723902717/qgrhozxk1d8vzjz1rq2m.webp"
+      ],
+      "contactInfo": {
+        "mobileNumber": "03451234568",
+        "secondaryNumber": "03341234568",
+        "allowWhatsAppContact": true
+      },
+      "seller": "64d30dcf4f9d70c0f4e7b6f7",
+      "make": "Toyota",
+      "model": "Fortuner",
+      "year": 2021,
+      "condition": "used"
+    },
+    {
+      "_id": { "$oid": "64bb97d4933cfe6cdd01ecb9" },
+      "city": "Karachi",
+      "type": "car",
+      "cityArea": "Bahria Town",
+      "carInfo": "BMW 3 Series 2023",
+      "registeredIn": "Registered",
+      "price": 8000000,
+      "description": "Luxury BMW 3 Series 2023 with top-of-the-line features.",
+      "specifications": {
+        "stockId": "BMW2023001",
+        "bodyType": "Sedan",
+        "fuelType": "Petrol",
+        "engine": "2.0L Turbo",
+        "mileage": 5000,
+        "transmission": "Automatic",
+        "drive": "Rear-Wheel Drive",
+        "vin": "BMW2023KHI",
+        "exteriorColor": "Silver",
+        "interiorColor": "Black",
+        "doors": 4,
+        "seats": 5
+      },
+      "features": [
+        "ABS",
+        "Air Bags",
+        "Leather Seats",
+        "Navigation System",
+        "Sun Roof",
+        "Heated Seats"
+      ],
+      "sellerNotes": "Immaculate condition, first owner.",
+      "defaultImage": "http://res.cloudinary.com/dcfpazr4b/image/upload/v1723902774/tdaqvyajxsj8vv3drjlr.webp",
+      "images": [
+        "http://res.cloudinary.com/dcfpazr4b/image/upload/v1723902774/tdaqvyajxsj8vv3drjlr.webp"
+      ],
+      "contactInfo": {
+        "mobileNumber": "03134567890",
+        "secondaryNumber": "03234567890",
+        "allowWhatsAppContact": true
+      },
+      "seller": "64d30dcf4f9d70c0f4e7b6f8",
+      "make": "BMW",
+      "model": "3 Series",
+      "year": 2023,
+      "condition": "new"
+    },
+    {
+      "_id": { "$oid": "64bb97d4933cfe6cdd01ecba" },
+      "city": "Lahore",
+      "type": "car",
+      "cityArea": "DHA Phase 5",
+      "carInfo": "Audi Q5 2022",
+      "registeredIn": "Registered",
+      "price": 7000000,
+      "description": "Audi Q5 2022 with advanced features and luxurious interiors.",
+      "specifications": {
+        "stockId": "AQ2022001",
+        "bodyType": "SUV",
+        "fuelType": "Petrol",
+        "engine": "2.0L Turbo",
+        "mileage": 10000,
+        "transmission": "Automatic",
+        "drive": "All-Wheel Drive",
+        "vin": "AUDIQ52022",
+        "exteriorColor": "White",
+        "interiorColor": "Brown",
+        "doors": 5,
+        "seats": 5
+      },
+      "features": [
+        "ABS",
+        "Air Bags",
+        "Leather Seats",
+        "Navigation System",
+        "Sun Roof",
+        "Cruise Control"
+      ],
+      "sellerNotes": "One owner, excellent condition.",
+      "defaultImage": "http://res.cloudinary.com/dcfpazr4b/image/upload/v1723902846/fv5zgd6wsizu1iwrqowo.webp",
+      "images": [
+        "http://res.cloudinary.com/dcfpazr4b/image/upload/v1723902846/fv5zgd6wsizu1iwrqowo.webp"
+      ],
+      "contactInfo": {
+        "mobileNumber": "03045678901",
+        "secondaryNumber": "03145678901",
+        "allowWhatsAppContact": true
+      },
+      "seller": "64d30dcf4f9d70c0f4e7b6f9",
+      "make": "Audi",
+      "model": "Q5",
+      "year": 2022,
+      "condition": "used"
+    },
+    {
+      "_id": { "$oid": "64bb97d4933cfe6cdd01ecbb" },
+      "city": "Islamabad",
+      "type": "car",
+      "cityArea": "G-11",
+      "carInfo": "Hyundai Tucson 2024",
+      "registeredIn": "Registered",
+      "price": 4700000,
+      "description": "Hyundai Tucson 2024, a great SUV with modern features and high performance.",
+      "specifications": {
+        "stockId": "HT2024001",
+        "bodyType": "SUV",
+        "fuelType": "Petrol",
+        "engine": "2.0L",
+        "mileage": 0,
+        "transmission": "Automatic",
+        "drive": "All-Wheel Drive",
+        "vin": "TUC2024ISB",
+        "exteriorColor": "Orange",
+        "interiorColor": "Grey",
+        "doors": 5,
+        "seats": 5
+      },
+      "features": [
+        "ABS",
+        "Air Bags",
+        "Leather Seats",
+        "Navigation System",
+        "Sun Roof",
+        "Cruise Control"
+      ],
+      "sellerNotes": "Brand new, under warranty.",
+      "defaultImage": "http://res.cloudinary.com/dcfpazr4b/image/upload/v1723902897/rh45kbd4iqsh9jvcoynj.webp",
+      "images": [
+        "http://res.cloudinary.com/dcfpazr4b/image/upload/v1723902897/rh45kbd4iqsh9jvcoynj.webp"
+      ],
+      "contactInfo": {
+        "mobileNumber": "03321234567",
+        "secondaryNumber": "03421234567",
+        "allowWhatsAppContact": true
+      },
+      "seller": "64d30dcf4f9d70c0f4e7b6f0",
+      "make": "Hyundai",
+      "model": "Tucson",
+      "year": 2024,
+      "condition": "new"
+    },
+    {
+      "_id": { "$oid": "64bb97d4933cfe6cdd01ecbc" },
+      "city": "Karachi",
+      "type": "car",
+      "cityArea": "Korangi",
+      "carInfo": "Ford Mustang 2022",
+      "registeredIn": "Registered",
+      "price": 6500000,
+      "description": "Ford Mustang 2022, a powerful and stylish sports car.",
+      "specifications": {
+        "stockId": "FM2022001",
+        "bodyType": "Coupe",
+        "fuelType": "Petrol",
+        "engine": "5.0L V8",
+        "mileage": 5000,
+        "transmission": "Automatic",
+        "drive": "Rear-Wheel Drive",
+        "vin": "MUSTANG2022KHI",
+        "exteriorColor": "Yellow",
+        "interiorColor": "Black",
+        "doors": 2,
+        "seats": 4
+      },
+      "features": [
+        "ABS",
+        "Air Bags",
+        "Leather Seats",
+        "Navigation System",
+        "Cruise Control",
+        "Sport Mode"
+      ],
+      "sellerNotes": "Like new, no modifications.",
+      "defaultImage": "http://res.cloudinary.com/dcfpazr4b/image/upload/v1723902943/qca9yhilrjxombaggp99.webp",
+      "images": [
+        "http://res.cloudinary.com/dcfpazr4b/image/upload/v1723902943/qca9yhilrjxombaggp99.webp"
+      ],
+      "contactInfo": {
+        "mobileNumber": "03156789012",
+        "secondaryNumber": "03256789012",
+        "allowWhatsAppContact": true
+      },
+      "seller": "64d30dcf4f9d70c0f4e7b6f1",
+      "make": "Ford",
+      "model": "Mustang",
+      "year": 2022,
+      "condition": "used"
+    },
+    {
+      "_id": { "$oid": "64bb97d4933cfe6cdd01ecbd" },
+      "city": "Lahore",
+      "type": "car",
+      "cityArea": "Johar Town",
+      "carInfo": "Nissan Altima 2023",
+      "registeredIn": "Registered",
+      "price": 3500000,
+      "description": "Nissan Altima 2023, a reliable and comfortable sedan.",
+      "specifications": {
+        "stockId": "NA2023001",
+        "bodyType": "Sedan",
+        "fuelType": "Petrol",
+        "engine": "2.5L",
+        "mileage": 12000,
+        "transmission": "Automatic",
+        "drive": "Front-Wheel Drive",
+        "vin": "ALTIMA2023LAHORE",
+        "exteriorColor": "Silver",
+        "interiorColor": "Black",
+        "doors": 4,
+        "seats": 5
+      },
+      "features": [
+        "ABS",
+        "Air Bags",
+        "Air Conditioning",
+        "Leather Seats",
+        "Navigation System",
+        "Cruise Control"
+      ],
+      "sellerNotes": "Well maintained, first owner.",
+      "defaultImage": "http://res.cloudinary.com/dcfpazr4b/image/upload/v1723902991/k1nplegiz0wmyfdhyerr.webp",
+      "images": [
+        "http://res.cloudinary.com/dcfpazr4b/image/upload/v1723902991/k1nplegiz0wmyfdhyerr.webp"
+      ],
+      "contactInfo": {
+        "mobileNumber": "03234567890",
+        "secondaryNumber": "03134567890",
+        "allowWhatsAppContact": true
+      },
+      "seller": "64d30dcf4f9d70c0f4e7b6f2",
+      "make": "Nissan",
+      "model": "Altima",
+      "year": 2023,
+      "condition": "used"
+    },
+    {
+      "_id": { "$oid": "64bb97d4933cfe6cdd01ecbe" },
+      "city": "Islamabad",
+      "type": "car",
+      "cityArea": "F-8",
+      "carInfo": "Mercedes-Benz E-Class 2022",
+      "registeredIn": "Registered",
+      "price": 9000000,
+      "description": "Mercedes-Benz E-Class 2022, luxurious and high-performance.",
+      "specifications": {
+        "stockId": "MBE2022001",
+        "bodyType": "Sedan",
+        "fuelType": "Petrol",
+        "engine": "3.0L V6",
+        "mileage": 6000,
+        "transmission": "Automatic",
+        "drive": "All-Wheel Drive",
+        "vin": "MBE2022ISB",
+        "exteriorColor": "Black",
+        "interiorColor": "Beige",
+        "doors": 4,
+        "seats": 5
+      },
+      "features": [
+        "ABS",
+        "Air Bags",
+        "Leather Seats",
+        "Navigation System",
+        "Sun Roof",
+        "Heated Seats"
+      ],
+      "sellerNotes": "In pristine condition, low mileage.",
+      "defaultImage": "http://res.cloudinary.com/dcfpazr4b/image/upload/v1723903033/wqqc3npz2tyhypwimuxr.webp",
+      "images": [
+        "http://res.cloudinary.com/dcfpazr4b/image/upload/v1723903033/wqqc3npz2tyhypwimuxr.webp"
+      ],
+      "contactInfo": {
+        "mobileNumber": "03456789012",
+        "secondaryNumber": "03356789012",
+        "allowWhatsAppContact": true
+      },
+      "seller": "64d30dcf4f9d70c0f4e7b6f3",
+      "make": "Mercedes-Benz",
+      "model": "E-Class",
+      "year": 2022,
+      "condition": "used"
+    },
+    {
+      "_id": { "$oid": "64bb97d4933cfe6cdd01ecbf" },
+      "city": "Karachi",
+      "type": "car",
+      "cityArea": "Defence",
+      "carInfo": "Chevrolet Tracker 2023",
+      "registeredIn": "Registered",
+      "price": 4200000,
+      "description": "Chevrolet Tracker 2023 with modern features and stylish design.",
+      "specifications": {
+        "stockId": "CT2023001",
+        "bodyType": "SUV",
+        "fuelType": "Petrol",
+        "engine": "1.2L Turbo",
+        "mileage": 5000,
+        "transmission": "Automatic",
+        "drive": "Front-Wheel Drive",
+        "vin": "TRACKER2023KHI",
+        "exteriorColor": "Red",
+        "interiorColor": "Black",
+        "doors": 5,
+        "seats": 5
+      },
+      "features": [
+        "ABS",
+        "Air Bags",
+        "Leather Seats",
+        "Navigation System",
+        "Cruise Control",
+        "Bluetooth"
+      ],
+      "sellerNotes": "Excellent condition, no accidents.",
+      "defaultImage": "http://res.cloudinary.com/dcfpazr4b/image/upload/v1723903096/yno8slasfbgwuzqvauy1.webp",
+      "images": [
+        "http://res.cloudinary.com/dcfpazr4b/image/upload/v1723903096/yno8slasfbgwuzqvauy1.webp"
+      ],
+      "contactInfo": {
+        "mobileNumber": "03167890123",
+        "secondaryNumber": "03267890123",
+        "allowWhatsAppContact": true
+      },
+      "seller": "64d30dcf4f9d70c0f4e7b6f4",
+      "make": "Chevrolet",
+      "model": "Tracker",
+      "year": 2023,
+      "condition": "new"
+    },
+    {
+      "_id": { "$oid": "64bb97d4933cfe6cdd01ecc0" },
+      "city": "Lahore",
+      "type": "car",
+      "cityArea": "Gulberg",
+      "carInfo": "Toyota Camry 2024",
+      "registeredIn": "Registered",
+      "price": 6000000,
+      "description": "Toyota Camry 2024, luxurious and comfortable sedan.",
+      "specifications": {
+        "stockId": "TC2024001",
+        "bodyType": "Sedan",
+        "fuelType": "Petrol",
+        "engine": "2.5L",
+        "mileage": 0,
+        "transmission": "Automatic",
+        "drive": "Front-Wheel Drive",
+        "vin": "CAM2024LAHORE",
+        "exteriorColor": "White",
+        "interiorColor": "Tan",
+        "doors": 4,
+        "seats": 5
+      },
+      "features": [
+        "ABS",
+        "Air Bags",
+        "Leather Seats",
+        "Navigation System",
+        "Sun Roof",
+        "Cruise Control"
+      ],
+      "sellerNotes": "Brand new, full warranty.",
+      "defaultImage": "http://res.cloudinary.com/dcfpazr4b/image/upload/v1723903154/jk97qhvi23ixihkffrss.webp",
+      "images": [
+        "http://res.cloudinary.com/dcfpazr4b/image/upload/v1723903154/jk97qhvi23ixihkffrss.webp"
+      ],
+      "contactInfo": {
+        "mobileNumber": "03245678901",
+        "secondaryNumber": "03145678901",
+        "allowWhatsAppContact": true
+      },
+      "seller": "64d30dcf4f9d70c0f4e7b6f5",
+      "make": "Toyota",
+      "model": "Camry",
+      "year": 2024,
+      "condition": "new"
+    }
+  ]
+  

@@ -1,0 +1,708 @@
+[{
+    "name": "Suzuki",
+    "companyImage": "https://example.com/suzuki-logo.png",
+    "type": "car",
+    "models": [
+      {
+        "name": "Swift",
+        "variants": [
+          "GL",
+          "GLX",
+          "Sport",
+          "Hybrid"
+        ]
+      },
+      {
+        "name": "Alto",
+        "variants": [
+          "VX",
+          "VXR",
+          "VXL"
+        ]
+      },
+      {
+        "name": "Ciaz",
+        "variants": [
+          "GL",
+          "GLX",
+          "Automatic"
+        ]
+      },
+      {
+        "name": "Vitara",
+        "variants": [
+          "GL+",
+          "GLX",
+          "Turbo"
+        ]
+      },
+      {
+        "name": "Baleno",
+        "variants": [
+          "GL",
+          "GLX",
+          "RS"
+        ]
+      },
+      {
+        "name": "Jimny",
+        "variants": [
+          "GLX",
+          "Sierra",
+          "Lite"
+        ]
+      },
+      {
+        "name": "Ertiga",
+        "variants": [
+          "GL",
+          "GLX",
+          "Automatic"
+        ]
+      },
+      {
+        "name": "Wagon R",
+        "variants": [
+          "VXR",
+          "VXL",
+          "AGS"
+        ]
+      },
+      {
+        "name": "S-Cross",
+        "variants": [
+          "GL",
+          "GLX",
+          "Turbo"
+        ]
+      },
+      {
+        "name": "Ignis",
+        "variants": [
+          "GL",
+          "GLX",
+          "Hybrid"
+        ]
+      }
+    ]
+  },
+
+  {
+    "name": "Hyundai",
+    "companyImage": "https://example.com/hyundai-logo.png", 
+    "type": "car",
+    "models": [
+      {
+        "name": "Elantra",
+        "variants": [
+          "GL",
+          "GLS",
+          "Limited",
+          "Sport"
+        ]
+      },
+      {
+        "name": "Sonata",
+        "variants": [
+          "SE",
+          "SEL",
+          "Sport",
+          "Limited",
+          "Hybrid"
+        ]
+      },
+      {
+        "name": "Tucson",
+        "variants": [
+          "SE",
+          "SEL",
+          "Sport",
+          "Limited"
+        ]
+      },
+      {
+        "name": "Santa Fe",
+        "variants": [
+          "SE",
+          "SEL",
+          "XRT",
+          "Limited",
+          "Calligraphy"
+        ]
+      },
+      {
+        "name": "Kona",
+        "variants": [
+          "SE",
+          "SEL",
+          "N Line",
+          "Limited",
+          "Electric"
+        ]
+      },
+      {
+        "name": "Accent",
+        "variants": [
+          "SE",
+          "SEL",
+          "Limited"
+        ]
+      },
+      {
+        "name": "Palisade",
+        "variants": [
+          "SE",
+          "SEL",
+          "Limited",
+          "Calligraphy"
+        ]
+      },
+      {
+        "name": "Venue",
+        "variants": [
+          "SE",
+          "SEL",
+          "Limited",
+          "Denim"
+        ]
+      },
+      {
+        "name": "Ioniq",
+        "variants": [
+          "Hybrid Blue",
+          "Hybrid SE",
+          "Hybrid SEL",
+          "Electric"
+        ]
+      },
+      {
+        "name": "Creta",
+        "variants": [
+          "GLS",
+          "GLS Limited",
+          "GLS Premium"
+        ]
+      }
+    ]
+  },
+  {
+    "name": "Kia",
+    "companyImage": "https://example.com/kia-logo.png",
+    "type": "car",
+    "models": [
+      {
+        "name": "Sportage",
+        "variants": [
+          "LX",
+          "EX",
+          "SX",
+          "X-Line",
+          "X-Pro"
+        ]
+      },
+      {
+        "name": "Sorento",
+        "variants": [
+          "LX",
+          "S",
+          "EX",
+          "SX",
+          "SX Prestige"
+        ]
+      },
+      {
+        "name": "Seltos",
+        "variants": [
+          "LX",
+          "S",
+          "EX",
+          "SX"
+        ]
+      },
+      {
+        "name": "Soul",
+        "variants": [
+          "LX",
+          "S",
+          "X-Line",
+          "EX",
+          "GT-Line"
+        ]
+      },
+      {
+        "name": "Carnival",
+        "variants": [
+          "LX",
+          "EX",
+          "SX",
+          "SX Prestige"
+        ]
+      },
+      {
+        "name": "Stinger",
+        "variants": [
+          "GT-Line",
+          "GT1",
+          "GT2"
+        ]
+      },
+      {
+        "name": "Forte",
+        "variants": [
+          "FE",
+          "LXS",
+          "GT-Line",
+          "EX",
+          "GT"
+        ]
+      },
+      {
+        "name": "Optima",
+        "variants": [
+          "LX",
+          "S",
+          "EX",
+          "SX"
+        ]
+      },
+      {
+        "name": "Telluride",
+        "variants": [
+          "LX",
+          "S",
+          "EX",
+          "SX",
+          "SX Prestige"
+        ]
+      },
+      {
+        "name": "Rio",
+        "variants": [
+          "LX",
+          "S"
+        ]
+      }
+    ]
+  },
+
+  
+
+  {
+    "name": "Ford",
+    "companyImage": "https://example.com/ford-logo.png",
+    "type": "car",
+    "models": [
+      {
+        "name": "Mustang",
+        "variants": [
+          "EcoBoost",
+          "GT",
+          "Mach 1",
+          "Shelby GT500"
+        ]
+      },
+      {
+        "name": "F-150",
+        "variants": [
+          "XL",
+          "XLT",
+          "Lariat",
+          "King Ranch",
+          "Platinum",
+          "Limited",
+          "Raptor"
+        ]
+      },
+      {
+        "name": "Explorer",
+        "variants": [
+          "Base",
+          "XLT",
+          "Limited",
+          "ST",
+          "Platinum",
+          "Timberline"
+        ]
+      },
+      {
+        "name": "Escape",
+        "variants": [
+          "S",
+          "SE",
+          "SEL",
+          "Titanium",
+          "Plug-In Hybrid"
+        ]
+      },
+      {
+        "name": "Edge",
+        "variants": [
+          "SE",
+          "SEL",
+          "ST-Line",
+          "Titanium",
+          "ST"
+        ]
+      },
+      {
+        "name": "Bronco",
+        "variants": [
+          "Base",
+          "Big Bend",
+          "Black Diamond",
+          "Outer Banks",
+          "Badlands",
+          "Wildtrak",
+          "First Edition"
+        ]
+      },
+      {
+        "name": "Ranger",
+        "variants": [
+          "XL",
+          "XLT",
+          "Lariat"
+        ]
+      },
+      {
+        "name": "Expedition",
+        "variants": [
+          "XL STX",
+          "XLT",
+          "Limited",
+          "King Ranch",
+          "Platinum"
+        ]
+      },
+      {
+        "name": "Fusion",
+        "variants": [
+          "S",
+          "SE",
+          "SEL",
+          "Titanium"
+        ]
+      },
+      {
+        "name": "Maverick",
+        "variants": [
+          "XL",
+          "XLT",
+          "Lariat"
+        ]
+      }
+    ]
+  },
+  
+
+
+  {
+    "name": "BMW",
+    "companyImage": "https://example.com/bmw-logo.png",
+    "type": "car",
+    "models": [
+      {
+        "name": "3 Series",
+        "variants": [
+          "330i",
+          "330e",
+          "M340i",
+          "M3"
+        ]
+      },
+      {
+        "name": "5 Series",
+        "variants": [
+          "530i",
+          "530e",
+          "540i",
+          "M550i",
+          "M5"
+        ]
+      },
+      {
+        "name": "7 Series",
+        "variants": [
+          "740i",
+          "750i",
+          "760i",
+          "M760i"
+        ]
+      },
+      {
+        "name": "X1",
+        "variants": [
+          "sDrive28i",
+          "xDrive28i"
+        ]
+      },
+      {
+        "name": "X3",
+        "variants": [
+          "sDrive30i",
+          "xDrive30i",
+          "M40i",
+          "X3 M"
+        ]
+      },
+      {
+        "name": "X5",
+        "variants": [
+          "sDrive40i",
+          "xDrive40i",
+          "xDrive45e",
+          "M50i",
+          "X5 M"
+        ]
+      },
+      {
+        "name": "X7",
+        "variants": [
+          "xDrive40i",
+          "xDrive50i",
+          "M50i"
+        ]
+      },
+      {
+        "name": "Z4",
+        "variants": [
+          "sDrive30i",
+          "M40i"
+        ]
+      },
+      {
+        "name": "i4",
+        "variants": [
+          "eDrive35",
+          "eDrive40",
+          "M50"
+        ]
+      },
+      {
+        "name": "iX",
+        "variants": [
+          "xDrive40",
+          "xDrive50",
+          "M60"
+        ]
+      }
+    ]
+  },
+  
+
+  {
+    "name": "Chevrolet",
+    "companyImage": "https://example.com/chevrolet-logo.png",
+    "type": "car",
+    "models": [
+      {
+        "name": "Camaro",
+        "variants": [
+          "LS",
+          "LT",
+          "SS",
+          "ZL1"
+        ]
+      },
+      {
+        "name": "Corvette",
+        "variants": [
+          "Stingray",
+          "Grand Sport",
+          "Z06",
+          "ZR1"
+        ]
+      },
+      {
+        "name": "Silverado",
+        "variants": [
+          "WT",
+          "LT",
+          "RST",
+          "LTZ",
+          "High Country"
+        ]
+      },
+      {
+        "name": "Tahoe",
+        "variants": [
+          "LS",
+          "LT",
+          "RST",
+          "Z71",
+          "Premier",
+          "High Country"
+        ]
+      },
+      {
+        "name": "Suburban",
+        "variants": [
+          "LS",
+          "LT",
+          "RST",
+          "Z71",
+          "Premier",
+          "High Country"
+        ]
+      },
+      {
+        "name": "Malibu",
+        "variants": [
+          "LS",
+          "RS",
+          "LT",
+          "Premier"
+        ]
+      },
+      {
+        "name": "Equinox",
+        "variants": [
+          "LS",
+          "LT",
+          "RS",
+          "Premier"
+        ]
+      },
+      {
+        "name": "Blazer",
+        "variants": [
+          "LT",
+          "RS",
+          "Premier"
+        ]
+      },
+      {
+        "name": "Traverse",
+        "variants": [
+          "LS",
+          "LT",
+          "RS",
+          "Premier",
+          "High Country"
+        ]
+      },
+      {
+        "name": "Trailblazer",
+        "variants": [
+          "LS",
+          "LT",
+          "ACTIV",
+          "RS"
+        ]
+      }
+    ]
+  },
+  
+  
+  {
+    "name": "Bentley",
+    "companyImage": "https://example.com/bentley-logo.png",
+    "type": "car",
+    "models": [
+      {
+        "name": "Continental GT",
+        "variants": [
+          "V8",
+          "W12",
+          "Speed",
+          "Convertible"
+        ]
+      },
+      {
+        "name": "Flying Spur",
+        "variants": [
+          "V8",
+          "W12",
+          "Hybrid",
+          "Speed"
+        ]
+      },
+      {
+        "name": "Bentayga",
+        "variants": [
+          "V8",
+          "W12",
+          "Hybrid",
+          "Speed"
+        ]
+      },
+      {
+        "name": "Mulsanne",
+        "variants": [
+          "Standard",
+          "Speed",
+          "Extended Wheelbase"
+        ]
+      },
+      {
+        "name": "Azure",
+        "variants": [
+          "Standard",
+          "Mulliner"
+        ]
+      }
+    ]
+  },
+
+  {
+    "name": "Acura",
+    "companyImage": "https://example.com/acura-logo.png",
+    "type": "car",
+    "models": [
+      {
+        "name": "MDX",
+        "variants": [
+          "Standard",
+          "Technology Package",
+          "A-Spec Package",
+          "Advance Package",
+          "Type S"
+        ]
+      },
+      {
+        "name": "RDX",
+        "variants": [
+          "Standard",
+          "Technology Package",
+          "A-Spec Package",
+          "Advance Package"
+        ]
+      },
+      {
+        "name": "TLX",
+        "variants": [
+          "Standard",
+          "Technology Package",
+          "A-Spec Package",
+          "Advance Package",
+          "Type S"
+        ]
+      },
+      {
+        "name": "ILX",
+        "variants": [
+          "Standard",
+          "Premium Package",
+          "A-Spec Package"
+        ]
+      },
+      {
+        "name": "NSX",
+        "variants": [
+          "Standard",
+          "Type S"
+        ]
+      },
+      {
+        "name": "Integra",
+        "variants": [
+          "Standard",
+          "A-Spec Package",
+          "A-Spec Technology Package"
+        ]
+      }
+    ]
+  }
+  
+  
+  ]
