@@ -33,3 +33,18 @@ export const postDataToServer = async (data) => {
     };
   }
 };
+
+
+
+
+export const fetchBrowseBlogsServer = async (type) => {
+  try {
+    const blogs = await await fetchAPI(`${API_ENDPOINTS.BROWSE_BLOGS}${type?`?type=${type}`:''}`);
+    return blogs?.data;
+  } catch (error) {
+    console.error("Error fetching dashboard data:", error);
+    return {
+      blogs: [],
+    };
+  }
+};

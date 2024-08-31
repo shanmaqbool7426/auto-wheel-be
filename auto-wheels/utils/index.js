@@ -71,3 +71,20 @@ export const reorderSlug = (slug,view,sortBy) => {
 
   return `/${dynamicSlug.join('/')}`;
 };
+ 
+export const formatToLacOrCrore = (value) => {
+  if (value >= 10000000) { 
+    return (value / 10000000).toFixed(1) + ' crore';
+  } else if (value >= 100000) { 
+    return (value / 100000).toFixed(1) + ' lac';
+  }
+  return value.toString(); 
+};
+
+
+
+export const formatToMonthYear=(dateString)=> {
+  const date = new Date(dateString);
+  const options = { year: 'numeric', month: 'long' };
+  return date.toLocaleDateString('en-US', options);
+}
