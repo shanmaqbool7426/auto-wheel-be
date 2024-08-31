@@ -7,9 +7,12 @@ const NewCarsPage =async (params) => {
   // let loading = true;
   const popularVehicles = await fetchVehiclsData('/t_car/cn_new/sb_price-asc');
   const fetchUpComingVehicles = await fetchVehiclsData('/t_car/cn_new/sb_upcoming');
-console.log('FetchVehicles fetchVehicles',fetchUpComingVehicles)
+  const fetchToyotaVehicles = await fetchVehiclsData('/t_car/cn_new/mk_toyota');
+  const fetchHondaVehicles = await fetchVehiclsData('/t_car/cn_new/mk_honda');
+
+console.log('fetchUpToyotaVehicles>>>>>>>',fetchToyotaVehicles)
   return (
-    <NewCarsModule makes={makesAndBodies?.makes} bodies={makesAndBodies?.bodies} popularVehicles={popularVehicles} fetchUpComingVehicles={fetchUpComingVehicles}/>
+    <NewCarsModule makes={makesAndBodies?.makes} bodies={makesAndBodies?.bodies} popularVehicles={popularVehicles} fetchUpComingVehicles={fetchUpComingVehicles}  fetchToyotaVehicles={fetchToyotaVehicles} fetchHondaVehicles={fetchHondaVehicles}/>
   )
 }
 
