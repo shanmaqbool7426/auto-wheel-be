@@ -30,7 +30,7 @@ const createVehicle = asyncHandler(async (req, res) => {
 
 
      ;;
-    }
+    } 
 
     const vehicleData = {
       ...rest,

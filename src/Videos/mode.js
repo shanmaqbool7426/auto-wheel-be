@@ -16,5 +16,15 @@ const videoSchema = new mongoose.Schema({
   }
 }, { timestamps: true });
 
+
+videoSchema.pre('save', function(next) {
+  if (!this.isModified('slug')) {
+    const baseSlug = `${this.title}`.toLowerCase().replace(/ /g, '-');
+    this.slug = `${baseSlug}-${this._id}`;
+    next();
+  }
+  next();
+});
+
 const Video= mongoose.model('Video', videoSchema);
 export default Video;
