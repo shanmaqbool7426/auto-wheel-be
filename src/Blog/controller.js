@@ -33,6 +33,16 @@ const createBlog = asyncHandler(async (req, res) => {
   responses.created(res, 'Blog post created successfully', blog);
 });
 
+const browseBlogs = asyncHandler(async (req, res) => {
+  const { page = 1, limit = 5 } = req.query;
+
+  const blogs = await Blog.find()
+    .populate('categories', 'name')
+    .populate('tags', 'name')
+    .skip((page - 1) * limit)
+    .limit(limit)
+    return responses.ok(res, 'blogs fetched successfully', blogs);
+})
 
 const getBlogs = asyncHandler(async (req, res) => {
   const { 0: routePath } = req.params;
@@ -255,5 +265,6 @@ export {
   getBlogs,
   getBlogById,
   updateBlog,
-  deleteBlog
+  deleteBlog,
+  browseBlogs
 };
