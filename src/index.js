@@ -13,6 +13,7 @@ import categoryRoutes from './Category/route.js'
 import commentRoutes from './Comment/route.js'
 import tagRoutes from './Tag/route.js'
 import blogRoutes from './Blog/route.js'
+import videoRoutes from './Videos/route.js'
 import {errorHandler} from "./Middleware/errorHandler.js"
 import { uploadOnCloudinary } from "./Utils/cloudinary.js";
 import morgan from "morgan"
@@ -53,6 +54,7 @@ app.use('/api/category', categoryRoutes);
 app.use('/api/comment', commentRoutes);
 app.use('/api/tag', tagRoutes);
 app.use('/api/blog', blogRoutes);
+app.use('/api/video', videoRoutes);
 
 const imageUploader=async(req,res)=>{
   console.log('Uploading image',req.file)
