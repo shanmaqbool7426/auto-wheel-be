@@ -6,15 +6,20 @@ import { uploadOnCloudinary } from '../Utils/cloudinary.js';
 const createVehicle = asyncHandler(async (req, res) => {
   try {
     const { specifications, features, contactInfo, seller, ...rest } = req.body;
+    console.log("🚀 ~ createVehicle ~ features:", features)
+    console.log("🚀 ~ createVehicle ~ req.body:", req.body)
 
     // Parse JSON fields
-    const parsedSpecifications = JSON.parse(specifications);
-    const parsedFeatures = JSON.parse(features);
-    const parsedContactInfo = JSON.parse(contactInfo);
+    // const parsedSpecifications = JSON.parse(specifications);
+    // const parsedFeatures = JSON.parse(features);
+    // const parsedContactInfo = JSON.parse(contactInfo);
+    const parsedSpecifications = typeof specifications === 'string' ? JSON.parse(specifications) : specifications;
+    const parsedFeatures = typeof features === 'string' ? JSON.parse(features) : features;
+    const parsedContactInfo = typeof contactInfo === 'string' ? JSON.parse(contactInfo) : contactInfo;
 
     let uploadedImages = [];
     let defaultImageUrl = null;
-    console.log(req.files.images, '')
+
     if (req.files) {
       const imageUploadPromises = [];
 
