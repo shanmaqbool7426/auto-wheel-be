@@ -12,6 +12,20 @@ const vehicleSchema = new mongoose.Schema({
     required: true,
     index: true
   },
+  carInfo:{
+     make: {
+      type: String,
+      required: true,
+    
+    },
+    model: {
+      type: String,
+         required: true,
+    },
+    variant: {
+      type: String,
+    }
+  },
   year: {
     type: Number,
     required: true,
@@ -51,7 +65,7 @@ const vehicleSchema = new mongoose.Schema({
   },
   registeredIn: {
     type: String,
-    enum: ['Registered', 'Un-Registered'],
+    enum: ['Registered', 'Un-Registered',"punjab","Sindh","karachi"],
     required: true,
   },
   price: {
@@ -64,7 +78,7 @@ const vehicleSchema = new mongoose.Schema({
     required: true,
   },
 
-  specifications: {
+ specifications: {
     stockId: { type: String, index: true },
     bodyType: { type: String, index: true },
     fuelType: { type: String, index: true },
@@ -79,6 +93,8 @@ const vehicleSchema = new mongoose.Schema({
     seats: { type: Number, min: 1, max: 9 },
     engineCapacity: { type: Number, min: 50, max: 1500 },
     payloadCapacity: { type: Number, min: 500, max: 50000 },
+    engineType: { type: String },
+    assembly: { type: String },
   },
   features: {
     type: [String],
@@ -140,7 +156,7 @@ const vehicleSchema = new mongoose.Schema({
 }, { timestamps: true });
 vehicleSchema.pre('save', function (next) {
   if (!this.isModified('slug')) {
-    const baseSlug = `${this.make}-${this.model}-${this.year}`.toLowerCase().replace(/ /g, '-');
+    const baseSlug = `${this.carInfo.make}-${this.carInfo.model}-${this.year}`.toLowerCase().replace(/ /g, '-');
     this.slug = `${baseSlug}-${this._id}`;
     next();
   }
