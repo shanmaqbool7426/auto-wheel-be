@@ -201,7 +201,19 @@ const getBlogs = asyncHandler(async (req, res) => {
       .lean();
 
     if (blog) {
-      return responses.ok(res, 'Blog post fetched successfully', { blog, type: 'blog' });
+      // Fetch the latest 5 blogs excluding the current blog
+      const blogs = await Blog.find({ _id: { $ne: blog._id } })
+        .populate('categories', 'name slug')
+        .populate('tags', 'name slug')
+        .sort({ publishDate: -1 })
+        .limit(5)
+        .lean();
+
+      return responses.ok(res, 'Blog post fetched successfully', {
+        blog,
+        blogs,
+        type: 'blog'
+      });
     }
   }
 
