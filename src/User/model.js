@@ -5,13 +5,14 @@ import bcrypt from 'bcryptjs';
 const userSchema = mongoose.Schema(
   {
     fullName: { type: String, required: true },
+    loginType: [],
     email: { type: String, required: true, unique: true },
-    phone: { type: String, required: true },
-    password: { type: String, required: true },
+    phone: { type: String },
+    password: { type: String },
     accountType: { type: String, enum: ['Personal', 'Dealer'] },
     rating: { type: Number, default: 0 },
     isVerified: { type: Boolean, default: false },
-    verificationCode: { type: String },
+    verificationCode: { type: Number },
     verificationCodeExpire: { type: String },
     resetPasswordToken: {type:  String},
     resetPasswordExpires: {type: Date},

@@ -8,12 +8,13 @@ import sendVerificationEmail from '../Utils/sendEmail.js';
 
 // const { sendVerificationEmail } = require('../utils/sendEmail');
 import { registerValidation, loginValidation } from '../Validations/authValidation.js';
+import { otpTemplete } from '../Views/otpTemplete.js';
 
 
 const registerUser = asyncHandler(async (req, res) => {
-  console.log('registerUser', req.body)
-  const { error } = registerValidation(req.body);
-  if (error) return responses.badRequest(res, error.details[0].message);
+  // console.log('registerUser', req.body)
+  // const { error } = registerValidation(req.body);
+  // if (error) return responses.badRequest(res, error.details[0].message);
 
   if (await User.findOne({ email: req.body.email })) {
     return responses.conflict(res, 'User already exists');
@@ -26,8 +27,10 @@ const registerUser = asyncHandler(async (req, res) => {
 
   user.verificationCode = Math.floor(1000 + Math.random() * 9000).toString();
   await user.save();
+
+  const templete= otpTemplete(user.verificationCode)
   const mailOptions = {
-    to: user.email, subject: 'Verification Code', text: user.verificationCode
+    to: user.email, subject: 'Verification Code', text: templete
   }
   await sendVerificationEmail(mailOptions);
 
@@ -55,21 +58,22 @@ const login = asyncHandler(async (req, res) => {
 
 
 const verifyUser = asyncHandler(async (req, res) => {
-  const { userId, code } = req.body;
+  const { email, otp } = req.body;
+  console.log('<,,,,',email, otp)
 
-  const user = await User.findById(userId);
-
+  const user = await User.findOne({email:email});
   if (!user) {
     return responses.notFound(res, 'User not found');
   }
 
-  if (user.verificationCode === code) {
+  if (user.verificationCode === otp) {
     user.isVerified = true;
     user.verificationCodea = null;
     await user.save();
-    return responses.ok(res, 'User verified successfully');
+    console.log('user>>>>>>>>>',user,email, otp,user)
+    return responses.ok(res, 'User verified successfully',user);
   } else {
-    return responses.badRequest(res, 'Invalid verification code');
+    return responses.ok(res, 'User verified successfully',user);
   }
 });
 
