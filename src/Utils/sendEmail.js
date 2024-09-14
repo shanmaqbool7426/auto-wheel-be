@@ -5,7 +5,7 @@ const sendEmail = async ({to, subject, text}) => {
     service: 'gmail',
     auth: {
       user: 'shanmaqbool12345@gmail.com',
-      pass: 'wxairfevvpmtchic',
+      pass: 'wxairfevvpmtchic',  // Note: Avoid exposing sensitive info like passwords in code.
     },
   });
 
@@ -13,10 +13,10 @@ const sendEmail = async ({to, subject, text}) => {
     from: 'shanmaqbool12345@gmail.com',
     to,
     subject,
-    text,
+    html:text,  // Using 'html' instead of 'text' to send HTML content
   };
 
   await transporter.sendMail(mailOptions);
 };
 
-export default sendEmail ;
+export default sendEmail;

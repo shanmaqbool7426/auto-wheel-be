@@ -2,51 +2,12 @@ import asyncHandler from 'express-async-handler';
 import Vehicle from './model.js';
 import response from "../Utils/response.js";
 import { uploadOnCloudinary } from '../Utils/cloudinary.js';
+import Review from '../Review/model.js';
 
 const createVehicle = asyncHandler(async (req, res) => {
   try {
-    const { specifications, features, contactInfo, seller, ...rest } = req.body;
-    console.log("🚀 ~ createVehicle ~ features:", features)
-    console.log("🚀 ~ createVehicle ~ req.body:", req.body)
-
-    // Parse JSON fields
-    // const parsedSpecifications = JSON.parse(specifications);
-    // const parsedFeatures = JSON.parse(features);
-    // const parsedContactInfo = JSON.parse(contactInfo);
-    const parsedSpecifications = typeof specifications === 'string' ? JSON.parse(specifications) : specifications;
-    const parsedFeatures = typeof features === 'string' ? JSON.parse(features) : features;
-    const parsedContactInfo = typeof contactInfo === 'string' ? JSON.parse(contactInfo) : contactInfo;
-
-    let uploadedImages = [];
-    let defaultImageUrl = null;
-
-    if (req.files) {
-      const imageUploadPromises = [];
-
-      if (req.files.images) {
-        req.files.images.forEach((file) => {
-          imageUploadPromises.push(uploadOnCloudinary(file.path));
-        });
-      }
-
-      if (req.files.defaultImage) {
-        imageUploadPromises.push(uploadOnCloudinary(req.files.defaultImage[0].path));
-      }
-
-
-     ;;
-    } 
-
-    const vehicleData = {
-      ...rest,
-      specifications: parsedSpecifications,
-      features: parsedFeatures,
-      contactInfo: parsedContactInfo,
-      images: uploadedImages,
-      defaultImage: defaultImageUrl || rest.defaultImage,
-    };
-
-    const vehicle = new Vehicle(vehicleData);
+    console.log('>>>>>>>-2',req.body)
+    const vehicle = new Vehicle(req.body);
     await vehicle.save();
     response.ok(res, "Vehicle Created Successfully", vehicle);
   } catch (error) {
@@ -92,6 +53,8 @@ const getBrowseByVehicles = asyncHandler(async (req, res) => {
 
 const getListVehicles = asyncHandler(async (req, res) => {
   const pathSegments = req.params[0].split('/'); 
+  const features = [];
+  console.log('>>>>>>>>>111',pathSegments)
   const filters = {};
   const options = {
     limit: parseInt(req.query.limit, 10) || 10,
@@ -121,6 +84,12 @@ const getListVehicles = asyncHandler(async (req, res) => {
       case 'ct':
         cities.push(value);
         break;
+        case 'ft':
+        if (value === 'featured') {
+          features.push('featured'); // Add 'featured' to features filter
+        }
+        break;
+
       case 'bt':
         bodyTypes.push(value);
         break;
@@ -194,6 +163,10 @@ if (filters.condition && filters.condition.$regex && filters.condition.$regex ==
   if (bodyTypes.length > 0) {
     filters['specifications.bodyType'] = { $in: bodyTypes.map(bodyType => new RegExp(`${bodyType.trim()}`, 'i')) };
   }
+  console.log('pathSegments>>',pathSegments)
+  if (pathSegments.includes('ft_featured')) {
+    filters.featured = true;
+    }
   
   options.skip = (page - 1) * options.limit;
 
@@ -249,11 +222,17 @@ if (filters.condition && filters.condition.$regex && filters.condition.$regex ==
 export default getListVehicles;
 
 const getVehicleBySlug = asyncHandler(async (req, res) => {
-  const { slug } = req.params; 
+  const { slug } = req.params;
   console.log('slug:', slug);
 
   try {
-    const vehicleDetail = await Vehicle.findOne({ slug }); 
+    // Find the vehicle by slug and increment the views count
+    const vehicleDetail = await Vehicle.findOneAndUpdate(
+      { slug },
+      { $inc: { views: 1 } },  // Increment the views count by 1
+      { new: true }            // Return the updated document
+    );
+
     if (!vehicleDetail) {
       return response.notFound(res, 'Vehicle not found');
     }
@@ -264,6 +243,7 @@ const getVehicleBySlug = asyncHandler(async (req, res) => {
     return response.serverError(res, 'An error occurred while retrieving vehicle details');
   }
 });
+
 
 const getSimilarVehicles = asyncHandler(async (req, res) => {
   try {
@@ -295,4 +275,70 @@ const getSimilarVehicles = asyncHandler(async (req, res) => {
   }
 });
 
-export { createVehicle, getBrowseByVehicles, getListVehicles, getVehicleBySlug, getSimilarVehicles }
+const getPopularVehicles = asyncHandler(async (req, res) => {
+  try {
+    const popularVehicles = await Vehicle.find()
+      .sort({ views: -1 }) 
+      .limit(8);          
+
+    if (popularVehicles.length === 0) {
+      return response.notFound(res, 'No vehicles found');
+    }
+
+    return response.ok(res, 'Popular vehicles retrieved successfully', popularVehicles);
+  } catch (error) {
+    console.error('Error retrieving popular vehicles:', error);
+    return response.serverError(res, 'An error occurred while retrieving popular vehicles');
+  }
+});
+
+
+const getPopularVehiclesByReviews = asyncHandler(async (req, res) => {
+  try {
+    const popularVehicles = await Review.aggregate([
+      {
+        $group: {
+          _id: '$vehicle',              // Group by vehicle ID
+          reviewCount: { $sum: 1 }      // Count the number of reviews per vehicle
+        }
+      },
+      {
+        $sort: { reviewCount: -1 }      // Sort by review count in descending order
+      },
+      {
+        $limit: 8                       // Limit the results to 8 vehicles
+      },
+      {
+        $lookup: {                       // Join with Vehicle collection to get vehicle details
+          from: 'vehicles',              // Name of the vehicles collection
+          localField: '_id',             // The field from the reviews collection (vehicle ID)
+          foreignField: '_id',           // The field from the vehicles collection (vehicle ID)
+          as: 'vehicleDetails'           // The alias for the joined data
+        }
+      },
+      {
+        $unwind: '$vehicleDetails'       // Unwind the vehicle details array
+      },
+      {
+        $project: {
+          _id: 0,                        // Exclude the grouped _id (vehicle ID)
+          vehicle: '$vehicleDetails',    // Include full vehicle details
+          reviewCount: 1                 // Include review count
+        }
+      }
+    ]);
+
+    if (!popularVehicles.length) {
+      return response.notFound(res, 'No vehicles found');
+    }
+
+    return response.ok(res, 'Popular vehicles retrieved successfully', popularVehicles);
+  } catch (error) {
+    console.error('Error retrieving popular vehicles by reviews:', error);
+    return response.serverError(res, 'An error occurred while retrieving popular vehicles by reviews');
+  }
+});
+
+
+
+export { createVehicle, getBrowseByVehicles, getListVehicles, getVehicleBySlug, getSimilarVehicles, getPopularVehicles, getPopularVehiclesByReviews }

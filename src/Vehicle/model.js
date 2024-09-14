@@ -91,8 +91,8 @@ const vehicleSchema = new mongoose.Schema({
     interiorColor: { type: String, index: true },
     doors: { type: Number, min: 2, max: 5 },
     seats: { type: Number, min: 1, max: 9 },
-    engineCapacity: { type: Number, min: 50, max: 1500 },
-    payloadCapacity: { type: Number, min: 500, max: 50000 },
+    engineCapacity: { type: Number  },
+    payloadCapacity: { type: Number },
     engineType: { type: String },
     assembly: { type: String },
   },
@@ -111,6 +111,10 @@ const vehicleSchema = new mongoose.Schema({
     type: [String]
   },
 
+  featured: {
+    type: Boolean,
+    default: false,
+  },
   views: {
     type: Number,
     default: 0,
@@ -138,11 +142,11 @@ const vehicleSchema = new mongoose.Schema({
     mobileNumber: {
       type: String,
       required: true,
-      match: /^[0-9]{11}$/
+      // match: /^[0-9]{11}$/
     },
     secondaryNumber: {
       type: String,
-      match: /^[0-9]{11}$/
+      // match: /^[0-9]{11}$/
     },
     allowWhatsAppContact: {
       type: Boolean,

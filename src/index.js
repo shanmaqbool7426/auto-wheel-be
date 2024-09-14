@@ -14,6 +14,7 @@ import commentRoutes from './Comment/route.js'
 import tagRoutes from './Tag/route.js'
 import blogRoutes from './Blog/route.js'
 import videoRoutes from './Videos/route.js'
+import reviewRoutes from './Review/route.js'
 import {errorHandler} from "./Middleware/errorHandler.js"
 import { uploadOnCloudinary } from "./Utils/cloudinary.js";
 import morgan from "morgan"
@@ -54,16 +55,23 @@ app.use('/api/category', categoryRoutes);
 app.use('/api/comment', commentRoutes);
 app.use('/api/tag', tagRoutes);
 app.use('/api/blog', blogRoutes);
+app.use('/api/reviews', reviewRoutes);
 app.use('/api/video', videoRoutes);
 
-const imageUploader=async(req,res)=>{
-  console.log('Uploading image',req.file)
-  const url = await uploadOnCloudinary(req.file?.path)
-  return responses.created(res, 'image received', url);
+app.use('/upload-image', upload.array('images', 10), async (req, res) => {
+  try {
+    const files = req.files; // This will contain all uploaded images
+    const urls = await Promise.all(files.map(async (file) => {
+      const result = await uploadOnCloudinary(file.path);
+      return result.secure_url; // Return only the secure_url
+    }));
+    
+    return responses.created(res, 'Images received', urls); // Return the list of uploaded URLs
+  } catch (error) {
+    return responses.badRequest(res, 'Image upload failed');
+  }
+});
 
-}
-app.use('/upload-image',upload.single("image"), imageUploader)
-// app.use(notFound); 
 
 app.use(errorHandler);
 
