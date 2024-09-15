@@ -1,6 +1,10 @@
 import mongoose from 'mongoose';
 const reviewSchema = new mongoose.Schema({
-  vehicle: { type: String },
+  vehicle: {    
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "NewVehicle"
+
+  },
   username: { type: String },
   ratings: {
     mileage: { type: Number},

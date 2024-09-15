@@ -14,6 +14,7 @@ import commentRoutes from './Comment/route.js'
 import tagRoutes from './Tag/route.js'
 import blogRoutes from './Blog/route.js'
 import videoRoutes from './Videos/route.js'
+import newVehicleRoutes from './NewVehicle/route.js'
 import reviewRoutes from './Review/route.js'
 import {errorHandler} from "./Middleware/errorHandler.js"
 import { uploadOnCloudinary } from "./Utils/cloudinary.js";
@@ -57,6 +58,7 @@ app.use('/api/tag', tagRoutes);
 app.use('/api/blog', blogRoutes);
 app.use('/api/reviews', reviewRoutes);
 app.use('/api/video', videoRoutes);
+app.use('/api/new-vehicles', newVehicleRoutes);
 
 app.use('/upload-image', upload.array('images', 10), async (req, res) => {
   try {
