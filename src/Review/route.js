@@ -10,7 +10,7 @@ const router = express.Router();
 
 router.post('/', submitReview);
 router.get('/', getAllReviews);
-router.get('/by-vehicle', getAllReviewsbyVehicle);
+router.get('/by-vehicle/:vehicle', getAllReviewsbyVehicle);
 // router.get('/', getAllComments);
 // router.get('/:id', getCommentById);
 // router.put('/:id', updateComment);
