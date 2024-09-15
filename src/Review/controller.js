@@ -10,9 +10,9 @@ const submitReview = asyncHandler(async (req, res) => {
     return res.status(400).json({ message: 'Ratings are required' });
   }
 
-  const { mileage, safety, comfort, maintenance, performance, feature } = ratings;
+  const { mileage, safety, comfort, maintenance, performance, features } = ratings;
 
-  const totalRatings = mileage + safety + comfort + maintenance + performance + feature;
+  const totalRatings = mileage + safety + comfort + maintenance + performance + features;
   const overAllRating = totalRatings / 6;
 
   const newReview = await Review.create({
@@ -24,7 +24,7 @@ const submitReview = asyncHandler(async (req, res) => {
       comfort,
       maintenance,
       performance,
-      feature,
+      features,
     },
     overAllRating,   
     comment: reviewText,   

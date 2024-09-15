@@ -8,7 +8,9 @@ import {
   updateNewVehicle,
   deleteNewVehicle,
   getUpcomingNewVehicles,
-  getVehiclesByMake
+  getVehiclesByMake,
+  getPopularVehiclesByReviews,
+  getNewlyLaunchedVehicles
 } from "./controller.js";  // Import new vehicle controller
 
 const router = express.Router();
@@ -23,6 +25,9 @@ router.get('/', getListNewVehicles);
 
 // Get popular new vehicles based on views
 router.get('/popular', getPopularNewVehicles);
+
+// Get  newly launched vehicles 
+router.get('/newly-launched', getNewlyLaunchedVehicles);
 
 // Get upcoming new vehicles (releaseDate in the future)
 router.get('/upcoming', getUpcomingNewVehicles);
@@ -41,7 +46,6 @@ router.delete('/:id', deleteNewVehicle);
 
 // Get details of a new vehicle by slug
 router.get('/:slug', getNewVehicleBySlug);
-
 
 
 
