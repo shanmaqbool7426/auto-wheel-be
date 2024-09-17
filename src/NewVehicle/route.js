@@ -36,7 +36,7 @@ router.get('/upcoming', getUpcomingNewVehicles);
 router.get('/similar/:vehicleId', getSimilarNewVehicles);
 
 // Get vehicles by make
-router.get('/make/:make', getVehiclesByMake);
+router.get('/make', getVehiclesByMake);
 
 // Update a new vehicle by ID
 router.put('/update/:id', updateNewVehicle);

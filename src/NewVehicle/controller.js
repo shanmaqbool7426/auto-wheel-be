@@ -223,61 +223,72 @@ const getSimilarNewVehicles = asyncHandler(async (req, res) => {
 
 // Get popular vehicles based on views
 const getPopularNewVehicles = asyncHandler(async (req, res) => {
-    try {
+  try {
       const { type, make } = req.query;
-      
+
       // Build the filter based on query parameters
       const filter = {
-        ...(type && { type }), // Add type to filter if provided
-        ...(make && { make })  // Add make to filter if provided
+          ...(type && { type }), // Add type to filter if provided
+          ...(make && { make })  // Add make to filter if provided
       };
-  
+
       const popularVehicles = await NewVehicle.aggregate([
-        { $match: filter },  // Match the filter for type and make if provided
-        { $sort: { views: -1 } },  // Sort by views in descending order
-        { $limit: 8 },  // Limit the results to 8 vehicles
-        {
-          $lookup: {
-            from: 'reviews',  // Join with the reviews collection
-            localField: '_id',  // Vehicle ID in NewVehicle
-            foreignField: 'vehicle',  // Vehicle reference in Review
-            as: 'reviews'  // Store the reviews data
+          { $match: filter },  // Match the filter for type and make if provided
+          { $sort: { views: -1 } },  // Sort by views in descending order
+          { $limit: 8 },  // Limit the results to 8 vehicles
+          {
+              $lookup: {
+                  from: 'reviews',  // Join with the reviews collection
+                  localField: '_id',  // Vehicle ID in NewVehicle collection
+                  foreignField: 'vehicle',  // Match with vehicle reference in Review collection
+                  as: 'reviews'  // Store the reviews data
+              }
+          },
+          {
+              $addFields: {
+                  averageRating: {
+                      $cond: {
+                          if: { $gt: [{ $size: '$reviews' }, 0] },  // Check if there are any reviews
+                          then: { 
+                              $round: [{ $avg: '$reviews.overAllRating' }, 4]  // Calculate the average rating and round to 4 decimal places
+                          },  
+                          else: null  // If no reviews, return null
+                      }
+                  },
+                  reviewCount: { $size: '$reviews' }  // Count the number of reviews
+              }
+          },
+          {
+              $project: {
+                  _id: 1,
+                  make: 1,
+                  model: 1,
+                  variant: 1,
+                  type: 1,
+                  slug: 1,
+                  views: 1,
+                  minPrice: 1,
+                  maxPrice: 1,
+                  year: 1,
+                  defaultImage: 1,
+                  averageRating: 1,  // Include average rating
+                  reviewCount: 1,    // Include review count
+              }
           }
-        },
-        {
-          $addFields: {
-            averageRating: {
-              $avg: '$reviews.overAllRating'  // Calculate the average rating from reviews
-            },
-            reviewCount: { $size: '$reviews' }  // Count the number of reviews
-          }
-        },
-        {
-          $project: {
-            _id: 1,
-            make: 1,
-            model: 1,
-            variant: 1,
-            type: 1,
-            slug:1,
-            views: 1,
-            defaultImage: 1,
-            averageRating: 1,  // Include average rating
-            reviewCount: 1,    // Include review count
-          }
-        }
       ]);
-  
+
       if (!popularVehicles.length) {
-        return response.notFound(res, 'No popular vehicles found');
+          return response.notFound(res, 'No popular vehicles found');
       }
-  
+
       response.ok(res, 'Popular vehicles retrieved successfully', popularVehicles);
-    } catch (error) {
+  } catch (error) {
       console.error('Error retrieving popular vehicles:', error);
       return response.serverError(res, 'Error retrieving popular vehicles', error);
-    }
-  });
+  }
+});
+
+
 
 
 // API to Get Upcoming Vehicles (releaseDate in the future)
@@ -303,8 +314,7 @@ const getUpcomingNewVehicles = asyncHandler(async (req, res) => {
   // API to Get Vehicles by Make
   const getVehiclesByMake = asyncHandler(async (req, res) => {
     try {
-      const { make } = req.params;
-      const { type } = req.query;
+      const { type ,make} = req.query;
   
       if (!make) {
         return response.badRequest(res, 'Make is required');
