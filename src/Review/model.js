@@ -1,25 +1,24 @@
 import mongoose from 'mongoose';
 const reviewSchema = new mongoose.Schema({
-  vehicle: {    
-    type: mongoose.Schema.Types.ObjectId,
-    ref: "NewVehicle"
-
+  vehicle: {
+    type: String
   },
   username: { type: String },
+  makeAndModel: { type: String },
   ratings: {
-    mileage: { type: Number},
+    mileage: { type: Number },
     maintenance: { type: Number },
     safety: { type: Number },
     comfort: { type: Number },
     features: { type: Number },
     performance: { type: Number },
   },
-  title: { type: String},
+  title: { type: String },
   comment: { type: String },
   overAllRating: { type: String },
-type:{type: String}
-},{timestamps: true});
+  type: { type: String }
+}, { timestamps: true });
 
-const Review= mongoose.model('Review', reviewSchema);
+const Review = mongoose.model('Review', reviewSchema);
 
 export default Review

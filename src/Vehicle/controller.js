@@ -209,7 +209,7 @@ if (filters.condition && filters.condition.$regex && filters.condition.$regex ==
     driveCounts: aggregationResult.driveCounts || [],
     cityAreaCounts: aggregationResult.cityAreaCounts || []
   };
-
+console.log("vehicles>>>>>",vehicles)
   const vehiclesResponse = {
     results: vehicles,
     count: totalVehicles,

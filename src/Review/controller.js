@@ -3,7 +3,7 @@ import asyncHandler from 'express-async-handler';
 import responses from "../Utils/response.js";
 
 const submitReview = asyncHandler(async (req, res) => {
-  const { vehicle, ratings, reviewText, reviewTitle,type } = req.body;
+  const { vehicle, ratings, reviewText, reviewTitle,type,makeAndModel } = req.body;
   
   // Ensure ratings are provided
   if (!ratings) {
@@ -11,7 +11,7 @@ const submitReview = asyncHandler(async (req, res) => {
   }
 
   const { mileage, safety, comfort, maintenance, performance, features } = ratings;
-
+console.log('Ratings',mileage, safety, comfort, maintenance, performance, features)
   const totalRatings = mileage + safety + comfort + maintenance + performance + features;
   const overAllRating = totalRatings / 6;
 
@@ -51,39 +51,85 @@ const getAllReviewsbyVehicle = asyncHandler(async (req, res) => {
 
 
 const getAllReviews = asyncHandler(async (req, res) => {
-  const { filterType } = req.query; // Assuming filterType is passed in query, like 'service', 'mileage', 'looks'
-  
-  // Define the allowed filter types
+  const { filterType } = req.query; // Not using makeAndModel since you won't provide it
+
   const validFilters = ['service', 'mileage', 'looks', 'comfort', 'space', 'power'];
 
   // Check if filterType is valid
-  if (!validFilters.includes(filterType) && filterType !== 'all') {
+  if (filterType && !validFilters.includes(filterType) && filterType !== 'all') {
     return res.status(400).json({ message: 'Invalid filter type' });
   }
 
+  // Initialize the filter object
   let filter = {};
+
+  // If a filterType is provided, add the corresponding filter for the rating type
   if (filterType && filterType !== 'all') {
     filter[`ratings.${filterType}`] = { $exists: true };
   }
 
-  const reviews = await Review.find(filter);
+  // Fetch the most recent review
+  const lastReview = await Review.findOne(filter).sort({ createdAt: -1 });
 
-  // Get counts for each rating type
-  const counts = await Review.aggregate([
+  if (!lastReview) {
+    return res.status(200).json({ message: 'No reviews found' });
+  }
+
+  // Get the vehicle identifier from the last review (adjust according to your schema)
+  const vehicleIdentifier = lastReview.vehicle || lastReview.makeAndModel;
+
+  // Now, fetch all reviews for this vehicle
+  filter['vehicle'] = vehicleIdentifier;
+
+  const reviews = await Review.find(filter).sort({ createdAt: -1 });
+
+  // Get counts and overall average rating for this vehicle
+  const stats = await Review.aggregate([
+    { $match: filter },
     {
       $group: {
         _id: null,
+        // Counts for each rating type
         service: { $sum: { $cond: [{ $ifNull: ['$ratings.service', false] }, 1, 0] } },
         mileage: { $sum: { $cond: [{ $ifNull: ['$ratings.mileage', false] }, 1, 0] } },
         looks: { $sum: { $cond: [{ $ifNull: ['$ratings.looks', false] }, 1, 0] } },
         comfort: { $sum: { $cond: [{ $ifNull: ['$ratings.comfort', false] }, 1, 0] } },
         space: { $sum: { $cond: [{ $ifNull: ['$ratings.space', false] }, 1, 0] } },
         power: { $sum: { $cond: [{ $ifNull: ['$ratings.power', false] }, 1, 0] } },
-        total: { $sum: 1 }
+        total: { $sum: 1 },
+        // Sum of overall ratings
+        totalRating: {
+          $sum: {
+            $toDouble: '$overAllRating' // Convert overAllRating to a number
+          }
+        }
+      }
+    },
+    {
+      $project: {
+        _id: 0,
+        service: 1,
+        mileage: 1,
+        looks: 1,
+        comfort: 1,
+        space: 1,
+        power: 1,
+        total: 1,
+        // Calculate average rating and round to one decimal place
+        averageRating: {
+          $cond: [
+            { $gt: ['$total', 0] },
+            { $round: [{ $divide: ['$totalRating', '$total'] }, 1] }, // Rounds to 1 decimal place
+            null
+          ]
+        }
       }
     }
   ]);
-  return responses.ok(res, 'Review fetched successfully', {reviews, counts: counts[0] });
+
+  return responses.ok(res, 'Reviews fetched successfully', { reviews, stats: stats[0] });
 });
+
+
 
 export {submitReview,getAllReviews,getAllReviewsbyVehicle}
