@@ -384,7 +384,62 @@ const getBlogs = asyncHandler(async (req, res) => {
       });
     }
   }
-
+  // Tag route handling
+  if (parts.length >= 2 && parts[0] === 'tag') {
+    const tagSlug = parts[1];
+    if (parts.length === 4 && parts[2] === 'page') {
+      currentPage = parseInt(parts[3]);
+    }
+  
+    const tag = await Tag.findOne({ slug: tagSlug }).lean();
+    if (tag) {
+      const tagBlogsQuery = Blog.find({ tags: tag._id })
+        .populate('categories', 'name slug')
+        .populate('tags', 'name slug description')
+        .sort({ publishDate: -1 });
+  
+      const [tagBlogs, totalBlogs] = await Promise.all([
+        paginateQuery(tagBlogsQuery),
+        Blog.countDocuments({ tags: tag._id })
+      ]);
+  
+      // Extract the blog IDs from the tagBlogs result
+      const blogIds = tagBlogs.map(blog => blog._id);
+  
+      // Aggregate the comment counts for these blogs
+      const commentCounts = await Comment.aggregate([
+        { $match: { postId: { $in: blogIds }, status: 'approved' } },
+        {
+          $group: {
+            _id: "$postId",
+            count: { $sum: 1 }
+          }
+        }
+      ]);
+  
+      // Create a map of comment counts for quick lookup
+      const commentCountMap = commentCounts.reduce((acc, curr) => {
+        acc[curr._id] = curr.count;
+        return acc;
+      }, {});
+  
+      // Add commentCount to each blog
+      tagBlogs.forEach(blog => {
+        blog.commentCount = commentCountMap[blog._id] || 0;
+      });
+  
+      return responses.ok(res, 'Tag blogs fetched successfully', {
+        tag: tag.name,
+        slug: tag.slug,
+        blogs: tagBlogs,
+        count: totalBlogs,
+        totalPages: Math.ceil(totalBlogs / limit),
+        currentPage,
+        type: 'tag'
+      });
+    }
+  }
+  
   // Single blog post route handling
   if (parts.length === 1) {
     const blogSlug = parts[0];
@@ -427,7 +482,7 @@ const getBlogs = asyncHandler(async (req, res) => {
         blog.commentCount = relatedCommentCountMap[blog._id] || 0;
       });
     // Increment the views for the main vehicle
-      await Blog.findOneAndUpdate({ slug: blogSlug }, { $inc: { viewCount: 1 } });
+      await Blog.findOneAndUpdate({ blogSlug }, { $inc: { viewCount: 1 } });
       return responses.ok(res, 'Blog post fetched successfully', {
         blog,
         comments,
