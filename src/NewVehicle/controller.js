@@ -67,61 +67,106 @@ const getListNewVehicles = asyncHandler(async (req, res) => {
 
 // Get vehicle details by slug
 const getNewVehicleBySlug = asyncHandler(async (req, res) => {
-    const { slug } = req.params;
-  
-    try {
-      // Aggregate vehicle details and reviews by slug
-      const vehicle = await NewVehicle.aggregate([
-        {
-          $match: { slug },  // Match vehicle by slug
-        },
-        {
-          $lookup: {
-            from: 'reviews',  // Join with the reviews collection
-            localField: '_id',  // Vehicle ID in NewVehicle
-            foreignField: 'vehicle',  // Vehicle reference in Review
-            as: 'reviews',  // Store the joined reviews data
-            pipeline: [
-              {
-                $group: {
-                  _id: '$vehicle',
-                  averageRating: { $avg: { $toDouble: '$overAllRating' } },  // Convert string to double and calculate average
-                  reviewCount: { $sum: 1 }  // Count the number of reviews
-                }
+  const { slug } = req.params;
+
+  try {
+    // Aggregate vehicle details and reviews by slug for the main vehicle
+    const vehicle = await NewVehicle.aggregate([
+      {
+        $match: { slug },  // Match vehicle by slug
+      },
+      {
+        $lookup: {
+          from: 'reviews',  // Join with the reviews collection
+          localField: '_id',  // Vehicle ID in NewVehicle
+          foreignField: 'vehicle',  // Vehicle reference in Review
+          as: 'reviews',  // Store the joined reviews data
+          pipeline: [
+            {
+              $group: {
+                _id: '$vehicle',
+                averageRating: { $avg: { $toDouble: '$overAllRating' } },  // Convert string to double and calculate average
+                reviewCount: { $sum: 1 }  // Count the number of reviews
               }
-            ]
-          }
-        },
-        {
-          $addFields: {
-            averageRating: { $arrayElemAt: ['$reviews.averageRating', 0] },  // Get the first (and only) element
-            reviewCount: { $arrayElemAt: ['$reviews.reviewCount', 0] }  // Get the first (and only) element
-          }
-        },
-        {
-          $project: {
-            vehicleDetails: '$$ROOT',  // Include all vehicle fields
-            averageRating: { $ifNull: ['$averageRating', 0] },  // Default to 0 if no reviews
-            reviewCount: { $ifNull: ['$reviewCount', 0] }  // Default to 0 if no reviews
-          }
+            }
+          ]
         }
-      ]);
-  
-      // Check if the vehicle exists
-      if (!vehicle.length) {
-        return response.notFound(res, 'Vehicle not found');
+      },
+      {
+        $addFields: {
+          averageRating: { $arrayElemAt: ['$reviews.averageRating', 0] },  // Get the first (and only) element
+          reviewCount: { $arrayElemAt: ['$reviews.reviewCount', 0] }  // Get the first (and only) element
+        }
+      },
+      {
+        $project: {
+          vehicleDetails: '$$ROOT',  // Include all vehicle fields
+          averageRating: { $ifNull: ['$averageRating', 0] },  // Default to 0 if no reviews
+          reviewCount: { $ifNull: ['$reviewCount', 0] }  // Default to 0 if no reviews
+        }
       }
-  
-      // Increment the views
-      await NewVehicle.findOneAndUpdate({ slug }, { $inc: { views: 1 } });
-  
-      // Return the vehicle details along with the ratings
-      response.ok(res, 'Vehicle details retrieved successfully', vehicle[0]);
-    } catch (error) {
-      console.error('Error retrieving vehicle:', error);
-      return response.serverError(res, 'Error retrieving vehicle details', error);
+    ]);
+
+    // Check if the vehicle exists
+    if (!vehicle.length) {
+      return response.notFound(res, 'Vehicle not found');
     }
-  });
+
+    // Extract the make and model from the found vehicle
+    const { make, model } = vehicle[0].vehicleDetails;
+
+    // Find all variants of the same model and make, except the current one, but exclude rating details
+    const variants = await NewVehicle.aggregate([
+      {
+        $match: { make, model, slug: { $ne: slug } }  // Match variants but exclude the current vehicle
+      },
+      {
+        $project: {
+          _id: 1,
+          make: 1,
+          model: 1,
+          variant: 1,
+          type: 1,
+          slug: 1,
+          releaseDate: 1,
+          year: 1,
+          minPrice: 1,
+          maxPrice: 1,
+          description: 1,
+          defaultImage: 1,
+          images: 1,
+          dimensions: 1,
+          engine: 1,
+          transmission: 1,
+          fuelCapacity: 1,
+          fuelAverage: 1,
+          starting: 1,
+          topSpeed: 1,
+          dryWeight: 1,
+          frame: 1,
+          groundClearance: 1,
+          wheelSize: 1,
+          tyres: 1,
+          colorsAvailable: 1,  // Include the fields without rating details
+        }
+      }
+    ]);
+
+    // Increment the views for the main vehicle
+    await NewVehicle.findOneAndUpdate({ slug }, { $inc: { views: 1 } });
+
+    // Return the vehicle details along with the variants
+    response.ok(res, 'Vehicle details retrieved successfully', {
+      vehicleDetails: vehicle[0].vehicleDetails,
+      variants: variants.length ? variants : []  // Include variants or empty array if none
+    });
+  } catch (error) {
+    console.error('Error retrieving vehicle:', error);
+    return response.serverError(res, 'Error retrieving vehicle details', error);
+  }
+});
+
+
   
 
 // // Update a vehicle by ID
