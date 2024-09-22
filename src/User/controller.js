@@ -160,6 +160,29 @@ const getReports = asyncHandler(async (req, res) => {
 });
 
 
+const getDealers = asyncHandler(async (req, res) => {
+  const { type, make, location, sort } = req.query;
+  let query = { accountType: 'Dealer' };
+
+  if (type) query.type = type;
+  if (make) query.make = make;
+  if (location) query.location = { $regex: location, $options: 'i' };
+
+  let sortOption = {};
+  if (sort === 'rating') {
+    sortOption = { rating: -1 };
+  } else if (sort === 'ads') {
+    sortOption = { adsCount: -1 };
+  }
+
+  const dealers = await User.find(query)
+    .sort(sortOption)
+    .select('fullName rating adsCount phone location');
+
+  return responses.ok(res, 'Dealers fetched successfully', dealers);
+});
+
+
 export {
   registerUser,
   login,
@@ -168,4 +191,5 @@ export {
   verifyUser,
   requestPasswordReset,
   resetPassword,
+  getDealers
 };

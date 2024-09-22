@@ -3,6 +3,12 @@ const reviewSchema = new mongoose.Schema({
   vehicle: {
     type: String
   },
+  vehicleId: 
+    {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "NewVehicle"
+    }
+  ,
   username: { type: String },
   makeAndModel: { type: String },
   ratings: {
@@ -14,6 +20,7 @@ const reviewSchema = new mongoose.Schema({
     performance: { type: Number },
   },
   title: { type: String },
+  reviewBy: { type: String },
   comment: { type: String },
   overAllRating: { type: String },
   type: { type: String }

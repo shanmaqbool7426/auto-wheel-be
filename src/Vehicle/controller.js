@@ -277,7 +277,8 @@ const getSimilarVehicles = asyncHandler(async (req, res) => {
 
 const getPopularVehicles = asyncHandler(async (req, res) => {
   try {
-    const popularVehicles = await Vehicle.find()
+   const {type}= req.query
+    const popularVehicles = await Vehicle.find({type:type})
       .sort({ views: -1 }) 
       .limit(8);          
 

@@ -14,10 +14,11 @@ const userSchema = mongoose.Schema(
     isVerified: { type: Boolean, default: false },
     verificationCode: { type: Number },
     verificationCodeExpire: { type: String },
-    resetPasswordToken: {type:  String},
-    resetPasswordExpires: {type: Date},
-    reports:[{vehicle: { type: mongoose.Schema.Types.ObjectId, ref:"Vehicle"} , reason:{type: String}}] 
-    },
+    resetPasswordToken: { type: String },
+    adsCount: [],
+    resetPasswordExpires: { type: Date },
+    reports: [{ vehicle: { type: mongoose.Schema.Types.ObjectId, ref: "Vehicle" }, reason: { type: String } }]
+  },
   { timestamps: true }
 );
 
