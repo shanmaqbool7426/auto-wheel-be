@@ -7,6 +7,7 @@ const newVehicleSchema = new mongoose.Schema({
     required: true,
     index: true
   },
+  reviewsIds: [],
   model: {
     type: String,
     required: true,

@@ -23,6 +23,9 @@ router.post('/', createNewVehicle);
 // List all new vehicles with filters
 router.get('/', getListNewVehicles);
 
+router.get('/get-popular-by-reviews-vehicles', getPopularVehiclesByReviews);
+
+
 // Get popular new vehicles based on views
 router.get('/popular', getPopularNewVehicles);
 

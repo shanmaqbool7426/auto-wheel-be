@@ -65,6 +65,57 @@ const getListNewVehicles = asyncHandler(async (req, res) => {
   }
 });
 
+const getPopularVehiclesByReviews = asyncHandler(async (req, res) => {
+  try {
+    const { type, make, model, year, minPrice, maxPrice } = req.query;
+
+    // Define filters
+    const matchFilters = {};
+    if (type) matchFilters.type = type;
+    if (make) matchFilters.make = { $regex: new RegExp(make, 'i') };  // Case-insensitive search
+    if (model) matchFilters.model = { $regex: new RegExp(model, 'i') };
+    if (year) matchFilters.year = year;
+    if (minPrice && maxPrice) {
+      matchFilters.price = { $gte: Number(minPrice), $lte: Number(maxPrice) };
+    }
+
+    const vehicles = await NewVehicle.aggregate([
+      { $match: matchFilters },
+      {
+        $addFields: { // Add a field to count the number of review IDs
+          reviewCount: { $size: { $ifNull: ["$reviewsIds", []] } }
+        }
+      },
+      { $sort: { reviewCount: -1 } },  // Sort by review count in descending order
+      { $limit: 8 },  // Limit to 8 vehicles
+      { $lookup: { // Optionally join with another collection if needed
+          from: 'reviews',  // Assuming 'reviews' is your reviews collection
+          localField: 'reviewsIds',
+          foreignField: '_id',
+          as: 'reviewDetails'
+        }
+      },
+      { $project: { // Define what fields to include in the final output
+          type: 1,
+          make: 1,
+          model: 1,
+          year: 1,
+          price: 1,
+          reviewCount: 1,
+          reviewDetails: 1 // Include review details if necessary
+        }
+      }
+    ]);
+
+    // Send success response
+    response.ok(res, 'Vehicles retrieved successfully', vehicles);
+  } catch (error) {
+    console.error('Error retrieving vehicles:', error);
+    response.serverError(res, 'Error retrieving vehicles', error.message);
+  }
+});
+
+
 // Get vehicle details by slug
 const getNewVehicleBySlug = asyncHandler(async (req, res) => {
   const { slug } = req.params;
@@ -398,66 +449,51 @@ const getVehiclesByMake = asyncHandler(async (req, res) => {
 });
 
 
-const getPopularVehiclesByReviews = asyncHandler(async (req, res) => {
-  const { type, make } = req.query; // Extract type and make from query parameters
+// const getPopularVehiclesByReviews = asyncHandler(async (req, res) => {
+//   try {
+//     const popularVehicles = await Review.aggregate([
+//       {
+//         $group: {
+//           _id: '$vehicle',              // Group by vehicle ID
+//           reviewCount: { $sum: 1 }      // Count the number of reviews per vehicle
+//         }
+//       },
+//       {
+//         $sort: { reviewCount: -1 }      // Sort by review count in descending order
+//       },
+//       {
+//         $limit: 8                       // Limit the results to 8 vehicles
+//       },
+//       {
+//         $lookup: {                       // Join with Vehicle collection to get vehicle details
+//           from: 'newvehicles',              // Name of the vehicles collection
+//           localField: '_id',             // The field from the reviews collection (vehicle ID)
+//           foreignField: 'vehicleId',           // The field from the vehicles collection (vehicle ID)
+//           as: 'vehicleDetails'           // The alias for the joined data
+//         }
+//       },
+//       {
+//         $unwind: '$vehicleDetails'       // Unwind the vehicle details array
+//       },
+//       {
+//         $project: {
+//           _id: 0,                        // Exclude the grouped _id (vehicle ID)
+//           vehicle: '$vehicleDetails',    // Include full vehicle details
+//           reviewCount: 1                 // Include review count
+//         }
+//       }
+//     ]);
 
-  try {
-    // Build the match stage for type and make filters if they are provided
-    const matchStage = {};
-    if (type) {
-      matchStage['vehicleDetails.type'] = type;
-    }
-    if (make) {
-      matchStage['vehicleDetails.make'] = make;
-    }
+//     if (!popularVehicles.length) {
+//       return response.notFound(res, 'No vehicles found');
+//     }
 
-    const popularVehicles = await Review.aggregate([
-      {
-        $group: {
-          _id: '$vehicle',              // Group by vehicle ID
-          reviewCount: { $sum: 1 }      // Count the number of reviews per vehicle
-        }
-      },
-      {
-        $sort: { reviewCount: -1 }      // Sort by review count in descending order
-      },
-      {
-        $limit: 8                       // Limit the results to 8 vehicles
-      },
-      {
-        $lookup: {                       // Join with Vehicle collection to get vehicle details
-          from: 'newvehicles',           // Name of the vehicles collection
-          localField: '_id',             // The field from the reviews collection (vehicle ID)
-          foreignField: '_id',           // The field from the vehicles collection (vehicle ID)
-          as: 'vehicleDetails'           // The alias for the joined data
-        }
-      },
-      {
-        $unwind: '$vehicleDetails'       // Unwind the vehicle details array
-      },
-      {
-        $match: matchStage               // Apply type and make filters if provided
-      },
-      {
-        $project: {
-          _id: 0,                        // Exclude the grouped _id (vehicle ID)
-          vehicle: '$vehicleDetails',    // Include full vehicle details
-          reviewCount: 1                 // Include review count
-        }
-      }
-    ]);
-
-    if (!popularVehicles.length) {
-      return response.notFound(res, 'No popular vehicles found');
-    }
-
-    return response.ok(res, 'Popular vehicles retrieved successfully', popularVehicles);
-  } catch (error) {
-    console.error('Error retrieving popular vehicles by reviews:', error);
-    return response.serverError(res, 'An error occurred while retrieving popular vehicles by reviews');
-  }
-});
-
+//     return response.ok(res, 'Popular vehicles retrieved successfully', popularVehicles);
+//   } catch (error) {
+//     console.error('Error retrieving popular vehicles by reviews:', error);
+//     return response.serverError(res, 'An error occurred while retrieving popular vehicles by reviews');
+//   }
+// });
 const getNewlyLaunchedVehicles = asyncHandler(async (req, res) => {
   try {
     const { type, make } = req.query;
