@@ -70,6 +70,24 @@ const newVehicleSchema = new mongoose.Schema({
   images: {
     type: [String]
   },
+  bodyType: {
+    type: String,
+    required: true
+  },
+  pros: [{ type: String }],
+  cons: [{ type: String }],
+  faqs: [
+    {
+      question: {
+        type: String,
+        required: true
+      },
+      answer: {
+        type: String,
+        required: true
+      }
+    }
+  ],
   views: {
     type: Number,
     default: 0
