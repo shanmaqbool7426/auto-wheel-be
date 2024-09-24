@@ -11,7 +11,8 @@ import {
   requestPasswordReset,
   verifyUser,
   addReport,
-  getReports
+  getReports,
+  getDealers
 } from './controller.js';
 
 const upload = multer({ storage: multer.memoryStorage() });
@@ -19,6 +20,7 @@ const upload = multer({ storage: multer.memoryStorage() });
 const router = express.Router();
 
 router.post('/register', registerUser);
+router.get('/get-dealers', getDealers);
 router.post('/login', login);
 router.post('/verify-user', verifyUser);
 router.post('/password-reset-request', requestPasswordReset);

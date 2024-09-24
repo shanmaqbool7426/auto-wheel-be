@@ -161,12 +161,11 @@ const getReports = asyncHandler(async (req, res) => {
 
 
 const getDealers = asyncHandler(async (req, res) => {
-  const { type, make, location, sort } = req.query;
+  const { location, sort, page = 1, limit = 10, type } = req.query; // Added type parameter
   let query = { accountType: 'Dealer' };
 
-  if (type) query.type = type;
-  if (make) query.make = make;
   if (location) query.location = { $regex: location, $options: 'i' };
+  if (type) query.type = type.toLowerCase(); // Add type to the query if provided
 
   let sortOption = {};
   if (sort === 'rating') {
@@ -177,9 +176,18 @@ const getDealers = asyncHandler(async (req, res) => {
 
   const dealers = await User.find(query)
     .sort(sortOption)
-    .select('fullName rating adsCount phone location');
+    .select('fullName rating phone location reviewCount adsCount')
+    .skip((page - 1) * limit) // Skip the records for pagination
+    .limit(Number(limit)); // Limit the number of records returned
 
-  return responses.ok(res, 'Dealers fetched successfully', dealers);
+  const totalDealers = await User.countDocuments(query); // Get total count for pagination
+  const totalPages = Math.ceil(totalDealers / limit); // Calculate total pages
+
+  return responses.ok(res, 'Dealers fetched successfully', {
+    dealers,
+    totalPages,
+    currentPage: Number(page),
+  });
 });
 
 
