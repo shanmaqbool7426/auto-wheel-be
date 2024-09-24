@@ -26,6 +26,10 @@ const vehicleSchema = new mongoose.Schema({
       type: String,
     }
   },
+  owner:{
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "User",
+  },
   year: {
     type: Number,
     required: true,

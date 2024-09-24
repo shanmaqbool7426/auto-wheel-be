@@ -16,6 +16,7 @@ import blogRoutes from './Blog/route.js'
 import videoRoutes from './Videos/route.js'
 import newVehicleRoutes from './NewVehicle/route.js'
 import reviewRoutes from './Review/route.js'
+import userReviewRoutes from './UserReviews/route.js'
 import {errorHandler} from "./Middleware/errorHandler.js"
 import { uploadOnCloudinary } from "./Utils/cloudinary.js";
 import morgan from "morgan"
@@ -57,6 +58,7 @@ app.use('/api/comment', commentRoutes);
 app.use('/api/tag', tagRoutes);
 app.use('/api/blog', blogRoutes);
 app.use('/api/reviews', reviewRoutes);
+app.use('/api/user-reviews', userReviewRoutes);
 app.use('/api/video', videoRoutes);
 app.use('/api/new-vehicles', newVehicleRoutes);
 

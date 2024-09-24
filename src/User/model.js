@@ -15,7 +15,8 @@ const userSchema = mongoose.Schema(
     verificationCode: { type: Number },
     verificationCodeExpire: { type: String },
     resetPasswordToken: { type: String },
-    adsCount: [],
+    adsCount:{ type: Number ,default:0} ,
+    reviewCount:{ type: Number ,default:0},
     resetPasswordExpires: { type: Date },
     reports: [{ vehicle: { type: mongoose.Schema.Types.ObjectId, ref: "Vehicle" }, reason: { type: String } }]
   },
