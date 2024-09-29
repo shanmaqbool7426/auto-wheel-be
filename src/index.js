@@ -15,6 +15,7 @@ import tagRoutes from './Tag/route.js'
 import blogRoutes from './Blog/route.js'
 import videoRoutes from './Videos/route.js'
 import newVehicleRoutes from './NewVehicle/route.js'
+import comparisonRoutes from './Comparison/route.js'
 import reviewRoutes from './Review/route.js'
 import userReviewRoutes from './UserReviews/route.js'
 import {errorHandler} from "./Middleware/errorHandler.js"
@@ -61,6 +62,7 @@ app.use('/api/reviews', reviewRoutes);
 app.use('/api/user-reviews', userReviewRoutes);
 app.use('/api/video', videoRoutes);
 app.use('/api/new-vehicles', newVehicleRoutes);
+app.use('/api/comparison', comparisonRoutes);
 
 app.use('/upload-image', upload.array('images', 10), async (req, res) => {
   try {
