@@ -89,6 +89,9 @@ const getListVehicles = asyncHandler(async (req, res) => {
       case 'bt':
         bodyTypes.push(value);
         break;
+      case 'ad':
+        filters.address={$regex:value,$options:'i'}
+        break;
       case 'pr':
         const [minPrice, maxPrice] = value.split('_').map(Number);
         filters.price = { $gte: minPrice, $lte: maxPrice };
