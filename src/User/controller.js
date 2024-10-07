@@ -191,6 +191,141 @@ const getDealers = asyncHandler(async (req, res) => {
 });
 
 
+const getFollowing = asyncHandler(async (req, res) => {
+  console.log('data>>')
+  
+  const userId = req.params.userId || req.user._id;
+  const { page = 1, limit = 10, search = '' } = req.query;
+  const skip = (page - 1) * limit;
+
+  const user = await User.findById(userId);
+  if (!user) {
+    return responses.notFound(res, 'User not found');
+  }
+
+  const query = {
+    _id: { $in: user.following },
+    $or: [
+      { fullName: { $regex: search, $options: 'i' } },
+      { email: { $regex: search, $options: 'i' } }
+    ]
+  };
+
+  const followings = await User.find(query)
+    .select('fullName email accountType city createdAt')
+    .sort({ createdAt: -1 })
+    .skip(skip)
+    .limit(Number(limit));
+
+  const total = await User.countDocuments(query);
+
+  return responses.ok(res, 'Followers retrieved successfully', {
+    followings,
+    total,
+    page: Number(page),
+    totalPages: Math.ceil(total / limit)
+  });
+});
+
+const getFollowers = asyncHandler(async (req, res) => {
+  console.log('data>>')
+  
+  const userId = req.params.userId || req.user._id;
+  const { page = 1, limit = 10, search = '' } = req.query;
+  const skip = (page - 1) * limit;
+
+  const user = await User.findById(userId);
+  if (!user) {
+    return responses.notFound(res, 'User not found');
+  }
+
+  const query = {
+    _id: { $in: user.followers },
+    $or: [
+      { fullName: { $regex: search, $options: 'i' } },
+      { email: { $regex: search, $options: 'i' } }
+    ]
+  };
+
+  const followers = await User.find(query)
+    .select('fullName email accountType city createdAt')
+    .sort({ createdAt: -1 })
+    .skip(skip)
+    .limit(Number(limit));
+
+  const total = await User.countDocuments(query);
+
+  return responses.ok(res, 'Followers retrieved successfully', {
+    followers,
+    total,
+    page: Number(page),
+    totalPages: Math.ceil(total / limit)
+  });
+});
+
+
+const followUser = asyncHandler(async (req, res) => {
+  const { userId } = req.params;
+  const currentUser = req.user._id;
+
+  if (userId === currentUser.toString()) {
+    return responses.badRequest(res, 'You cannot follow yourself');
+  }
+
+  const [user, userToFollow] = await Promise.all([
+    User.findById(currentUser),
+    User.findById(userId)
+  ]);
+
+  if (!userToFollow) {
+    return responses.notFound(res, 'User to follow not found');
+  }
+
+  if (user.following.includes(userId)) {
+    return responses.badRequest(res, 'You are already following this user');
+  }
+
+  user.following.push(userId);
+  userToFollow.followers.push(currentUser);
+
+  await Promise.all([user.save(), userToFollow.save()]);
+
+  return responses.ok(res, 'User followed successfully');
+});
+
+const unfollowUser = asyncHandler(async (req, res) => {
+  const { userId } = req.params;
+  // const currentUser = req.user._id;
+  const currentUser = '66e08a35e874573aeab6d39e';
+  
+
+  if (userId === currentUser.toString()) {
+    return responses.badRequest(res, 'You cannot unfollow yourself');
+  }
+
+  const [user, userToUnfollow] = await Promise.all([
+    User.findById(currentUser),
+    User.findById(userId)
+  ]);
+
+  if (!userToUnfollow) {
+    return responses.notFound(res, 'User to unfollow not found');
+  }
+
+  if (!user.following.includes(userId)) {
+    return responses.badRequest(res, 'You are not following this user');
+  }
+
+  user.following = user.following.filter(id => id.toString() !== userId);
+  userToUnfollow.followers = userToUnfollow.followers.filter(id => id.toString() !== currentUser.toString());
+
+  await Promise.all([user.save(), userToUnfollow.save()]);
+
+  return responses.ok(res, 'User unfollowed successfully');
+});
+
+
+
 export {
   registerUser,
   login,
@@ -199,5 +334,9 @@ export {
   verifyUser,
   requestPasswordReset,
   resetPassword,
-  getDealers
+  getDealers,
+  getFollowers,
+  getFollowing,
+  followUser,
+  unfollowUser
 };

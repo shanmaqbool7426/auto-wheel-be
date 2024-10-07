@@ -8,16 +8,28 @@ const userSchema = mongoose.Schema(
     loginType: [],
     email: { type: String, required: true, unique: true },
     phone: { type: String },
-    password: { type: String },
+    password: { type: String,select: false },
     accountType: { type: String, enum: ['Personal', 'Dealer'] },
     rating: { type: Number, default: 0 },
     isVerified: { type: Boolean, default: false },
     verificationCode: { type: Number },
     verificationCodeExpire: { type: String },
+    followers: [{
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'User'
+    }],
+    following: [{
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'User'
+    }],
     resetPasswordToken: { type: String },
     adsCount:{ type: Number ,default:0} ,
     reviewCount:{ type: Number ,default:0},
     resetPasswordExpires: { type: Date },
+    favoriteVehicles: [{
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'Vehicle',
+    }],
     reports: [{ vehicle: { type: mongoose.Schema.Types.ObjectId, ref: "Vehicle" }, reason: { type: String } }]
   },
   { timestamps: true }
@@ -26,6 +38,7 @@ const userSchema = mongoose.Schema(
 userSchema.methods.matchPassword = async function (enteredPassword) {
   return await bcrypt.compare(enteredPassword, this.password);
 };
+
 
 userSchema.pre('save', async function (next) {
   if (!this.isModified('password')) {
