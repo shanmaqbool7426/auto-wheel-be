@@ -3,6 +3,7 @@ import Vehicle from './model.js';
 import response from "../Utils/response.js";
 import { uploadOnCloudinary } from '../Utils/cloudinary.js';
 import Review from '../Review/model.js';
+import User from '../User/model.js';
 
 const createVehicle = asyncHandler(async (req, res) => {
   try {
@@ -335,6 +336,159 @@ const getPopularVehiclesByReviews = asyncHandler(async (req, res) => {
   }
 });
 
+const getVehiclesByUserId = asyncHandler(async (req, res) => {
+  try {
+    const { userId } = req.params;
+    const { search, type, status, sort, page = 1, limit = 10 } = req.query;
+
+    const query = { seller: userId };
+
+    // Add search filter if provided
+    if (search) {
+      query.$or = [
+        { title: { $regex: search, $options: 'i' } },
+        { description: { $regex: search, $options: 'i' } }
+      ];
+    }
+
+    // Add type filter if provided
+    if (type) {
+      query.type = type;
+    }
+
+    // Add status filter if provided
+    if (status) {
+      query.status = status;
+    }
+
+    // Set up sorting
+    let sortOption = { createdAt: -1 }; // Default sort
+    if (sort === 'newToOld') {
+      sortOption = { createdAt: -1 };
+    } else if (sort === 'oldToNew') {
+      sortOption = { createdAt: 1 };
+    }
+
+    const skip = (parseInt(page, 10) - 1) * parseInt(limit, 10);
+
+    const vehicles = await Vehicle.find(query)
+      .sort(sortOption)
+      .skip(skip)
+      .limit(parseInt(limit, 10));
+
+    const totalVehicles = await Vehicle.countDocuments(query);
+
+    const result = {
+      vehicles,
+      currentPage: parseInt(page, 10),
+      totalPages: Math.ceil(totalVehicles / parseInt(limit, 10)),
+      totalVehicles
+    };
+
+    return response.ok(res, 'Vehicles retrieved successfully', result);
+  } catch (error) {
+    console.error('Error retrieving vehicles by user ID:', error);
+    return response.serverError(res, 'An error occurred while retrieving vehicles');
+  }
+});
 
 
-export { createVehicle, getBrowseByVehicles, getListVehicles, getVehicleBySlug, getSimilarVehicles, getPopularVehicles, getPopularVehiclesByReviews }
+
+const getFavoriteVehiclesByUserId = asyncHandler(async (req, res) => {
+  const { userId } = req.params;
+  const { search, sort } = req.query; // Get search and sort from query parameters
+
+  try {
+    const user = await User.findById(userId).populate('favoriteVehicles');
+    if (!user) {
+      return response.notFound(res, 'User not found');
+    }
+
+    let favoriteVehicles = user.favoriteVehicles;
+
+    // Filter by vehicle ID if search parameter is provided
+    if (search) {
+      console.log('>>> search',search)
+      favoriteVehicles = favoriteVehicles.filter(vehicle => vehicle._id.toString() === search);
+    }
+
+    // Sort the vehicles based on the sort parameter
+    if (sort) {
+      favoriteVehicles.sort((a, b) => {
+        if (sort === 'newToOld') {
+          return new Date(b.createdAt) - new Date(a.createdAt);
+        } else if (sort === 'oldToNew') {
+          return new Date(a.createdAt) - new Date(b.createdAt);
+        }
+        return 0; // No sorting if sort parameter is not recognized
+      });
+    }
+
+    return response.ok(res, 'Favorite vehicles retrieved successfully', favoriteVehicles);
+  } catch (error) {
+    console.error('Error retrieving favorite vehicles:', error);
+    return response.serverError(res, 'An error occurred while retrieving favorite vehicles');
+  }
+});
+
+
+const deleteFavoriteVehicle = asyncHandler(async (req, res) => {
+  const { userId, vehicleId } = req.params;
+
+  try {
+    const user = await User.findById(userId);
+    if (!user) {
+      return response.notFound(res, 'User not found');
+    }
+    user.favoriteVehicles = user.favoriteVehicles.filter(id => id.toString() !== vehicleId);
+    await user.save(); // Ensure this does not modify the password
+    return response.ok(res, 'Favorite vehicle deleted successfully');
+  } catch (error) {
+    console.error('Error deleting favorite vehicle:', error);
+    return response.serverError(res, 'An error occurred while deleting the favorite vehicle');
+  }
+});
+
+const toggleFeaturedVehicle = asyncHandler(async (req, res) => {
+  try {
+    const { vehicleId } = req.params;
+    console.log("vehicleId", vehicleId);
+
+    const vehicle = await Vehicle.findByIdAndUpdate(
+      vehicleId,
+      [
+        { $set: { isFeatured: { $not: "$isFeatured" } } }
+      ],
+      { new: true, runValidators: true }
+    );
+
+    if (!vehicle) {
+      return response.notFound(res, 'Vehicle not found');
+    }
+
+    return response.ok(res, `Vehicle ${vehicle.isFeatured ? 'featured' : 'unfeatured'} successfully`, vehicle);
+  } catch (error) {
+    console.error('Error toggling featured status:', error);
+    return response.serverError(res, 'An error occurred while updating the vehicle: ' + error.message);
+  }
+});
+
+const deleteVehicle = asyncHandler(async (req, res) => {
+  try {
+    const { vehicleId } = req.params;
+
+    const vehicle = await Vehicle.findByIdAndDelete(vehicleId);
+
+    if (!vehicle) {
+      return response.notFound(res, 'Vehicle not found');
+    }
+
+    return response.ok(res, 'Vehicle deleted successfully',  vehicle);
+  } catch (error) {
+    console.error('Error deleting vehicle:', error);
+    return response.serverError(res, 'An error occurred while deleting the vehicle: ' + error.message);
+  }
+});
+
+
+export { createVehicle,getVehiclesByUserId,getFavoriteVehiclesByUserId,deleteFavoriteVehicle, getBrowseByVehicles,deleteVehicle, getListVehicles, getVehicleBySlug, getSimilarVehicles, getPopularVehicles, getPopularVehiclesByReviews ,toggleFeaturedVehicle}
