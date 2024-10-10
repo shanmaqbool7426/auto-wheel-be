@@ -119,6 +119,12 @@ const vehicleSchema = new mongoose.Schema({
   images: {
     type: [String]
   },
+  status: {
+    type: String,
+    enum: ['active', 'inactive', 'deleted','pending','expired'],
+    default: 'pending',
+    index: true,
+  },
 
   featured: {
     type: Boolean,
@@ -136,6 +142,14 @@ const vehicleSchema = new mongoose.Schema({
   releaseDate: {
     type: Date,
 
+  },
+  isFavorite:{
+    type: Boolean,
+    default: false,
+  },
+  isFeatured:{
+    type: Boolean,
+    default: false,
   },
   startPrice: {
     type: Number,
