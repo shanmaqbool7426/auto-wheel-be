@@ -1,31 +1,26 @@
-import mongoose, { Schema } from "mongoose";
+import mongoose from 'mongoose';
 
-const chatSchema = new Schema(
-  {
-    name: {
-      type: String,
-      required: true,
-    },
-    isGroupChat: {
-      type: Boolean,
-      default: false,
-    },
-    lastMessage: {
-      type: Schema.Types.ObjectId,
-      ref: "ChatMessage",
-    },
-    participants: [
-      {
-        type: Schema.Types.ObjectId,
-        ref: "User",
-      },
-    ],
-    admin: {
-      type: Schema.Types.ObjectId,
-      ref: "User",
-    },
+const messageSchema = new mongoose.Schema({
+  sender: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'User',
+    required: true
   },
-  { timestamps: true }
-);
+  receiver: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'User',
+    required: true
+  },
+  content: {
+    type: String,
+    required: true
+  },
+  read: {
+    type: Boolean,
+    default: false
+  }
+}, { timestamps: true });
 
-export const Chat = mongoose.model("Chat", chatSchema);
+const Message = mongoose.model('Message', messageSchema);
+
+export default Message;

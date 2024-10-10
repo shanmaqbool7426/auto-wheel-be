@@ -1,6 +1,8 @@
 import express from "express"
 import dotenv from 'dotenv';
 import helmet from 'helmet';
+import http from 'http';
+import { Server } from 'socket.io';
 // const rateLimit = require('express-rate-limit');
 import cors from 'cors';
 // const compression = require('compression');
@@ -28,6 +30,9 @@ import { upload } from "./Middleware/multer.js";
 dotenv.config();
 connectDB();
 const app = express();
+
+const server = http.createServer(app);
+const io = new Server(server);
 app.use(helmet());
 
 // const limiter = rateLimit({
@@ -77,11 +82,44 @@ app.use('/upload-image', upload.array('images', 10), async (req, res) => {
     return responses.badRequest(res, 'Image upload failed');
   }
 });
+const connectedUsers = new Map();
 
+io.on('connection', (socket) => {
+  console.log('A user connected');
+
+  socket.on('authenticate', (userId) => {
+    connectedUsers.set(userId, socket.id);
+  });
+
+  socket.on('send_message', async ({ senderId, receiverId, content }) => {
+    const message = await Message.create({
+      sender: senderId,
+      receiver: receiverId,
+      content
+    });
+
+    const receiverSocketId = connectedUsers.get(receiverId);
+    if (receiverSocketId) {
+      io.to(receiverSocketId).emit('new_message', message);
+    }
+
+    socket.emit('message_sent', message);
+  });
+
+  socket.on('disconnect', () => {
+    console.log('A user disconnected');
+    for (const [userId, socketId] of connectedUsers.entries()) {
+      if (socketId === socket.id) {
+        connectedUsers.delete(userId);
+        break;
+      }
+    }
+  });
+});
 
 app.use(errorHandler);
 
 const PORT = process.env.PORT || 5000;
-app.listen(PORT, () => {
+server.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
 });
