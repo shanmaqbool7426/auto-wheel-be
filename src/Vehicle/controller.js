@@ -62,6 +62,7 @@ const getListVehicles = asyncHandler(async (req, res) => {
 
   let cities = [];
   let makes = [];
+  let variants = [];
   let models = [];
   let bodyTypes = [];
   pathSegments.forEach(segment => {
@@ -78,6 +79,9 @@ const getListVehicles = asyncHandler(async (req, res) => {
       case 'md':
         models.push(value);
         break;
+      case 'vt':
+        variants.push(value);
+        break;
       case 'ct':
         cities.push(value);
         break;
@@ -89,6 +93,9 @@ const getListVehicles = asyncHandler(async (req, res) => {
 
       case 'bt':
         bodyTypes.push(value);
+        break;
+      case 'ad':
+        filters.address={$regex:value,$options:'i'}
         break;
       case 'pr':
         const [minPrice, maxPrice] = value.split('_').map(Number);
@@ -157,6 +164,10 @@ const getListVehicles = asyncHandler(async (req, res) => {
     filters.model = { $in: models.map(model => new RegExp(`${model.trim()}`, 'i')) };
   }
 
+  if (variants.length > 0) {
+    filters.variant = { $in: variants.map(variant => new RegExp(`${variant.trim()}`, 'i')) };
+  }
+
   if (bodyTypes.length > 0) {
     filters['specifications.bodyType'] = { $in: bodyTypes.map(bodyType => new RegExp(`${bodyType.trim()}`, 'i')) };
   }
@@ -180,6 +191,7 @@ const getListVehicles = asyncHandler(async (req, res) => {
         cityCounts: [{ $group: { _id: '$city', count: { $sum: 1 } } }],
         makeCounts: [{ $group: { _id: '$make', count: { $sum: 1 } } }],
         modelCounts: [{ $group: { _id: '$model', count: { $sum: 1 } } }],
+        variantCounts: [{ $group: { _id: '$variant', count: { $sum: 1 } } }],
         yearCounts: [{ $group: { _id: '$year', count: { $sum: 1 } } }],
         bodyTypeCounts: [{ $group: { _id: '$specifications.bodyType', count: { $sum: 1 } } }],
         fuelTypeCounts: [{ $group: { _id: '$specifications.fuelType', count: { $sum: 1 } } }],
@@ -198,6 +210,7 @@ const getListVehicles = asyncHandler(async (req, res) => {
     cityCounts: aggregationResult.cityCounts || [],
     makeCounts: aggregationResult.makeCounts || [],
     modelCounts: aggregationResult.modelCounts || [],
+    variantCounts: aggregationResult.variantCounts || [],
     yearCounts: aggregationResult.yearCounts || [],
     bodyTypeCounts: aggregationResult.bodyTypeCounts || [],
     fuelTypeCounts: aggregationResult.fuelTypeCounts || [],
