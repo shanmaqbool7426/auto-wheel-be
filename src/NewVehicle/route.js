@@ -10,7 +10,9 @@ import {
   getUpcomingNewVehicles,
   getVehiclesByMake,
   getPopularVehiclesByReviews,
-  getNewlyLaunchedVehicles
+  getNewlyLaunchedVehicles,
+  getTopComparisonVehicles,
+  getComparison
 } from "./controller.js";  // Import new vehicle controller
 
 const router = express.Router();
@@ -28,6 +30,12 @@ router.get('/get-popular-by-reviews-vehicles', getPopularVehiclesByReviews);
 
 // Get popular new vehicles based on views
 router.get('/popular', getPopularNewVehicles);
+
+// Get top comparison new vehicles
+router.get('/comparison', getTopComparisonVehicles);
+
+// Get comparison new vehicles
+router.post('/compare', getComparison);
 
 // Get  newly launched vehicles 
 router.get('/newly-launched', getNewlyLaunchedVehicles);
