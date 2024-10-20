@@ -51,11 +51,11 @@ const getBrowseByVehicles = asyncHandler(async (req, res) => {
 const getListVehicles = asyncHandler(async (req, res) => {
   const pathSegments = req.params[0].split('/');
   const features = [];
-  console.log('>>>>>>>>>111', pathSegments)
+  console.log('>>>>>>>>>111', pathSegments);
   const filters = {};
   const options = {
     limit: parseInt(req.query.limit, 10) || 10,
-    sort: {}
+    sort: {},
   };
 
   let page = 1;
@@ -65,10 +65,10 @@ const getListVehicles = asyncHandler(async (req, res) => {
   let variants = [];
   let models = [];
   let bodyTypes = [];
-  pathSegments.forEach(segment => {
+  pathSegments.forEach((segment) => {
     const [key, ...rest] = segment.split('_');
     const value = rest.join('_');
-    console.log('>>>>>', value)
+    console.log('>>>>>', value);
     switch (key) {
       case 't':
         filters.type = value;
@@ -90,12 +90,11 @@ const getListVehicles = asyncHandler(async (req, res) => {
           features.push('featured'); // Add 'featured' to features filter
         }
         break;
-
       case 'bt':
         bodyTypes.push(value);
         break;
       case 'ad':
-        filters.address={$regex:value,$options:'i'}
+        filters.address = { $regex: value, $options: 'i' };
         break;
       case 'pr':
         const [minPrice, maxPrice] = value.split('_').map(Number);
@@ -130,14 +129,11 @@ const getListVehicles = asyncHandler(async (req, res) => {
           options.sort.year = 1;
         } else if (value === 'year-desc') {
           options.sort.year = -1;
-        }
-        else if (value === 'upcoming') {
+        } else if (value === 'upcoming') {
           options.sort.releaseDate = 1;
-        }
-        else if (value === 'popular') {
+        } else if (value === 'popular') {
           options.sort.views = -1;
-        }
-        else {
+        } else {
           options.sort.createdAt = -1;
         }
         break;
@@ -148,59 +144,104 @@ const getListVehicles = asyncHandler(async (req, res) => {
         break;
     }
   });
-  if (filters.condition && filters.condition.$regex && filters.condition.$regex === 'new' && options.sort.releaseDate) {
+  if (
+    filters.condition &&
+    filters.condition.$regex &&
+    filters.condition.$regex === 'new' &&
+    options.sort.releaseDate
+  ) {
     filters.releaseDate = { $gte: new Date() };
   }
 
   if (cities.length > 0) {
-    filters.city = { $in: cities.map(city => new RegExp(`${city.trim()}`, 'i')) };
+    filters.city = { $in: cities.map((city) => new RegExp(`${city.trim()}`, 'i')) };
   }
 
   if (makes.length > 0) {
-    filters.make = { $in: makes.map(make => new RegExp(`${make.trim()}`, 'i')) };
+    filters.make = { $in: makes.map((make) => new RegExp(`${make.trim()}`, 'i')) };
   }
 
   if (models.length > 0) {
-    filters.model = { $in: models.map(model => new RegExp(`${model.trim()}`, 'i')) };
+    filters.model = { $in: models.map((model) => new RegExp(`${model.trim()}`, 'i')) };
   }
 
   if (variants.length > 0) {
-    filters.variant = { $in: variants.map(variant => new RegExp(`${variant.trim()}`, 'i')) };
+    filters.variant = { $in: variants.map((variant) => new RegExp(`${variant.trim()}`, 'i')) };
   }
 
   if (bodyTypes.length > 0) {
-    filters['specifications.bodyType'] = { $in: bodyTypes.map(bodyType => new RegExp(`${bodyType.trim()}`, 'i')) };
+    filters['specifications.bodyType'] = {
+      $in: bodyTypes.map((bodyType) => new RegExp(`${bodyType.trim()}`, 'i')),
+    };
   }
-  console.log('pathSegments>>', pathSegments)
+  console.log('pathSegments>>', pathSegments);
   if (pathSegments.includes('ft_featured')) {
     filters.featured = true;
   }
 
   options.skip = (page - 1) * options.limit;
 
+  // Create a copy of filters without any filters for cityCounts
+  const cityCountsFilters = {}; // Empty filters to include all documents
+
   const [totalVehicles, vehicles] = await Promise.all([
     Vehicle.countDocuments(filters),
-    Vehicle.find(filters, null, options).lean()
+    Vehicle.find(filters, null, options).lean(),
   ]);
 
   const aggregationPipeline = [
-    { $match: filters },
     {
       $facet: {
-        typeCounts: [{ $group: { _id: '$type', count: { $sum: 1 } } }],
-        cityCounts: [{ $group: { _id: '$city', count: { $sum: 1 } } }],
-        makeCounts: [{ $group: { _id: '$make', count: { $sum: 1 } } }],
-        modelCounts: [{ $group: { _id: '$model', count: { $sum: 1 } } }],
-        variantCounts: [{ $group: { _id: '$variant', count: { $sum: 1 } } }],
-        yearCounts: [{ $group: { _id: '$year', count: { $sum: 1 } } }],
-        bodyTypeCounts: [{ $group: { _id: '$specifications.bodyType', count: { $sum: 1 } } }],
-        fuelTypeCounts: [{ $group: { _id: '$specifications.fuelType', count: { $sum: 1 } } }],
-        transmissionCounts: [{ $group: { _id: '$specifications.transmission', count: { $sum: 1 } } }],
-        exteriorColorCounts: [{ $group: { _id: '$specifications.exteriorColor', count: { $sum: 1 } } }],
-        driveCounts: [{ $group: { _id: '$specifications.drive', count: { $sum: 1 } } }],
-        cityAreaCounts: [{ $group: { _id: '$cityArea', count: { $sum: 1 } } }]
-      }
-    }
+        typeCounts: [
+          { $match: filters },
+          { $group: { _id: '$type', count: { $sum: 1 } } },
+        ],
+        cityCounts: [
+          { $match: cityCountsFilters }, // Use empty filters to include all documents
+          { $group: { _id: '$city', count: { $sum: 1 } } },
+        ],
+        makeCounts: [
+          { $match: filters },
+          { $group: { _id: '$make', count: { $sum: 1 } } },
+        ],
+        modelCounts: [
+          { $match: filters },
+          { $group: { _id: '$model', count: { $sum: 1 } } },
+        ],
+        variantCounts: [
+          { $match: filters },
+          { $group: { _id: '$variant', count: { $sum: 1 } } },
+        ],
+        yearCounts: [
+          { $match: filters },
+          { $group: { _id: '$year', count: { $sum: 1 } } },
+        ],
+        bodyTypeCounts: [
+          { $match: filters },
+          { $group: { _id: '$specifications.bodyType', count: { $sum: 1 } } },
+        ],
+        fuelTypeCounts: [
+          { $match: filters },
+          { $group: { _id: '$specifications.fuelType', count: { $sum: 1 } } },
+        ],
+        transmissionCounts: [
+          { $match: filters },
+          { $group: { _id: '$specifications.transmission', count: { $sum: 1 } } },
+        ],
+        exteriorColorCounts: [
+          { $match: filters },
+          { $group: { _id: '$specifications.exteriorColor', count: { $sum: 1 } } },
+        ],
+        driveCounts: [
+          { $match: filters },
+          { $group: { _id: '$specifications.drive', count: { $sum: 1 } } },
+        ],
+        cityAreaCounts: [
+          { $match: filters },
+          { $group: { _id: '$cityArea', count: { $sum: 1 } } },
+        ],
+      },
+    },
   ];
 
   const [aggregationResult] = await Vehicle.aggregate(aggregationPipeline);
@@ -217,12 +258,13 @@ const getListVehicles = asyncHandler(async (req, res) => {
     transmissionCounts: aggregationResult.transmissionCounts || [],
     exteriorColorCounts: aggregationResult.exteriorColorCounts || [],
     driveCounts: aggregationResult.driveCounts || [],
-    cityAreaCounts: aggregationResult.cityAreaCounts || []
+    cityAreaCounts: aggregationResult.cityAreaCounts || [],
   };
+
   const vehiclesResponse = {
     results: vehicles,
     count: totalVehicles,
-    counts
+    counts,
   };
 
   return response.ok(res, 'Vehicles retrieved successfully', vehiclesResponse);

@@ -6,7 +6,7 @@ import { Server } from 'socket.io';
 // const rateLimit = require('express-rate-limit');
 import cors from 'cors';
 // const compression = require('compression');
-import {connectDB} from './Utils/connectDB.js';
+import { connectDB } from './Utils/connectDB.js';
 import authRoutes from './User/route.js'
 import browesByMakeRoutes from './BrowesByMake/route.js'
 import browesByBodyRoutes from './BrowseByBody/route.js'
@@ -20,11 +20,14 @@ import newVehicleRoutes from './NewVehicle/route.js'
 import comparisonRoutes from './Comparison/route.js'
 import reviewRoutes from './Review/route.js'
 import userReviewRoutes from './UserReviews/route.js'
-import {errorHandler} from "./Middleware/errorHandler.js"
+import { errorHandler } from "./Middleware/errorHandler.js"
 import { uploadOnCloudinary } from "./Utils/cloudinary.js";
 import morgan from "morgan"
 import responses from "./Utils/response.js";
 import { upload } from "./Middleware/multer.js";
+import { ChatMessage } from "./Messages/model.js";
+import mongoose from "mongoose";
+import User from "./User/model.js";
 // const { errorHandler, notFound } = require('./middleware/errorMiddleware');
 
 dotenv.config();
@@ -32,7 +35,13 @@ connectDB();
 const app = express();
 
 const server = http.createServer(app);
-const io = new Server(server);
+const io = new Server(server, {
+  cors: {
+    origin: ["http://localhost:3000", "http://localhost:3001"], // Add your frontend URL
+    methods: ["GET", "POST"],
+    credentials: true
+  }
+});
 app.use(helmet());
 
 // const limiter = rateLimit({
@@ -44,16 +53,17 @@ app.use(helmet());
 
 const corsOptions = {
   "/": {
-    origin:["http://localhost:5000","http://localhost:3000"], 
+    origin: ["http://localhost:5000", "http://localhost:3000"],
     credentials: true,
-  }}
+  }
+}
 app.use(cors(corsOptions));
 
 // app.use(compression());
 app.use(morgan('combined'))
 
 app.use(express.json());
-app.use(express.urlencoded({limit: '50mb'}));
+app.use(express.urlencoded({ limit: '50mb' }));
 
 app.use('/api/user', authRoutes);
 app.use('/api/browes-by-make', browesByMakeRoutes);
@@ -76,46 +86,170 @@ app.use('/upload-image', upload.array('images', 10), async (req, res) => {
       const result = await uploadOnCloudinary(file.path);
       return result.secure_url; // Return only the secure_url
     }));
-    
+
     return responses.created(res, 'Images received', urls); // Return the list of uploaded URLs
   } catch (error) {
     return responses.badRequest(res, 'Image upload failed');
   }
 });
 const connectedUsers = new Map();
+const userConversations = new Map();
 
 io.on('connection', (socket) => {
   console.log('A user connected');
 
   socket.on('authenticate', (userId) => {
+    console.log('User authenticated:', userId,socket.id);
     connectedUsers.set(userId, socket.id);
+    socket.userId = userId;
   });
 
-  socket.on('send_message', async ({ senderId, receiverId, content }) => {
-    const message = await Message.create({
-      sender: senderId,
-      receiver: receiverId,
-      content
-    });
-
-    const receiverSocketId = connectedUsers.get(receiverId);
-    if (receiverSocketId) {
-      io.to(receiverSocketId).emit('new_message', message);
+  socket.on('get_conversations', async () => {
+console.log('conversations_list')
+      try {
+        const conversations = await getConversationsForUser('670b78ae88faa5acc2bbd0e4');
+        socket.emit('conversations_list', conversations);
+      } catch (error) { 
+        socket.emit('error', { message: 'Failed to fetch conversations' });
     }
+  });
 
-    socket.emit('message_sent', message);
+  socket.on('send_message', async ({ sender, receiver, content }) => {
+    console.log('Sending message:', { sender, receiver, content });
+    try {
+      const message = await ChatMessage.create({
+        sender: sender,
+        receiver:receiver,
+        content
+      });
+
+      const messageData = {
+        id: message._id,
+        sender: sender,
+        receiver: receiver,
+        content: message.content,
+        createdAt: message.createdAt
+      };
+      console.log('connectedUsers.get(sender)',connectedUsers.get(sender))
+
+      // Emit to both sender and receiver
+      io.emit('new_message', messageData);
+
+      // Update conversations for both users
+      const updatedConversation = await getUpdatedConversation(sender, receiver, message);
+      io.to(connectedUsers.get(sender)).emit('conversation_update', updatedConversation);
+      io.to(connectedUsers.get(receiver)).emit('conversation_update', updatedConversation);
+
+    } catch (error) {
+      console.error('Error sending message:', error);
+      socket.emit('error', { message: 'Failed to send message' });
+    }
   });
 
   socket.on('disconnect', () => {
     console.log('A user disconnected');
-    for (const [userId, socketId] of connectedUsers.entries()) {
-      if (socketId === socket.id) {
-        connectedUsers.delete(userId);
-        break;
-      }
+    if (socket.userId) {
+      connectedUsers.delete(socket.userId);
     }
   });
 });
+async function getConversationsForUser(userId) {
+  try {
+    const objectId = new mongoose.Types.ObjectId(userId);    const messages = await ChatMessage.aggregate([
+      {
+        $match: {
+          $or: [{ sender: objectId }, { receiver: objectId }]
+        }
+      },
+      {
+        $sort: { createdAt: -1 }
+      },
+      {
+        $group: {
+          _id: {
+            $cond: [
+              { $eq: ['$sender', objectId] },
+              '$receiver',
+              '$sender'
+            ]
+          },
+          lastMessage: { $first: '$$ROOT' }
+        }
+      },
+      {
+        $lookup: {
+          from: 'users',
+          localField: '_id',
+          foreignField: '_id',
+          as: 'otherUser'
+        }
+      },
+      {
+        $unwind: '$otherUser'
+      },
+      {
+        $project: {
+          otherUser: {
+            _id: 1,
+            name: 1,
+            email: 1
+          },
+          lastMessage: {
+            _id: 1,
+            content: 1,
+            sender: 1,
+            receiver: 1,
+            createdAt: 1
+          }
+        }
+      }
+    ]);
+    console.log('messages11',messages)
+     messages.map(m => ({
+      id: m._id,
+      otherUser: {
+        id: m.otherUser._id,
+        name: m.otherUser.name,
+        email: m.otherUser.email
+      },
+      lastMessage: {
+        id: m.lastMessage._id,
+        content: m.lastMessage.content,
+        sender: m.lastMessage.sender,
+        receiver: m.lastMessage.receiver,
+        createdAt: m.lastMessage.createdAt
+      }
+    }));
+    console.log('messages',messages)
+
+    return messages
+  } catch (error) {
+    console.error('Error fetching conversations:', error);
+    throw error;
+  }
+}
+async function getUpdatedConversation(senderId, receiverId, message) {
+  const otherUserId = senderId === message.sender.toString() ? message.receiver : message.sender;
+
+  console.log('otherUserId',otherUserId)
+  const otherUser = await User.findById(otherUserId);
+  
+  return {
+    id: otherUserId,
+    otherUser: {
+      id: otherUser._id,
+      name: otherUser.name,
+      email: otherUser.email
+    },
+    lastMessage: {
+      id: message._id,
+      content: message.content,
+      sender: message.sender,
+      receiver: message.receiver,
+      createdAt: message.createdAt
+    }
+  };
+}
 
 app.use(errorHandler);
 

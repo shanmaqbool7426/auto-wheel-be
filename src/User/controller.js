@@ -32,9 +32,9 @@ const registerUser = asyncHandler(async (req, res) => {
   const mailOptions = {
     to: user.email, subject: 'Verification Code', text: templete
   }
-  await sendVerificationEmail(mailOptions);
+  // await sendVerificationEmail(mailOptions);
 
-  return responses.created(res, 'Verification code sent to your email address', {});
+  return responses.created(res, 'Verification code sent to your email address', user.verificationCode);
 });
 
 
