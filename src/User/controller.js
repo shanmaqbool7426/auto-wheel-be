@@ -57,6 +57,107 @@ const login = asyncHandler(async (req, res) => {
 });
 
 
+const updateUserProfile = asyncHandler(async (req, res) => {
+  const { firstName, lastName, phoneNumber, email, showEmail, whatsAppOnThisNumber } = req.body;
+
+  const user = await User.findById(req.user._id);
+  if (!user) {
+    return responses.notFound(res, 'User not found');
+  }
+  user.firstName = firstName || user.firstName;
+  user.lastName = lastName || user.lastName;
+  // user.email = email || user.email; // Ensure email is updated if provided
+  user.phone = phoneNumber || user.phone; // Update phone number
+  user.showEmail = showEmail !== undefined ? showEmail : user.showEmail; // Update showEmail if provided
+  user.whatsAppOnThisNumber = whatsAppOnThisNumber !== undefined ? whatsAppOnThisNumber : user.whatsAppOnThisNumber; // Update WhatsApp status
+
+  await user.save(); // Save the updated user information
+  return responses.ok(res, 'User profile updated successfully', user); // Return success response
+});
+
+const updateDealerInfo = asyncHandler(async (req, res) => {
+  const { dealerName, licenseNumber, location, salesHours, hasWhatsApp, showEmail } = req.body;
+
+  const user = await User.findById(req.user._id);
+  if (!user) {
+    return responses.notFound(res, 'User not found');
+  }
+
+  // Update dealer information
+  user.dealerName = dealerName || user.dealerName;
+  user.licenseNumber = licenseNumber || user.licenseNumber;
+  user.location = location || user.location;
+  user.salesHours = salesHours || user.salesHours;
+  user.hasWhatsApp = hasWhatsApp !== undefined ? hasWhatsApp : user.hasWhatsApp; // Check for undefined
+  user.showEmail = showEmail !== undefined ? showEmail : user.showEmail; // Check for undefined
+
+  await user.save();
+  return responses.ok(res, 'Dealer information updated successfully', user);
+});
+
+const updateServicesOffered = asyncHandler(async (req, res) => {
+  const { servicesOffered } = req.body; // Expecting an array of services
+
+  const user = await User.findById(req.user._id);
+  if (!user) {
+    return responses.notFound(res, 'User not found');
+  }
+
+  // Update services offered
+  user.servicesOffered = servicesOffered; // Replace existing services with new ones
+
+  await user.save();
+  return responses.ok(res, 'Services offered updated successfully', user.servicesOffered);
+});
+
+const changePassword = asyncHandler(async (req, res) => {
+  const { currentPassword, newPassword } = req.body;
+
+  const user = await User.findById(req.user._id);
+  if (!user) {
+    return responses.notFound(res, 'User not found');
+  }
+
+  if (!(await user.matchPassword(currentPassword))) {
+    return responses.unauthorized(res, 'Current password is incorrect');
+  }
+
+  user.password = newPassword;
+  await user.save();
+  return responses.ok(res, 'Password changed successfully');
+});
+
+
+const connectAccount = asyncHandler(async (req, res) => {
+  const { loginType } = req.body; // e.g., Google, Facebook, etc.
+
+  const user = await User.findById(req.user._id);
+  if (!user) {
+    return responses.notFound(res, 'User not found');
+  }
+
+  if (!user.loginType.includes(loginType)) {
+    user.loginType.push(loginType);
+    await user.save();
+    return responses.ok(res, 'Account connected successfully');
+  } else {
+    return responses.badRequest(res, 'Account already connected');
+  }
+});
+
+const disconnectAccount = asyncHandler(async (req, res) => {
+  const { loginType } = req.body; // e.g., Google, Facebook, etc.
+
+  const user = await User.findById(req.user._id);
+  if (!user) {
+    return responses.notFound(res, 'User not found');
+  }
+
+  user.loginType = user.loginType.filter(type => type !== loginType);
+  await user.save();
+  return responses.ok(res, 'Account disconnected successfully');
+});
+
 const verifyUser = asyncHandler(async (req, res) => {
   const { email, otp } = req.body;
   console.log('<,,,,',email, otp)
@@ -69,9 +170,12 @@ const verifyUser = asyncHandler(async (req, res) => {
   if (user.verificationCode === otp) {
     user.isVerified = true;
     user.verificationCodea = null;
+    const token = generateToken(user._id);
+
     await user.save();
+    // generateToken(user._id)
     console.log('user>>>>>>>>>',user,email, otp,user)
-    return responses.ok(res, 'User verified successfully',user);
+    return responses.ok(res, 'User verified successfully',{user,token});
   } else {
     return responses.ok(res, 'User verified successfully',user);
   }
@@ -329,6 +433,12 @@ const unfollowUser = asyncHandler(async (req, res) => {
 export {
   registerUser,
   login,
+  updateUserProfile,
+  updateDealerInfo,
+  updateServicesOffered,
+  changePassword,
+  connectAccount,
+  disconnectAccount,
   addReport,
   getReports,
   verifyUser,

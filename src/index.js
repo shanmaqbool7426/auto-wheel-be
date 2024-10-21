@@ -92,6 +92,34 @@ app.use('/upload-image', upload.array('images', 10), async (req, res) => {
     return responses.badRequest(res, 'Image upload failed');
   }
 });
+
+
+// Add this function outside the io.on('connection', ...) block
+async function getMessagesForConversation(userId, otherUserId) {
+  try {
+    const userObjectId = new mongoose.Types.ObjectId(userId);
+    const otherUserObjectId = new mongoose.Types.ObjectId(otherUserId);
+    
+    const messages = await ChatMessage.find({
+      $or: [
+        { sender: userObjectId, receiver: otherUserObjectId },
+        { sender: otherUserObjectId, receiver: userObjectId }
+      ]
+    }).sort({ createdAt: 1 });
+
+    return messages.map(message => ({
+      id: message._id,
+      content: message.content,
+      sender: message.sender.toString(),
+      receiver: message.receiver.toString(),
+      createdAt: message.createdAt
+    }));
+  } catch (error) {
+    console.error('Error fetching messages for conversation:', error);
+    throw error;
+  }
+}
+
 const connectedUsers = new Map();
 const userConversations = new Map();
 
@@ -99,13 +127,12 @@ io.on('connection', (socket) => {
   console.log('A user connected');
 
   socket.on('authenticate', (userId) => {
-    console.log('User authenticated:', userId,socket.id);
+    console.log('UseFr authenticated:', userId,socket.id);
     connectedUsers.set(userId, socket.id);
     socket.userId = userId;
   });
 
   socket.on('get_conversations', async () => {
-console.log('conversations_list')
       try {
         const conversations = await getConversationsForUser('670b78ae88faa5acc2bbd0e4');
         socket.emit('conversations_list', conversations);
@@ -114,6 +141,7 @@ console.log('conversations_list')
     }
   });
 
+  
   socket.on('send_message', async ({ sender, receiver, content }) => {
     console.log('Sending message:', { sender, receiver, content });
     try {
@@ -145,6 +173,19 @@ console.log('conversations_list')
       socket.emit('error', { message: 'Failed to send message' });
     }
   });
+
+
+  // Add this new event handler in your io.on('connection', ...) block
+socket.on('get_messages', async ({ userId, otherUserId }) => {
+  try {
+    console.log('get_messages')
+    const messages = await getMessagesForConversation(userId, otherUserId);
+    socket.emit('conversation_messages', messages);
+  } catch (error) {
+    console.error('Error fetching messages:', error);
+    socket.emit('error', { message: 'Failed to fetch messages' });
+  }
+});
 
   socket.on('disconnect', () => {
     console.log('A user disconnected');
@@ -191,7 +232,7 @@ async function getConversationsForUser(userId) {
         $project: {
           otherUser: {
             _id: 1,
-            name: 1,
+            fullName: 1,
             email: 1
           },
           lastMessage: {
@@ -209,7 +250,7 @@ async function getConversationsForUser(userId) {
       id: m._id,
       otherUser: {
         id: m.otherUser._id,
-        name: m.otherUser.name,
+        fullName: m.otherUser.fullName,
         email: m.otherUser.email
       },
       lastMessage: {
@@ -238,7 +279,7 @@ async function getUpdatedConversation(senderId, receiverId, message) {
     id: otherUserId,
     otherUser: {
       id: otherUser._id,
-      name: otherUser.name,
+      fullName: otherUser.fullName,
       email: otherUser.email
     },
     lastMessage: {

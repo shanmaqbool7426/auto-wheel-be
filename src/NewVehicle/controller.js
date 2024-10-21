@@ -449,6 +449,7 @@ const getVehiclesByMake = asyncHandler(async (req, res) => {
 });
 
 
+
 // const getPopularVehiclesByReviews = asyncHandler(async (req, res) => {
 //   try {
 //     const popularVehicles = await Review.aggregate([
@@ -560,6 +561,7 @@ const getNewlyLaunchedVehicles = asyncHandler(async (req, res) => {
     return response.serverError(res, 'Error retrieving newly launched vehicles', error);
   }
 });
+
 
 export {
   createNewVehicle,
