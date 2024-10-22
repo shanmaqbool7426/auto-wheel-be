@@ -28,7 +28,6 @@ const vehicleSchema = new mongoose.Schema({
   },
   address:{
     type: String,
-    required: true,
     index: true,
   },
   owner:{

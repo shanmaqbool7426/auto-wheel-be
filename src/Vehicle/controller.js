@@ -4,23 +4,22 @@ import response from "../Utils/response.js";
 import { uploadOnCloudinary } from '../Utils/cloudinary.js';
 import Review from '../Review/model.js';
 import User from '../User/model.js';
+import mongoose, { mongo } from 'mongoose';
 
 const createVehicle = asyncHandler(async (req, res) => {
   try {
-    console.log('>>>>>>>-2', req.body);
-
     const vehicle = new Vehicle(req.body);
     await vehicle.save();
     const user = await User.findById(req.body.userId);
     if (!user) {
-      return responses.notFound(res, 'User not found');
+      return response.notFound(res, 'User not found');
     }
     user.adsCount.push(vehicle._id);
     await user.save();
-    responses.ok(res, "Vehicle Created Successfully", vehicle);
+    response.ok(res, "Vehicle Created Successfully", vehicle);
   } catch (error) {
     console.error(error);
-    responses.internalServerError(res, 'Failed to create vehicle');
+    response.internalServerError(res, 'Failed to create vehicle');
   }
 });
 
@@ -463,8 +462,13 @@ const getFavoriteVehiclesByUserId = asyncHandler(async (req, res) => {
 
     // Filter by vehicle ID if search parameter is provided
     if (search) {
-      console.log('>>> search',search)
-      favoriteVehicles = favoriteVehicles.filter(vehicle => vehicle._id.toString() === search);
+      console.log('>>> search', search);
+      favoriteVehicles = favoriteVehicles.filter(vehicle => {
+        // Convert the vehicle ID to string and check if it includes the search term
+        return vehicle._id.toString().includes(search)
+      });
+    
+      console.log('>>>>', favoriteVehicles);
     }
 
     // Sort the vehicles based on the sort parameter
@@ -531,9 +535,8 @@ const toggleFeaturedVehicle = asyncHandler(async (req, res) => {
 const deleteVehicle = asyncHandler(async (req, res) => {
   try {
     const { vehicleId } = req.params;
-
-    const vehicle = await Vehicle.findByIdAndDelete(vehicleId);
-
+   const id= new mongoose.Types.ObjectId(vehicleId)
+    const vehicle = await Vehicle.deleteOne({_id:id});
     if (!vehicle) {
       return response.notFound(res, 'Vehicle not found');
     }
