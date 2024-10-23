@@ -69,7 +69,7 @@ const updateUserProfile = asyncHandler(async (req, res) => {
   // user.email = email || user.email; // Ensure email is updated if provided
   user.phone = phoneNumber || user.phone; // Update phone number
   user.showEmail = showEmail !== undefined ? showEmail : user.showEmail; // Update showEmail if provided
-  user.whatsAppOnThisNumber = whatsAppOnThisNumber !== undefined ? whatsAppOnThisNumber : user.whatsAppOnThisNumber; // Update WhatsApp status
+  user.hasWhatsApp = whatsAppOnThisNumber !== undefined ? whatsAppOnThisNumber : user.whatsAppOnThisNumber; // Update WhatsApp status
 
   await user.save(); // Save the updated user information
   return responses.ok(res, 'User profile updated successfully', user); // Return success response
@@ -111,20 +111,38 @@ const updateServicesOffered = asyncHandler(async (req, res) => {
 });
 
 const changePassword = asyncHandler(async (req, res) => {
-  const { currentPassword, newPassword } = req.body;
+  try {
+    const { currentPassword, newPassword } = req.body;
 
-  const user = await User.findById(req.user._id);
-  if (!user) {
-    return responses.notFound(res, 'User not found');
+    // Ensure req.user is defined
+    if (!req.user || !req.user._id) {
+      return responses.unauthorized(res, 'User not authenticated');
+    }
+
+    const user = await User.findById(req.user._id);
+    console.log('User found:', user); // Log the user object
+
+    if (!user) {
+      return responses.notFound(res, 'User not found');
+    }
+
+    // Check if the current password matches
+    const isMatch = await user.matchPassword(currentPassword);
+    console.log('Password match:', isMatch); // Log the result of password match
+
+    if (!isMatch) {
+      return responses.unauthorized(res, 'Current password is incorrect');
+    }
+
+    // Update the password
+    user.password = newPassword; // Set the new password
+    await user.save(); // Save the user
+
+    return responses.ok(res, 'Password changed successfully');
+  } catch (error) {
+    console.error('Error changing password:', error);
+    return responses.serverError(res, 'An error occurred while changing the password');
   }
-
-  if (!(await user.matchPassword(currentPassword))) {
-    return responses.unauthorized(res, 'Current password is incorrect');
-  }
-
-  user.password = newPassword;
-  await user.save();
-  return responses.ok(res, 'Password changed successfully');
 });
 
 
@@ -156,6 +174,27 @@ const disconnectAccount = asyncHandler(async (req, res) => {
   user.loginType = user.loginType.filter(type => type !== loginType);
   await user.save();
   return responses.ok(res, 'Account disconnected successfully');
+});
+
+const getProfile = asyncHandler(async (req, res) => {
+  try {
+    // Ensure req.user is defined
+    if (!req.user || !req.user._id) {
+      return responses.unauthorized(res, 'User not authenticated');
+    }
+
+    // Find the user by ID and exclude the password field
+    const user = await User.findById(req.user._id).select('-password'); // Exclude password from the response
+
+    if (!user) {
+      return responses.notFound(res, 'User not found');
+    }
+
+    return responses.ok(res, 'User profile retrieved successfully', user);
+  } catch (error) {
+    console.error('Error retrieving user profile:', error);
+    return responses.serverError(res, 'An error occurred while retrieving the user profile');
+  }
 });
 
 const verifyUser = asyncHandler(async (req, res) => {
@@ -433,6 +472,7 @@ const unfollowUser = asyncHandler(async (req, res) => {
 export {
   registerUser,
   login,
+  getProfile,
   updateUserProfile,
   updateDealerInfo,
   updateServicesOffered,
