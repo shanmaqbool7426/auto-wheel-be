@@ -23,7 +23,8 @@ import {
   updateServicesOffered,
   changePassword,
   connectAccount,
-  disconnectAccount
+  disconnectAccount,
+  getProfile
 } from './controller.js';
 import { deleteFavoriteVehicle, getFavoriteVehiclesByUserId, getVehiclesByUserId } from '../Vehicle/controller.js';
 import { protect } from '../Middleware/auth.js';
@@ -39,7 +40,7 @@ router.get('/get-dealers', getDealers);
 router.post('/login', login);
 router.post('/verify-user', verifyUser);
 router.post('/password-reset-request', requestPasswordReset);
-// router.get('/profile', getProfile); // Assuming authentication middleware is applied
+router.get('/profile',protect, getProfile); // Assuming authentication middleware is applied
 // router.put('/profile', updateProfile); // Assuming authentication middleware is applied
 // router.post('/forgot-password', forgotPassword);
 router.post('/reset-password', resetPassword);

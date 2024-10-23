@@ -10,7 +10,7 @@ const userSchema = mongoose.Schema(
     loginType: [],
     email: { type: String, required: true, unique: true },
     phone: { type: String },
-    password: { type: String,select: false },
+    password: { type: String },
     accountType: { type: String, enum: ['Personal', 'Dealer'] },
     rating: { type: Number, default: 0 },
     isVerified: { type: Boolean, default: false },
@@ -48,18 +48,24 @@ const userSchema = mongoose.Schema(
 );
 
 userSchema.methods.matchPassword = async function (enteredPassword) {
+  console.log('matchedd',enteredPassword, this.password)
   return await bcrypt.compare(enteredPassword, this.password);
 };
 
 
 userSchema.pre('save', async function (next) {
-  if (!this.isModified('password')) {
+  try {
+    if (!this.isModified('password')) {
+      return next();
+    }
+    const salt = await bcrypt.genSalt(10);
+    this.password = await bcrypt.hash(this.password, salt);
     next();
+  } catch (error) {
+    next(error); // Pass the error to the next middleware
   }
-
-  const salt = await bcrypt.genSalt(10);
-  this.password = await bcrypt.hash(this.password, salt);
 });
+
 
 userSchema.methods.toJSON = function () {
   const user = this.toObject();
