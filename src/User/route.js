@@ -40,7 +40,7 @@ router.get('/get-dealers', getDealers);
 router.post('/login', login);
 router.post('/verify-user', verifyUser);
 router.post('/password-reset-request', requestPasswordReset);
-router.get('/profile',protect, getProfile); // Assuming authentication middleware is applied
+router.get('/profile/:userId',protect, getProfile); // Assuming authentication middleware is applied
 // router.put('/profile', updateProfile); // Assuming authentication middleware is applied
 // router.post('/forgot-password', forgotPassword);
 router.post('/reset-password', resetPassword);

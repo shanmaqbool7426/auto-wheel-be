@@ -195,8 +195,11 @@ socket.on('get_messages', async ({ userId, otherUserId }) => {
   });
 });
 async function getConversationsForUser(userId) {
+
+  console.log('userId',userId)
   try {
-    const objectId = new mongoose.Types.ObjectId(userId);    const messages = await ChatMessage.aggregate([
+    const objectId = new mongoose.Types.ObjectId(userId);  
+      const messages = await ChatMessage.aggregate([
       {
         $match: {
           $or: [{ sender: objectId }, { receiver: objectId }]
