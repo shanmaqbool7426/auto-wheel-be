@@ -178,13 +178,14 @@ const disconnectAccount = asyncHandler(async (req, res) => {
 
 const getProfile = asyncHandler(async (req, res) => {
   try {
+    const userId = req.params.userId;
     // Ensure req.user is defined
-    if (!req.user || !req.user._id) {
-      return responses.unauthorized(res, 'User not authenticated');
-    }
+    // if (!req.user || !req.user._id) {
+    //   return responses.unauthorized(res, 'User not authenticated');
+    // }
 
     // Find the user by ID and exclude the password field
-    const user = await User.findById(req.user._id).select('-password'); // Exclude password from the response
+    const user = await User.findById(userId).select('-password'); // Exclude password from the response
 
     if (!user) {
       return responses.notFound(res, 'User not found');
