@@ -339,7 +339,189 @@ const getPopularNewVehicles = asyncHandler(async (req, res) => {
   }
 });
 
+const getTopComparisonVehicles = asyncHandler(async (req, res) => {
+  try {
+    const { type, make } = req.query;
 
+    // Build the filter based on query parameters
+    const filter = {
+      ...(type && { type }), // Add type to filter if provided
+      ...(make && { make })  // Add make to filter if provided
+    };
+
+    // Fetch up to 12 popular vehicles based on the provided filter
+    const comparisonVehicles = await NewVehicle.aggregate([
+      { $match: filter },  // Match the filter for type and make if provided
+      { $limit: 12 },  // Limit the results to 12 vehicles
+      {
+        $lookup: {
+          from: 'reviews',  // Join with the reviews collection
+          localField: '_id',  // Vehicle ID in NewVehicle collection
+          foreignField: 'vehicle',  // Match with vehicle reference in Review collection
+          as: 'reviews'  // Store the reviews data
+        }
+      },
+      {
+        $addFields: {
+          averageRating: {
+            $cond: {
+              if: { $gt: [{ $size: '$reviews' }, 0] },  // Check if there are any reviews
+              then: {
+                $round: [{ $avg: '$reviews.overAllRating' }, 4]  // Calculate the average rating and round to 4 decimal places
+              },
+              else: null  // If no reviews, return null
+            }
+          },
+          reviewCount: { $size: '$reviews' }  // Count the number of reviews
+        }
+      },
+      {
+        $project: {
+          _id: 1,
+          make: 1,
+          model: 1,
+          variant: 1,
+          type: 1,
+          slug: 1,
+          views: 1,
+          minPrice: 1,
+          maxPrice: 1,
+          year: 1,
+          defaultImage: 1,  // Include the default image
+          averageRating: 1,  // Include average rating
+          reviewCount: 1,    // Include review count
+        }
+      }
+    ]);
+
+    // Return an empty array if fewer than 2 vehicles are available for pairing
+    if (comparisonVehicles.length < 2) {
+      return response.ok(res, 'Not enough vehicles found for comparison', []);
+    }
+
+    // Randomize and create up to 6 pairs of vehicles
+    const shuffledVehicles = comparisonVehicles.sort(() => 0.5 - Math.random());
+    const vehiclePairs = [];
+    const pairsToCreate = Math.min(6, Math.floor(shuffledVehicles.length / 2));
+
+    for (let i = 0; i < pairsToCreate * 2; i += 2) {
+      const vehiclePair = {
+        vehicle1: shuffledVehicles[i],
+        vehicle2: shuffledVehicles[i + 1]
+      };
+      vehiclePairs.push(vehiclePair);
+    }
+
+    // Respond with the generated vehicle pairs
+    response.ok(res, 'Vehicle pairs for comparison retrieved successfully', vehiclePairs);
+  } catch (error) {
+    console.error('Error retrieving comparison vehicles:', error);
+    return response.serverError(res, 'Error retrieving comparison vehicles', error);
+  }
+});
+
+export const getComparison = async (req, res) => {
+  const { vehicle1, vehicle2, vehicle3 } = req.body;
+  const { type } = req.query;
+
+  // Check that at least two vehicles are provided
+  if (!vehicle1 || !vehicle2 || (vehicle1 && !vehicle2 && vehicle3)) {
+    return res.status(400).json({ error: "You must select at least two vehicles to compare." });
+  }
+
+  try {
+    // Function to find or return a random vehicle based on type
+    const findOrRandomVehicle = async (vehicle, type) => {
+      if (vehicle) {
+        // Check for vehicle with make, model, and variant
+        let existingVehicle = await NewVehicle.findOne({
+          make: vehicle.make,
+          model: vehicle.model,
+          variant: vehicle.variant,
+          type: type
+        });
+
+        // If vehicle exists, return its ID
+        if (existingVehicle) {
+          return existingVehicle._id;
+        }
+
+        // Check for vehicle with make and model
+        existingVehicle = await NewVehicle.findOne({
+          make: vehicle.make,
+          model: vehicle.model,
+          type: type
+        });
+
+        // If vehicle exists, return its ID
+        if (existingVehicle) {
+          return existingVehicle._id;
+        }
+
+        // Check for vehicle with model only
+        existingVehicle = await NewVehicle.findOne({
+          model: vehicle.model,
+          type: type
+        });
+
+        // If vehicle exists, return its ID
+        if (existingVehicle) {
+          return existingVehicle._id;
+        }
+      }
+
+      // If vehicle doesn't exist or not provided, return a random vehicle ID based on the type
+      const randomVehicle = await NewVehicle.aggregate([
+        { $match: { type: type } }, // Filter by type before selecting randomly
+        { $sample: { size: 1 } }
+      ]);
+      return randomVehicle[0]._id;
+    };
+
+    // Check each vehicle and get their IDs
+    const vehicleIds = [];
+    vehicleIds.push(await findOrRandomVehicle(vehicle1, type));
+    vehicleIds.push(await findOrRandomVehicle(vehicle2, type));
+
+    if (vehicle3) {
+      vehicleIds.push(await findOrRandomVehicle(vehicle3, type));
+    }
+
+    // Populate the vehicle details along with reviews and calculated fields
+    const populatedVehicles = await NewVehicle.aggregate([
+      { $match: { _id: { $in: vehicleIds } } },
+      {
+        $lookup: {
+          from: 'reviews',  // Join with the reviews collection
+          localField: '_id',  // Vehicle ID in NewVehicle collection
+          foreignField: 'vehicle',  // Match with vehicle reference in Review collection
+          as: 'reviews'  // Store the reviews data
+        }
+      },
+      {
+        $addFields: {
+          averageRating: {
+            $cond: {
+              if: { $gt: [{ $size: '$reviews' }, 0] },  // Check if there are any reviews
+              then: {
+                $round: [{ $avg: '$reviews.overAllRating' }, 4]  // Calculate the average rating and round to 4 decimal places
+              },
+              else: null  // If no reviews, return null
+            }
+          },
+          reviewCount: { $size: '$reviews' }  // Count the number of reviews
+        }
+      }
+    ]);
+
+    res.status(200).json({
+      message: "Comparison data retrieved successfully",
+      comparison: populatedVehicles
+    });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
 
 
 // API to Get Upcoming Vehicles (releaseDate in the future)
@@ -574,5 +756,6 @@ export {
   getUpcomingNewVehicles,
   getVehiclesByMake,
   getPopularVehiclesByReviews,
-  getNewlyLaunchedVehicles
+  getNewlyLaunchedVehicles,
+  getTopComparisonVehicles
 };

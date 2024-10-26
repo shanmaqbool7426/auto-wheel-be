@@ -15,6 +15,7 @@ import {
   toggleFeaturedVehicle,
   // imageUploader
 } from "./controller.js"
+import { protect } from "../Middleware/auth.js";
 
 const router = express.Router();
 
@@ -23,10 +24,10 @@ router.get('/vehicles-by-type', getBrowseByVehicles);
 router.get('/vehicles-by-type', getBrowseByVehicles);
 router.get('/get-popular-vehicles', getPopularVehicles);
 router.get('/get-popular-by-reviews-vehicles', getPopularVehiclesByReviews);
-router.get('/:slug', getVehicleBySlug);
 router.get('/getSimilarVehicles/:vehicleId', getSimilarVehicles);
+router.get('/:slug', getVehicleBySlug);
 router.get('/vehicles-listing/*', getListVehicles);
-router.post('/', createVehicle); // Assuming authentication middleware is applied
+router.post('/',protect, createVehicle); // Assuming authentication middleware is applied
 // router.put('/:id', updateVehicle);
 router.delete('/:id', deleteVehicle); 
 
