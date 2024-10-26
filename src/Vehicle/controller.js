@@ -10,11 +10,11 @@ const createVehicle = asyncHandler(async (req, res) => {
   try {
     const vehicle = new Vehicle(req.body);
     await vehicle.save();
-    const user = await User.findById(req.user._id);
+    const user = await User.findById(req.body?.seller);
     if (!user) {
       return response.notFound(res, 'User not found');
     }
-    user.adsCount.push(vehicle._id);
+    user.adsCount = (user.adsCount || 0) + 1;
     await user.save();
     response.ok(res, "Vehicle Created Successfully", vehicle);
   } catch (error) {
