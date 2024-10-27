@@ -12,7 +12,8 @@ import {
   getPopularVehiclesByReviews,
   getNewlyLaunchedVehicles,
   getTopComparisonVehicles,
-  getComparison
+  getComparison,
+  getListVehicles
 } from "./controller.js";  // Import new vehicle controller
 
 const router = express.Router();
@@ -36,6 +37,9 @@ router.get('/comparison', getTopComparisonVehicles);
 
 // Get comparison new vehicles
 router.post('/compare', getComparison);
+
+// Get comparison new vehicles
+router.get('/vehicles-listing/*', getListVehicles);
 
 // Get  newly launched vehicles 
 router.get('/newly-launched', getNewlyLaunchedVehicles);
