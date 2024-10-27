@@ -4,13 +4,14 @@ import User from '../User/model.js';
 import responses from '../Utils/response.js';
 
 const protect = asyncHandler(async (req, res, next) => {
-  let token='fsdf';
-console.log('>>>>>',process.env.JWT_SECRET)
-  if (true) {
+
+  let token = req.headers.authorization
+  if (token) {
     try {
-      // token = req.headers.authorization.split(' ')[1];
-      // const decoded = jwt.verify(token, 'token-secret-scv');
-      req.user = await User.findById('67139bb54aabf4d48e4dbfff').select('-password');
+      const decoded = jwt.verify(token, 'token-secret-scv');
+
+      console.log('decodeddecoded',decoded)
+      req.user = await User.findById(decoded?.id).select('-password');
       // if (!req.user) {
       //   return responses.unauthorized(res, 'Not authorized, user not found');
       // }

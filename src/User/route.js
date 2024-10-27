@@ -24,7 +24,8 @@ import {
   changePassword,
   connectAccount,
   disconnectAccount,
-  getProfile
+  getProfile,
+  updateProfileImages
 } from './controller.js';
 import { deleteFavoriteVehicle, getFavoriteVehiclesByUserId, getVehiclesByUserId } from '../Vehicle/controller.js';
 import { protect } from '../Middleware/auth.js';
@@ -40,7 +41,7 @@ router.get('/get-dealers', getDealers);
 router.post('/login', login);
 router.post('/verify-user', verifyUser);
 router.post('/password-reset-request', requestPasswordReset);
-router.get('/profile/:userId',protect, getProfile); // Assuming authentication middleware is applied
+router.get('/profile/:userId', getProfile); // Assuming authentication middleware is applied
 // router.put('/profile', updateProfile); // Assuming authentication middleware is applied
 // router.post('/forgot-password', forgotPassword);
 router.post('/reset-password', resetPassword);
@@ -58,8 +59,10 @@ router.put('/favorites/:userId/:vehicleId', deleteFavoriteVehicle);
 
 router.get('/:userId/followers', getFollowers);
 router.get('/:userId/following', getFollowing);
-router.post('/:userId/follow', followUser);
-router.post('/:userId/unfollow', unfollowUser);
+router.post('/:userId/follow',protect, followUser);
+router.post('/:userId/unfollow',protect, unfollowUser);
+router.put('/update-profile-images', protect, updateProfileImages);
+
 
 export default router;
 

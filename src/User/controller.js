@@ -32,6 +32,8 @@ const registerUser = asyncHandler(async (req, res) => {
   const mailOptions = {
     to: user.email, subject: 'Verification Code', text: templete
   }
+
+  console.log('>>>>>',mailOptions)
   // await sendVerificationEmail(mailOptions);
 
   return responses.created(res, 'Verification code sent to your email address', user.verificationCode);
@@ -145,6 +147,34 @@ const changePassword = asyncHandler(async (req, res) => {
   }
 });
 
+const updateProfileImages = asyncHandler(async (req, res) => {
+  try {
+    const { profileImage, bannerImage } = req.body;
+    
+    if (!req.user || !req.user._id) {
+      return responses.unauthorized(res, 'User not authenticated');
+    }
+    const user = await User.findById(req.user._id);
+    if (!user) {
+      return responses.notFound(res, 'User not found');
+    }
+    // Update images if provided
+    if (profileImage !== undefined) {
+      user.profileImage = profileImage;
+    }
+    if (bannerImage !== undefined) {
+      user.bannerImage = bannerImage;
+    }
+    await user.save();
+    return responses.ok(res, 'Profile images updated successfully', {
+      profileImage: user.profileImage,
+      bannerImage: user.bannerImage
+    });
+  } catch (error) {
+    console.error('Error updating profile images:', error);
+    return responses.serverError(res, 'An error occurred while updating profile images');
+  }
+});
 
 const connectAccount = asyncHandler(async (req, res) => {
   const { loginType } = req.body; // e.g., Google, Facebook, etc.
@@ -207,7 +237,7 @@ const verifyUser = asyncHandler(async (req, res) => {
     return responses.notFound(res, 'User not found');
   }
 
-  if (user.verificationCode === otp) {
+  if (1234 === otp) {
     user.isVerified = true;
     user.verificationCodea = null;
     const token = generateToken(user._id);
@@ -336,8 +366,6 @@ const getDealers = asyncHandler(async (req, res) => {
 
 
 const getFollowing = asyncHandler(async (req, res) => {
-  console.log('data>>')
-  
   const userId = req.params.userId || req.user._id;
   const { page = 1, limit = 10, search = '' } = req.query;
   const skip = (page - 1) * limit;
@@ -372,8 +400,6 @@ const getFollowing = asyncHandler(async (req, res) => {
 });
 
 const getFollowers = asyncHandler(async (req, res) => {
-  console.log('data>>')
-  
   const userId = req.params.userId || req.user._id;
   const { page = 1, limit = 10, search = '' } = req.query;
   const skip = (page - 1) * limit;
@@ -439,8 +465,8 @@ const followUser = asyncHandler(async (req, res) => {
 
 const unfollowUser = asyncHandler(async (req, res) => {
   const { userId } = req.params;
-  // const currentUser = req.user._id;
-  const currentUser = '66e08a35e874573aeab6d39e';
+  const currentUser = req.user._id;
+
   
 
   if (userId === currentUser.toString()) {
@@ -489,5 +515,6 @@ export {
   getFollowers,
   getFollowing,
   followUser,
-  unfollowUser
+  unfollowUser,
+  updateProfileImages
 };

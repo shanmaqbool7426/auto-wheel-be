@@ -1,10 +1,17 @@
 import express from 'express';
-import { addReview, getReviews } from './controller.js';
 import { protect } from '../Middleware/auth.js';
+import {
+  createReview,
+  getDealerReviews,
+  addComment,
+  likeDislikeReview
+} from './controller.js';
 
 const router = express.Router();
 
-router.post('/add-review',protect, addReview);
-router.get('/get-reviews/:dealerId', getReviews);
+router.post('/',protect,  createReview);
+router.get('/dealer/:dealerId', getDealerReviews);
+router.post('/:reviewId/comment', protect, addComment);
+router.post('/:reviewId/like-dislike',protect, likeDislikeReview);
 
 export default router;
