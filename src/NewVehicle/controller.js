@@ -88,14 +88,16 @@ const getPopularVehiclesByReviews = asyncHandler(async (req, res) => {
       },
       { $sort: { reviewCount: -1 } },  // Sort by review count in descending order
       { $limit: 8 },  // Limit to 8 vehicles
-      { $lookup: { // Optionally join with another collection if needed
+      {
+        $lookup: { // Optionally join with another collection if needed
           from: 'reviews',  // Assuming 'reviews' is your reviews collection
           localField: 'reviewsIds',
           foreignField: '_id',
           as: 'reviewDetails'
         }
       },
-      { $project: { // Define what fields to include in the final output
+      {
+        $project: { // Define what fields to include in the final output
           type: 1,
           make: 1,
           model: 1,
@@ -546,7 +548,7 @@ const getUpcomingNewVehicles = asyncHandler(async (req, res) => {
 
     // Respond with the list of upcoming vehicles
     return res.status(200).json({ message: 'Upcoming vehicles retrieved successfully', data: upcomingVehicles });
-    
+
   } catch (error) {
     console.error('Error retrieving upcoming vehicles:', error);
     return res.status(500).json({ message: 'Error retrieving upcoming vehicles' });
@@ -609,8 +611,8 @@ const getVehiclesByMake = asyncHandler(async (req, res) => {
           views: 1,
           defaultImage: 1,
           createdAt: 1,
-          maxPrice:1,
-          minPrice:1,
+          maxPrice: 1,
+          minPrice: 1,
           averageRating: { $ifNull: ['$averageRating', 0] },  // Default to 0 if no reviews
           reviewCount: { $ifNull: ['$reviewCount', 0] }  // Default to 0 if no reviews
         }
@@ -723,8 +725,8 @@ const getNewlyLaunchedVehicles = asyncHandler(async (req, res) => {
           releaseDate: 1,
           views: 1,
           defaultImage: 1,
-          maxPrice:1,
-          minPrice:1,
+          maxPrice: 1,
+          minPrice: 1,
           averageRating: 1,  // Include average rating
           reviewCount: 1,    // Include review count
         }
@@ -735,7 +737,7 @@ const getNewlyLaunchedVehicles = asyncHandler(async (req, res) => {
       return response.notFound(res, 'No newly launched vehicles found');
     }
 
-    console.log('newlyLaunchedVehicles',newlyLaunchedVehicles)
+    console.log('newlyLaunchedVehicles', newlyLaunchedVehicles)
 
     response.ok(res, 'Newly launched vehicles retrieved successfully', newlyLaunchedVehicles);
   } catch (error) {
@@ -743,6 +745,180 @@ const getNewlyLaunchedVehicles = asyncHandler(async (req, res) => {
     return response.serverError(res, 'Error retrieving newly launched vehicles', error);
   }
 });
+
+const getListVehicles = asyncHandler(async (req, res) => {
+  const pathSegments = req.params[0].split('/');
+  const filters = {};
+  const options = {
+    limit: parseInt(req.query.limit, 10) || 10,
+    sort: {},
+  };
+
+  let page = 1;
+
+  let makes = [];
+  let models = [];
+  let variants = [];
+  let bodyTypes = [];
+
+  pathSegments.forEach((segment) => {
+    const [key, ...rest] = segment.split('_');
+    const value = rest.join('_');
+
+    switch (key) {
+      case 't':
+        filters.type = value;
+        break;
+      case 'mk':
+        makes.push(value);
+        break;
+      case 'md':
+        models.push(value);
+        break;
+      case 'vt':
+        variants.push(value);
+        break;
+      case 'featured':
+        filters.featured = true;
+        break;
+      case 'bt':
+        bodyTypes.push(value);
+        break;
+      case 'pr':
+        const [minPrice, maxPrice] = value.split('_').map(Number);
+        filters.minPrice = { $lte: maxPrice };
+        filters.maxPrice = { $gte: minPrice };
+        break;
+      case 'yr':
+        const [minYear, maxYear] = value.split('_').map(Number);
+        filters.year = { $gte: minYear, $lte: maxYear };
+        break;
+      case 'tr':
+        filters['transmission.type'] = { $regex: value, $options: 'i' };
+        break;
+      case 'cl':
+        filters['exterior.colorsAvailable'] = { $in: [new RegExp(value, 'i')] };
+        break;
+      case 'fuel':
+        filters['engine.type'] = { $regex: value, $options: 'i' };
+        break;
+      case 'sb':
+        if (value === 'price-asc') {
+          options.sort.minPrice = 1;
+        } else if (value === 'price-desc') {
+          options.sort.minPrice = -1;
+        } else if (value === 'year-asc') {
+          options.sort.year = 1;
+        } else if (value === 'year-desc') {
+          options.sort.year = -1;
+        } else if (value === 'upcoming') {
+          options.sort.releaseDate = 1;
+        } else if (value === 'popular') {
+          options.sort.views = -1;
+        } else {
+          options.sort.createdAt = -1;
+        }
+        break;
+      case 'page':
+        page = parseInt(rest[0], 10);
+        break;
+      default:
+        break;
+    }
+  });
+
+  if (makes.length > 0) {
+    filters.make = { $in: makes.map((make) => new RegExp(`${make.trim()}`, 'i')) };
+  }
+
+  if (models.length > 0) {
+    filters.model = { $in: models.map((model) => new RegExp(`${model.trim()}`, 'i')) };
+  }
+
+  if (variants.length > 0) {
+    filters.variant = { $in: variants.map((variant) => new RegExp(`${variant.trim()}`, 'i')) };
+  }
+
+  if (bodyTypes.length > 0) {
+    filters.bodyType = {
+      $in: bodyTypes.map((bodyType) => new RegExp(`${bodyType.trim()}`, 'i')),
+    };
+  }
+
+  options.skip = (page - 1) * options.limit;
+
+  const [totalVehicles, vehicles] = await Promise.all([
+    NewVehicle.countDocuments(filters),
+    NewVehicle.find(filters, null, options).lean(),
+  ]);
+
+  const aggregationPipeline = [
+    {
+      $facet: {
+        typeCounts: [
+          { $match: filters },
+          { $group: { _id: '$type', count: { $sum: 1 } } },
+        ],
+        makeCounts: [
+          { $match: filters },
+          { $group: { _id: '$make', count: { $sum: 1 } } },
+        ],
+        modelCounts: [
+          { $match: filters },
+          { $group: { _id: '$model', count: { $sum: 1 } } },
+        ],
+        variantCounts: [
+          { $match: filters },
+          { $group: { _id: '$variant', count: { $sum: 1 } } },
+        ],
+        yearCounts: [
+          { $match: filters },
+          { $group: { _id: '$year', count: { $sum: 1 } } },
+        ],
+        bodyTypeCounts: [
+          { $match: filters },
+          { $group: { _id: '$bodyType', count: { $sum: 1 } } },
+        ],
+        fuelTypeCounts: [
+          { $match: filters },
+          { $group: { _id: '$engine.type', count: { $sum: 1 } } },
+        ],
+        transmissionCounts: [
+          { $match: filters },
+          { $group: { _id: '$transmission.type', count: { $sum: 1 } } },
+        ],
+        exteriorColorCounts: [
+          { $match: filters },
+          { $unwind: '$exterior.colorsAvailable' },
+          { $group: { _id: '$exterior.colorsAvailable', count: { $sum: 1 } } },
+        ],
+      },
+    },
+  ];
+
+  const [aggregationResult] = await NewVehicle.aggregate(aggregationPipeline);
+
+  const counts = {
+    typeCounts: aggregationResult.typeCounts || [],
+    makeCounts: aggregationResult.makeCounts || [],
+    modelCounts: aggregationResult.modelCounts || [],
+    variantCounts: aggregationResult.variantCounts || [],
+    yearCounts: aggregationResult.yearCounts || [],
+    bodyTypeCounts: aggregationResult.bodyTypeCounts || [],
+    fuelTypeCounts: aggregationResult.fuelTypeCounts || [],
+    transmissionCounts: aggregationResult.transmissionCounts || [],
+    exteriorColorCounts: aggregationResult.exteriorColorCounts || [],
+  };
+
+  const vehiclesResponse = {
+    results: vehicles,
+    count: totalVehicles,
+    counts,
+  };
+
+  return response.ok(res, 'Vehicles retrieved successfully', vehiclesResponse);
+});
+
 
 
 export {
@@ -757,5 +933,6 @@ export {
   getVehiclesByMake,
   getPopularVehiclesByReviews,
   getNewlyLaunchedVehicles,
-  getTopComparisonVehicles
+  getTopComparisonVehicles,
+  getListVehicles
 };
