@@ -132,9 +132,10 @@ io.on('connection', (socket) => {
     socket.userId = userId;
   });
 
-  socket.on('get_conversations', async () => {
+  socket.on('get_conversations', async (userId) => {
+    console.log('userId>>>>',userId)
       try {
-        const conversations = await getConversationsForUser('670b78ae88faa5acc2bbd0e4');
+        const conversations = await getConversationsForUser(userId);
         socket.emit('conversations_list', conversations);
       } catch (error) { 
         socket.emit('error', { message: 'Failed to fetch conversations' });
