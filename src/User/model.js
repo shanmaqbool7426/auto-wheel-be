@@ -34,7 +34,8 @@ const userSchema = mongoose.Schema(
     }],
     reports: [{ vehicle: { type: mongoose.Schema.Types.ObjectId, ref: "Vehicle" }, reason: { type: String } }],
 
-
+    profileImage: { type: String },
+    bannerImage: { type: String },
     dealerName: { type: String },
     licenseNumber: { type: String },
     location: { type: String },
