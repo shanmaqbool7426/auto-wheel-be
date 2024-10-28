@@ -95,6 +95,9 @@ const getListVehicles = asyncHandler(async (req, res) => {
       case 'ad':
         filters.address = { $regex: value, $options: 'i' };
         break;
+      case 'ca':
+        filters.cityArea = { $regex: value, $options: 'i' };
+        break;
       case 'pr':
         const [minPrice, maxPrice] = value.split('_').map(Number);
         filters.price = { $gte: minPrice, $lte: maxPrice };
