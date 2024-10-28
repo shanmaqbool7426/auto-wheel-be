@@ -53,7 +53,7 @@ app.use(helmet());
 
 const corsOptions = {
   "/": {
-    origin: ["http://localhost:5000", "http://localhost:3000"],
+    origin: ["http://localhost:5000", "http://localhost:3000",'https://auto-wheel-be.vercel.app'],
     credentials: true,
   }
 }
