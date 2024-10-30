@@ -435,32 +435,61 @@ const getFollowers = asyncHandler(async (req, res) => {
 
 
 const followUser = asyncHandler(async (req, res) => {
-  const { userId } = req.params;
-  const currentUser = req.user._id;
+  try {
+    const { userId } = req.params;
+    const currentUser = req.user._id;
 
-  if (userId === currentUser.toString()) {
-    return responses.badRequest(res, 'You cannot follow yourself');
+    // Validate if user is trying to follow themselves
+    if (userId === currentUser.toString()) {
+      return responses.badRequest(res, 'You cannot follow yourself');
+    }
+
+    // Find both users
+    let user, userToFollow;
+    try {
+      [user, userToFollow] = await Promise.all([
+        User.findById(currentUser),
+        User.findById(userId)
+      ]);
+    } catch (error) {
+      console.error('Database query error:', error);
+      return responses.badRequest(res, 'Error fetching user data');
+    }
+
+    // Validate if users exist
+    if (!user) {
+      return responses.notFound(res, 'Current user not found');
+    }
+
+    if (!userToFollow) {
+      return responses.notFound(res, 'User to follow not found');
+    }
+console.log('>>>>>>>>',user)
+    // Check if already following
+    if (user.following.includes(userId)) {
+      return responses.badRequest(res, 'You are already following this user');
+    }
+
+    // Update following/followers
+    try {
+      user.following.push(userId);
+      userToFollow.followers.push(currentUser);
+
+      await Promise.all([user.save(), userToFollow.save()]);
+
+      return responses.ok(res, 'User followed successfully', {
+        followingCount: user.following.length,
+        followersCount: userToFollow.followers.length
+      });
+    } catch (error) {
+      console.error('Error updating follow relationship:', error);
+      return responses.serverError(res, 'Failed to update follow relationship');
+    }
+
+  } catch (error) {
+    console.error('Follow user error:', error);
+    return responses.serverError(res, 'An unexpected error occurred',error);
   }
-
-  const [user, userToFollow] = await Promise.all([
-    User.findById(currentUser),
-    User.findById(userId)
-  ]);
-
-  if (!userToFollow) {
-    return responses.notFound(res, 'User to follow not found');
-  }
-
-  if (user.following.includes(userId)) {
-    return responses.badRequest(res, 'You are already following this user');
-  }
-
-  user.following.push(userId);
-  userToFollow.followers.push(currentUser);
-
-  await Promise.all([user.save(), userToFollow.save()]);
-
-  return responses.ok(res, 'User followed successfully');
 });
 
 const unfollowUser = asyncHandler(async (req, res) => {
