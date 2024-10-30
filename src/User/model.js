@@ -11,7 +11,7 @@ const userSchema = mongoose.Schema(
     email: { type: String, required: true, unique: true },
     phone: { type: String },
     password: { type: String },
-    accountType: { type: String, enum: ['Personal', 'Dealer'] },
+    accountType: { type: String, enum: ['Personal', 'Dealer'],default:"Dealer" },
     rating: { type: Number, default: 0 },
     isVerified: { type: Boolean, default: false },
     verificationCode: { type: Number },
