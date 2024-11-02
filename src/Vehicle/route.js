@@ -27,7 +27,7 @@ router.get('/get-popular-by-reviews-vehicles', getPopularVehiclesByReviews);
 router.get('/getSimilarVehicles/:vehicleId', getSimilarVehicles);
 router.get('/:slug', getVehicleBySlug);
 router.get('/vehicles-listing/*', getListVehicles);
-router.post('/',protect, createVehicle); // Assuming authentication middleware is applied
+router.post('/', createVehicle); // Assuming authentication middleware is applied
 // router.put('/:id', updateVehicle);
 router.delete('/:id', deleteVehicle); 
 
