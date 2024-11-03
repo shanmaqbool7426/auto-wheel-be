@@ -108,13 +108,36 @@ export const likeDislikeReview = asyncHandler(async (req, res) => {
   const dislikeIndex = review.dislikes.indexOf(userId);
 
   if (action === 'like') {
-    if (likeIndex === -1) review.likes.push(userId);
-    if (dislikeIndex !== -1) review.dislikes.splice(dislikeIndex, 1);
+    if (likeIndex === -1) {
+      // Add like if not already liked
+      review.likes.push(userId);
+      // Remove dislike if exists
+      if (dislikeIndex !== -1) {
+        review.dislikes.splice(dislikeIndex, 1);
+      }
+    } else {
+      // Remove like if already liked (toggle)
+      review.likes.splice(likeIndex, 1);
+    }
   } else if (action === 'dislike') {
-    if (dislikeIndex === -1) review.dislikes.push(userId);
-    if (likeIndex !== -1) review.likes.splice(likeIndex, 1);
+    if (dislikeIndex === -1) {
+      // Add dislike if not already disliked
+      review.dislikes.push(userId);
+      // Remove like if exists
+      if (likeIndex !== -1) {
+        review.likes.splice(likeIndex, 1);
+      }
+    } else {
+      // Remove dislike if already disliked (toggle)
+      review.dislikes.splice(dislikeIndex, 1);
+    }
   }
 
   await review.save();
-  res.json({ likes: review.likes.length, dislikes: review.dislikes.length });
+  res.json({ 
+    likes: review.likes.length, 
+    dislikes: review.dislikes.length,
+    hasLiked: review.likes.includes(userId),
+    hasDisliked: review.dislikes.includes(userId)
+  });
 });
