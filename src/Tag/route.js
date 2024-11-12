@@ -9,6 +9,7 @@ import {
 
 const router = express.Router();
 
+
 router.post('/', createTag);
 router.get('/', getAllTags);
 router.get('/:id', getTagById);

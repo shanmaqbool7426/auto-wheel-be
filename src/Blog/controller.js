@@ -548,11 +548,54 @@ const deleteBlog = asyncHandler(async (req, res) => {
   responses.ok(res, 'Blog post deleted successfully');
 });
 
+
+const bulkDeleteBlogs = asyncHandler(async (req, res) => {
+  const { ids } = req.body;
+  
+  if (!Array.isArray(ids) || ids.length === 0) {
+    return responses.badRequest(res, 'Please provide valid blog IDs');
+  }
+
+  const result = await Blog.deleteMany({ _id: { $in: ids } });
+  
+  responses.ok(res, `Successfully deleted ${result.deletedCount} blogs`);
+});
+
+// Add search functionality
+const searchBlogs = asyncHandler(async (req, res) => {
+  const { query, page = 1, limit = 10 } = req.query;
+  
+  const searchQuery = {
+    $or: [
+      { title: { $regex: query, $options: 'i' } },
+      { content: { $regex: query, $options: 'i' } }
+    ]
+  };
+
+  const [blogs, total] = await Promise.all([
+    Blog.find(searchQuery)
+      .populate('categories', 'name slug')
+      .populate('tags', 'name slug')
+      .skip((page - 1) * limit)
+      .limit(limit)
+      .sort({ publishDate: -1 }),
+    Blog.countDocuments(searchQuery)
+  ]);
+
+  responses.ok(res, 'Search results fetched successfully', {
+    blogs,
+    total,
+    pages: Math.ceil(total / limit),
+    currentPage: page
+  });
+});
+
 export {
   createBlog,
   getBlogs,
   getBlogById,
   updateBlog,
   deleteBlog,
-  browseBlogs
+  browseBlogs,
+  bulkDeleteBlogs
 };

@@ -12,6 +12,16 @@ const vehicleSchema = new mongoose.Schema({
     required: true,
     index: true
   },
+
+  featureStartDate: {
+    type: Date,
+  },
+  featureDuration: {
+    type: Number, // Duration in days
+  },
+  featureEndDate: {
+    type: Date,
+  },
   carInfo:{
      make: {
       type: String,

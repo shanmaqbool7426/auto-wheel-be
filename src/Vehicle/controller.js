@@ -5,6 +5,7 @@ import { uploadOnCloudinary } from '../Utils/cloudinary.js';
 import Review from '../Review/model.js';
 import User from '../User/model.js';
 import mongoose, { mongo } from 'mongoose';
+import cron from 'node-cron';
 
 const createVehicle = asyncHandler(async (req, res) => {
   try {
@@ -178,7 +179,9 @@ const getListVehicles = asyncHandler(async (req, res) => {
   }
   console.log('pathSegments>>', pathSegments);
   if (pathSegments.includes('ft_featured')) {
-    filters.featured = true;
+    const now = new Date();
+    filters.isFeatured = true;
+    filters.featureEndDate = { $gt: now }; 
   }
 
   options.skip = (page - 1) * options.limit;
@@ -489,51 +492,42 @@ const getFavoriteVehiclesByUserId = asyncHandler(async (req, res) => {
     return response.ok(res, 'Favorite vehicles retrieved successfully', favoriteVehicles);
   } catch (error) {
     console.error('Error retrieving favorite vehicles:', error);
-    return response.serverError(res, 'An error occurred while retrieving favorite vehicles');
+    // return response.serverError(res, 'An error occurred while retrieving favorite vehicles');
   }
 });
 
 
-const deleteFavoriteVehicle = asyncHandler(async (req, res) => {
-  const { userId, vehicleId } = req.params;
-
+const toggleFavoriteVehicle = asyncHandler(async (req, res) => {
   try {
+    const { userId, vehicleId } = req.params;
+
     const user = await User.findById(userId);
     if (!user) {
       return response.notFound(res, 'User not found');
     }
-    user.favoriteVehicles = user.favoriteVehicles.filter(id => id.toString() !== vehicleId);
-    await user.save(); // Ensure this does not modify the password
-    return response.ok(res, 'Favorite vehicle deleted successfully');
-  } catch (error) {
-    console.error('Error deleting favorite vehicle:', error);
-    return response.serverError(res, 'An error occurred while deleting the favorite vehicle');
-  }
-});
 
-const toggleFeaturedVehicle = asyncHandler(async (req, res) => {
-  try {
-    const { vehicleId } = req.params;
-    console.log("vehicleId", vehicleId);
-
-    const vehicle = await Vehicle.findByIdAndUpdate(
-      vehicleId,
-      [
-        { $set: { isFeatured: { $not: "$isFeatured" } } }
-      ],
-      { new: true, runValidators: true }
-    );
-
-    if (!vehicle) {
-      return response.notFound(res, 'Vehicle not found');
+    const isFavorite = user.favoriteVehicles.includes(vehicleId);
+    
+    if (isFavorite) {
+      // Remove from favorites
+      user.favoriteVehicles = user.favoriteVehicles.filter(id => id.toString() !== vehicleId);
+    } else {
+      // Add to favorites
+      user.favoriteVehicles.push(vehicleId);
     }
 
-    return response.ok(res, `Vehicle ${vehicle.isFeatured ? 'featured' : 'unfeatured'} successfully`, vehicle);
+    await user.save();
+
+    return response.ok(res, 
+      isFavorite ? 'Vehicle removed from favorites' : 'Vehicle added to favorites',
+      { isFavorite: !isFavorite }
+    );
   } catch (error) {
-    console.error('Error toggling featured status:', error);
-    return response.serverError(res, 'An error occurred while updating the vehicle: ' + error.message);
+    console.error('Error toggling favorite status:', error);
+    return response.serverError(res, 'An error occurred while updating favorites');
   }
 });
+
 
 const deleteVehicle = asyncHandler(async (req, res) => {
   try {
@@ -552,4 +546,67 @@ const deleteVehicle = asyncHandler(async (req, res) => {
 });
 
 
-export { createVehicle,getVehiclesByUserId,getFavoriteVehiclesByUserId,deleteFavoriteVehicle, getBrowseByVehicles,deleteVehicle, getListVehicles, getVehicleBySlug, getSimilarVehicles, getPopularVehicles, getPopularVehiclesByReviews ,toggleFeaturedVehicle}
+const toggleFeaturedVehicle = asyncHandler(async (req, res) => {
+  try {
+    const { vehicleId } = req.params;
+    const { duration } = req.body; // Duration in days
+
+    const now = new Date();
+    const endDate = new Date(now);
+    endDate.setDate(endDate.getDate() + parseInt(duration));
+
+    const vehicle = await Vehicle.findByIdAndUpdate(
+      vehicleId,
+      {
+        isFeatured: true,
+        featureStartDate: now,
+        featureDuration: duration,
+        featureEndDate: endDate
+      },
+      { new: true, runValidators: true }
+    );
+
+    if (!vehicle) {
+      return response.notFound(res, 'Vehicle not found');
+    }
+
+    return response.ok(res, 'Vehicle featured successfully', vehicle);
+  } catch (error) {
+    console.error('Error toggling featured status:', error);
+    return response.serverError(res, 'An error occurred while updating the vehicle: ' + error.message);
+  }
+});
+
+// Add a new function to check and update expired featured listings
+const updateExpiredFeaturedListings = asyncHandler(async () => {
+  try {
+    const now = new Date();
+    await Vehicle.updateMany(
+      {
+        isFeatured: true,
+        featureEndDate: { $lte: now }
+      },
+      {
+        $set: {
+          isFeatured: false,
+          featureStartDate: null,
+          featureDuration: null,
+          featureEndDate: null
+        }
+      }
+    );
+  } catch (error) {
+    console.error('Error updating expired featured listings:', error);
+  }
+});
+
+// You can set up a cron job or scheduled task to run this function periodically
+// For example, using node-cron:
+
+// Run every day at midnight
+cron.schedule('0 0 * * *', () => {
+  updateExpiredFeaturedListings();
+});
+
+
+export { createVehicle,getVehiclesByUserId,toggleFavoriteVehicle,toggleFeaturedVehicle,getFavoriteVehiclesByUserId, getBrowseByVehicles,deleteVehicle, getListVehicles, getVehicleBySlug, getSimilarVehicles, getPopularVehicles, getPopularVehiclesByReviews }
