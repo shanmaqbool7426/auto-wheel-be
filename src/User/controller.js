@@ -60,25 +60,30 @@ const login = asyncHandler(async (req, res) => {
 
 
 const updateUserProfile = asyncHandler(async (req, res) => {
+  console.log('>>>>>> req.body',req.body)
   const { firstName, lastName, phoneNumber, email, showEmail, whatsAppOnThisNumber } = req.body;
 
   const user = await User.findById(req.user._id);
   if (!user) {
     return responses.notFound(res, 'User not found');
   }
+
+  console.log('>>>>>> firstName',firstName,lastName)
   user.firstName = firstName || user.firstName;
   user.lastName = lastName || user.lastName;
   // user.email = email || user.email; // Ensure email is updated if provided
   user.phone = phoneNumber || user.phone; // Update phone number
   user.showEmail = showEmail !== undefined ? showEmail : user.showEmail; // Update showEmail if provided
   user.hasWhatsApp = whatsAppOnThisNumber !== undefined ? whatsAppOnThisNumber : user.whatsAppOnThisNumber; // Update WhatsApp status
-
+console.log('>>>>>>',user)
   await user.save(); // Save the updated user information
-  return responses.ok(res, 'User profile updated successfully', user); // Return success response
+  const userData = await User.findById(req.user._id);
+console.log('userData',userData)
+  return responses.ok(res, 'User profile updated successfully', userData); // Return success response
 });
 
 const updateDealerInfo = asyncHandler(async (req, res) => {
-  const { dealerName, licenseNumber, location, salesHours, hasWhatsApp, showEmail } = req.body;
+  const { dealerName, licenseNumber, locationAddress, salesHours, hasWhatsApp, showEmail } = req.body;
 
   const user = await User.findById(req.user._id);
   if (!user) {
@@ -88,7 +93,7 @@ const updateDealerInfo = asyncHandler(async (req, res) => {
   // Update dealer information
   user.dealerName = dealerName || user.dealerName;
   user.licenseNumber = licenseNumber || user.licenseNumber;
-  user.location = location || user.location;
+  user.locationAddress = locationAddress || user.locationAddress;
   user.salesHours = salesHours || user.salesHours;
   user.hasWhatsApp = hasWhatsApp !== undefined ? hasWhatsApp : user.hasWhatsApp; // Check for undefined
   user.showEmail = showEmail !== undefined ? showEmail : user.showEmail; // Check for undefined

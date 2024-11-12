@@ -4,9 +4,9 @@ import bcrypt from 'bcryptjs';
 
 const userSchema = mongoose.Schema(
   {
-    fullName: { type: String },
-    firstName: { type: String },
-    lastName: { type: String },
+    fullName: { type: String,default:"" },
+    firstName: { type: String,default:"" },
+    lastName: { type: String,default:"" },
     loginType: [],
     email: { type: String, required: true, unique: true },
     phone: { type: String },
@@ -34,12 +34,12 @@ const userSchema = mongoose.Schema(
     }],
     reports: [{ vehicle: { type: mongoose.Schema.Types.ObjectId, ref: "Vehicle" }, reason: { type: String } }],
 
-    profileImage: { type: String },
-    bannerImage: { type: String },
-    dealerName: { type: String },
-    licenseNumber: { type: String },
-    location: { type: String },
-    salesHours: { type: String },
+    profileImage: { type: String,default:""  },
+    bannerImage: { type: String,default:"" },
+    dealerName: { type: String,default:"" },
+    licenseNumber: { type: String,default:"" },
+    locationAddress: { type: String,default:"" },
+    salesHours: { type: String,default:"" },
     hasWhatsApp: { type: Boolean, default: false },
     showEmail: { type: Boolean, default: false },
     servicesOffered: [{ type: String }],

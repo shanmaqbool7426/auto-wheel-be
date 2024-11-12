@@ -27,7 +27,7 @@ import {
   getProfile,
   updateProfileImages
 } from './controller.js';
-import { deleteFavoriteVehicle, getFavoriteVehiclesByUserId, getVehiclesByUserId } from '../Vehicle/controller.js';
+import { getFavoriteVehiclesByUserId, getVehiclesByUserId, toggleFavoriteVehicle } from '../Vehicle/controller.js';
 import { protect } from '../Middleware/auth.js';
 
 const upload = multer({ storage: multer.memoryStorage() });
@@ -55,8 +55,7 @@ router.post('/connect-account',protect, connectAccount); // Connect account
 router.post('/disconnect-account',protect, disconnectAccount); // Disconnect account
 router.get('/vehicles-by-user/:userId', getVehiclesByUserId);
 router.get('/:userId/favorites', getFavoriteVehiclesByUserId);
-router.put('/favorites/:userId/:vehicleId', deleteFavoriteVehicle);
-
+router.put('/:vehicleId/toggle-favorite/:userId',  toggleFavoriteVehicle);
 router.get('/:userId/followers', getFollowers);
 router.get('/:userId/following', getFollowing);
 router.post('/:userId/follow',protect, followUser);

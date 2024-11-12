@@ -6,7 +6,7 @@ import responses from '../Utils/response.js';
 // Create a new review
 export const createReview = asyncHandler(async (req, res) => {
     try {
-      const { dealerId, content, buyingProcess, vehicleSelection, levelOfServices } = req.body;
+      const { dealerId, content, buyingProcess, vehicleSelection, levelOfServices,title } = req.body;
       const userId = req.user._id;
       console.log('userIduserId', userId);
   
@@ -28,6 +28,7 @@ export const createReview = asyncHandler(async (req, res) => {
       // Create new review
       const newReview = await Review.create({
         user: userId,
+        title:title,
         dealer: dealerId,
         rating: roundedRating,
         content,
