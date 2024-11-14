@@ -39,12 +39,24 @@ const blogSchema = new mongoose.Schema({
   },
   visibility: {
     type: String,
-    enum: ['Public', 'Private', 'Draft'],
+    enum: ['Public', 'Private', 'Draft', 'Scheduled'],
     default: 'Public'
   },
   publishDate: {
     type: Date,
     default: Date.now
+  },
+  scheduledAt: {
+    type: Date,
+    default: null
+  },
+  isDeleted:{
+    type: Boolean,
+    default: false
+  },
+  deletedAt:{
+    type: Date,
+    default: null
   },
   viewCount: {
     type: Number,
@@ -52,9 +64,19 @@ const blogSchema = new mongoose.Schema({
   }
 }, { timestamps: true });
 
+
 blogSchema.pre('save', function(next) {
   if (!this.slug || this.isModified('title')) {
     this.slug = slugify(this.title, { lower: true, strict: true });
+  }
+
+   // Handle scheduled posts
+   if (this.visibility === 'Scheduled' && this.scheduledAt) {
+    const now = new Date();
+    if (this.scheduledAt <= now) {
+      this.visibility = 'Public';
+      this.publishDate = now;
+    }
   }
   next();
 });

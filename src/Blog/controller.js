@@ -7,30 +7,52 @@ import Tag from '../Tag/model.js';
 import Comment from "../Comment/model.js";
 
 
+// Update the create blog function
 const createBlog = asyncHandler(async (req, res) => {
-  const { title, content, author, categories, tags, isSticky, visibility, publishDate } = req.body;
+  const { 
+    title, 
+    content, 
+    author, 
+    categories, 
+    tags, 
+    isSticky, 
+    visibility, 
+    publishDate,
+    scheduledAt // New field
+  } = req.body;
 
-  const bodyImageURL = await uploadOnCloudinary(req.file?.path)
+  const bodyImageURL = await uploadOnCloudinary(req.file?.path);
   
-  if (!title || !content  || !author || !categories) {
+  if (!title || !content || !author || !categories) {
     return responses.badRequest(res, 'Title, content, image URL, author, and categories are required');
   }
+
+  // Validate scheduled post
+  if (visibility === 'Scheduled' && !scheduledAt) {
+    return responses.badRequest(res, 'Scheduled posts require a scheduledAt date');
+  }
+
+  if (scheduledAt && new Date(scheduledAt) <= new Date()) {
+    return responses.badRequest(res, 'Scheduled date must be in the future');
+  }
+
   const categoryIds = JSON.parse(categories);
-  const tagIds = tags ? JSON.parse(tags):[];
+  const tagIds = tags ? JSON.parse(tags) : [];
+  
   const blog = new Blog({
     title,
     content,
-    imageUrl:bodyImageURL.url,
+    imageUrl: bodyImageURL.url,
     author,
     categories: categoryIds,
     tags: tagIds,
     isSticky: isSticky || false,
-    visibility: visibility || 'Public',
-    publishDate: publishDate || Date.now(),
+    visibility,
+    scheduledAt: scheduledAt ? new Date(scheduledAt) : null,
+    publishDate: (visibility === 'Public') ? (publishDate || Date.now()) : null,
   });
 
   await blog.save();
-
   responses.created(res, 'Blog post created successfully', blog);
 });
 
@@ -556,40 +578,126 @@ const bulkDeleteBlogs = asyncHandler(async (req, res) => {
     return responses.badRequest(res, 'Please provide valid blog IDs');
   }
 
-  const result = await Blog.deleteMany({ _id: { $in: ids } });
+  // Update documents to mark them as deleted instead of removing them
+  const result = await Blog.updateMany(
+    { _id: { $in: ids } },
+    { 
+      $set: { 
+        isDeleted: true,
+        deletedAt: new Date()
+      } 
+    }
+  );
   
-  responses.ok(res, `Successfully deleted ${result.deletedCount} blogs`);
+  responses.ok(res, `Successfully marked ${result.modifiedCount} blogs as deleted`);
 });
-
 // Add search functionality
 const searchBlogs = asyncHandler(async (req, res) => {
-  const { query, page = 1, limit = 10 } = req.query;
+  const { 
+    query = '', 
+    page = 1, 
+    limit = 10,
+    visibility,
+    sortBy = 'publishDate',
+    sortOrder = 'desc',
+    categories,
+    tags,
+    author
+  } = req.query;
   
-  const searchQuery = {
-    $or: [
-      { title: { $regex: query, $options: 'i' } },
-      { content: { $regex: query, $options: 'i' } }
-    ]
-  };
+  // Validate visibility
+  if (visibility && !['Public', 'Private', 'Draft'].includes(visibility)) {
+    return responses.badRequest(res, 'Invalid visibility value. Must be Public, Private, or Draft');
+  }
 
-  const [blogs, total] = await Promise.all([
-    Blog.find(searchQuery)
-      .populate('categories', 'name slug')
-      .populate('tags', 'name slug')
-      .skip((page - 1) * limit)
-      .limit(limit)
-      .sort({ publishDate: -1 }),
-    Blog.countDocuments(searchQuery)
-  ]);
+  // Validate sortBy (add all valid fields you want to allow sorting on)
+  const validSortFields = ['publishDate', 'title', 'viewCount', 'createdAt', 'updatedAt'];
+  if (sortBy && !validSortFields.includes(sortBy)) {
+    return responses.badRequest(res, `Invalid sortBy value. Must be one of: ${validSortFields.join(', ')}`);
+  }
 
-  responses.ok(res, 'Search results fetched successfully', {
-    blogs,
-    total,
-    pages: Math.ceil(total / limit),
-    currentPage: page
-  });
+  // Validate sortOrder
+  if (sortOrder && !['asc', 'desc'].includes(sortOrder.toLowerCase())) {
+    return responses.badRequest(res, 'Invalid sortOrder value. Must be asc or desc');
+  }
+
+  // Build search query object
+  let searchQuery = {};
+  searchQuery.isDeleted = false;
+
+  // Text search if query exists
+  if (query?.trim()) {
+    searchQuery.$or = [
+      { title: { $regex: String(query), $options: 'i' } },
+      { content: { $regex: String(query), $options: 'i' } }
+    ];
+  }
+
+  // Add visibility filter (only if valid)
+  if (visibility) {
+    searchQuery.visibility = visibility;
+  }
+
+  // Add categories filter with partial text search
+  if (categories?.trim()) {
+    const categoryDocs = await Category.find({
+      name: { $regex: categories, $options: 'i' }
+    }).select('_id');
+    const categoryIds = categoryDocs.map(cat => cat._id);
+    searchQuery.categories = { $in: categoryIds };
+  }
+
+  // Add tags filter with partial text search
+  if (tags?.trim()) {
+    const tagDocs = await Tag.find({
+      name: { $regex: tags, $options: 'i' }
+    }).select('_id');
+    const tagIds = tagDocs.map(tag => tag._id);
+    searchQuery.tags = { $in: tagIds };
+  }
+
+  // Add author filter with partial text search
+  if (author?.trim()) {
+    searchQuery.author = { $regex: author, $options: 'i' };
+  }
+
+  // Build sort object (using validated values)
+  const sortObject = {};
+  sortObject[validSortFields.includes(sortBy) ? sortBy : 'publishDate'] = 
+    sortOrder?.toLowerCase() === 'asc' ? 1 : -1;
+
+  try {
+    const [blogs, totalCount] = await Promise.all([
+      Blog.find(searchQuery)
+        .populate('categories', 'name slug')
+        .populate('tags', 'name slug')
+        .skip((parseInt(page) - 1) * parseInt(limit))
+        .limit(parseInt(limit))
+        .sort(sortObject)
+        .lean(),
+      Blog.countDocuments(searchQuery)
+    ]);
+
+    responses.ok(res, 'Search results fetched successfully', {
+      blogs,
+      total: totalCount,
+      totalPages: Math.ceil(totalCount / parseInt(limit)),
+      currentPage: parseInt(page),
+      filters: {
+        visibility,
+        categories,
+        tags,
+        author
+      },
+      sorting: {
+        sortBy: validSortFields.includes(sortBy) ? sortBy : 'publishDate',
+        sortOrder: sortOrder?.toLowerCase() === 'asc' ? 'asc' : 'desc'
+      }
+    });
+  } catch (error) {
+    responses.serverError(res, 'Error while searching blogs', error);
+  }
 });
-
 export {
   createBlog,
   getBlogs,
@@ -597,5 +705,6 @@ export {
   updateBlog,
   deleteBlog,
   browseBlogs,
-  bulkDeleteBlogs
+  bulkDeleteBlogs,
+  searchBlogs
 };
