@@ -623,7 +623,7 @@ const searchBlogs = asyncHandler(async (req, res) => {
 
   // Build search query object
   let searchQuery = {};
-  searchQuery.isDeleted = false;
+  // searchQuery.isDeleted = false;
 
   // Text search if query exists
   if (query?.trim()) {
