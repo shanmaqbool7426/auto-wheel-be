@@ -18,7 +18,8 @@ const createBlog = asyncHandler(async (req, res) => {
     isSticky, 
     visibility, 
     publishDate,
-    scheduledAt // New field
+    scheduledAt, // New field
+    slug
   } = req.body;
 
   const bodyImageURL = await uploadOnCloudinary(req.file?.path);
@@ -559,13 +560,11 @@ const updateBlog = asyncHandler(async (req, res) => {
 });
 
 const deleteBlog = asyncHandler(async (req, res) => {
-  const blog = await Blog.findById(req.params.id);
+  const blog = await Blog.findByIdAndDelete(req.params.id);
 
   if (!blog) {
     return responses.notFound(res, 'Blog post not found');
-  }
-
-  await blog.remove();
+  } 
 
   responses.ok(res, 'Blog post deleted successfully');
 });
@@ -627,10 +626,19 @@ const searchBlogs = asyncHandler(async (req, res) => {
 
   // Text search if query exists
   if (query?.trim()) {
+    const searchTerm = String(query);
     searchQuery.$or = [
-      { title: { $regex: String(query), $options: 'i' } },
-      { content: { $regex: String(query), $options: 'i' } }
+      { title: { $regex: searchTerm, $options: 'i' } },
+      { title: { $regex: `Copy(?: \\(\\d+\\))? of .*${searchTerm}.*`, $options: 'i' } },
+      { content: { $regex: searchTerm, $options: 'i' } }
     ];
+
+    if (searchTerm.toLowerCase().includes('copy of')) {
+      const baseTitle = searchTerm.replace(/^copy\s*(?:\(\d+\))?\s*of\s*/i, '').trim();
+      searchQuery.$or.push(
+        { title: { $regex: `^Copy(?: \\(\\d+\\))? of ${baseTitle}`, $options: 'i' } }
+      );
+    }
   }
 
   // Add visibility filter (only if valid)
@@ -698,6 +706,200 @@ const searchBlogs = asyncHandler(async (req, res) => {
     responses.serverError(res, 'Error while searching blogs', error);
   }
 });
+
+
+const duplicateBlog = asyncHandler(async (req, res) => {
+  const { id } = req.params;
+  
+  // Find the original blog
+  const originalBlog = await Blog.findById(id);
+  
+  if (!originalBlog) {
+    return responses.notFound(res, 'Original blog post not found');
+  }
+
+  // Generate appropriate copy title and slug
+  const generateCopyDetails = async (originalTitle, originalSlug) => {
+    const baseTitle = originalTitle.replace(/^Copy \(\d+\) of /, '').replace(/^Copy of /, '');
+    const baseSlug = originalSlug.replace(/^copy-\d*-of-/, '').replace(/^copy-of-/, '');
+    
+    const existingCopies = await Blog.find({
+      $or: [
+        { title: new RegExp(`^Copy(?: \\(\\d+\\))? of ${baseTitle}$`) },
+        { slug: new RegExp(`^copy-(?:\\d+-)?of-${baseSlug}$`) }
+      ]
+    });
+
+    if (existingCopies.length === 0) {
+      return {
+        title: `Copy of ${baseTitle}`,
+        slug: `copy-of-${baseSlug}`
+      };
+    }
+
+    const copyNumbers = existingCopies.map(blog => {
+      const match = blog.title.match(/^Copy \((\d+)\) of /) || blog.slug.match(/^copy-(\d+)-of-/);
+      return match ? parseInt(match[1]) : 1;
+    });
+
+    const nextNumber = Math.max(...copyNumbers, 1) + 1;
+    return {
+      title: `Copy (${nextNumber}) of ${baseTitle}`,
+      slug: `copy-${nextNumber}-of-${baseSlug}`
+    };
+  };
+
+  // Get unique title and slug
+  const { title, slug } = await generateCopyDetails(originalBlog.title, originalBlog.slug);
+
+  // Create a new blog object with the original data
+  const duplicatedBlog = new Blog({
+    title,
+    slug,
+    content: originalBlog.content,
+    imageUrl: originalBlog.imageUrl,
+    author: originalBlog.author,
+    categories: originalBlog.categories,
+    tags: originalBlog.tags,
+    isSticky: false,
+    visibility: 'Draft',
+    publishDate: null,
+    createdAt: new Date(),
+  });
+
+  await duplicatedBlog.save();
+  
+  // Fetch all blogs sorted by creation date
+  const blogs = await Blog.find()
+    .sort({ createdAt: -1 })
+    .exec();
+  
+  responses.created(res, 'Blog post duplicated successfully', { duplicatedBlog, blogs });
+});
+
+
+const duplicateBlogs = asyncHandler(async (req, res) => {
+  const ids = req.params.id ? [req.params.id] : req.body.ids || [];
+
+  if (ids.length === 0) {
+    return responses.badRequest(res, 'Please provide blog ID(s) to duplicate');
+  }
+
+  const originalBlogs = await Blog.find({ _id: { $in: ids } });
+
+  if (originalBlogs.length === 0) {
+    return responses.notFound(res, 'No blogs found to duplicate');
+  }
+
+  const baseTitles = originalBlogs.map(blog => 
+    blog.title.replace(/^Copy \(\d+\) of /, '').replace(/^Copy of /, '')
+  );
+
+  const existingCopies = await Blog.find({
+    title: { 
+      $in: baseTitles.map(title => new RegExp(`^Copy(?: \\(\\d+\\))? of ${title}$`))
+    }
+  }).lean();
+
+  const duplicates = originalBlogs.map(blog => {
+    const baseTitle = blog.title.replace(/^Copy \(\d+\) of /, '').replace(/^Copy of /, '');
+    const baseSlug = blog.slug.replace(/^copy-\d*-of-/, '').replace(/^copy-of-/, '');
+    
+    const copies = existingCopies.filter(copy => 
+      copy.title.includes(`of ${baseTitle}`)
+    );
+
+    const copyNumber = copies.length > 0 ? copies.length + 1 : 0;
+    const newTitle = copyNumber === 0 
+      ? `Copy of ${baseTitle}`
+      : `Copy (${copyNumber}) of ${baseTitle}`;
+    const newSlug = copyNumber === 0
+      ? `copy-of-${baseSlug}`
+      : `copy-${copyNumber}-of-${baseSlug}`;
+
+    return {
+      title: newTitle,
+      slug: newSlug,
+      content: blog.content,
+      imageUrl: blog.imageUrl,
+      author: blog.author,
+      categories: blog.categories,
+      tags: blog.tags,
+      isSticky: false,
+      visibility: 'Draft',
+      publishDate: null,
+      createdAt: new Date()
+    };
+  });
+
+  try {
+    const createdBlogs = await Blog.insertMany(duplicates, { ordered: false });
+    const [blogs, totalCount] = await Promise.all([
+      Blog.find()
+        .sort({ createdAt: -1 })
+        .limit(10), // Add limit to prevent large data loads
+      Blog.countDocuments()
+    ]);
+
+    responses.created(res, 'Duplication completed', {
+      summary: {
+        total: ids.length,
+        successful: createdBlogs.length,
+        failed: ids.length - createdBlogs.length
+      },
+      duplicatedBlogs: createdBlogs,
+      blogs,
+      totalBlogs: totalCount
+    });
+  } catch (error) {
+    // Handle bulk write errors
+    if (error.writeErrors) {
+      const successful = error.insertedDocs || [];
+      responses.badRequest(res, 'Partial duplication completed', {
+        summary: {
+          total: ids.length,
+          successful: successful.length,
+          failed: error.writeErrors.length
+        },
+        duplicatedBlogs: successful,
+        errors: error.writeErrors.map(err => ({
+          index: err.index,
+          message: err.errmsg
+        }))
+      });
+    } else {
+      responses.serverError(res, 'Duplication failed', error);
+    }
+  }
+});
+
+
+const getStatusCounts = asyncHandler(async (req, res) => {
+  try {
+    const [all, mine, published, draft, trash, scheduled] = await Promise.all([
+      Blog.countDocuments({  }),
+      Blog.countDocuments({ author: req.user._id }),
+      Blog.countDocuments({ visibility: 'Public' }),
+      Blog.countDocuments({ visibility: 'Draft' }),
+      Blog.countDocuments({ isDeleted: true }),
+      Blog.countDocuments({ visibility: 'Scheduled' })
+    ]);
+
+    const counts = {
+      all,
+      published,
+      draft,
+      trash,
+      mine,
+      scheduled
+    };
+
+    responses.ok(res, 'Blog status counts fetched successfully', counts);
+  } catch (error) {
+    responses.serverError(res, 'Error fetching blog status counts', error);
+  }
+});
+
 export {
   createBlog,
   getBlogs,
@@ -706,5 +908,8 @@ export {
   deleteBlog,
   browseBlogs,
   bulkDeleteBlogs,
-  searchBlogs
+  searchBlogs,
+  duplicateBlog,
+  duplicateBlogs,
+  getStatusCounts
 };

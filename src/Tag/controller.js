@@ -19,8 +19,46 @@ export const createTag = asyncHandler(async (req, res) => {
 });
 
 export const getAllTags = asyncHandler(async (req, res) => {
-  const tags = await Tag.find();
-  return responses.ok(res, 'Tags fetched successfully', tags);
+  const {
+    page = 1,
+    limit = 10,
+    search = '',
+    sortBy = 'createdAt',
+    sortOrder = 'desc'
+  } = req.query;
+
+  // Build query
+  const query = {};
+
+  // Search functionality
+  if (search) {
+    query.$or = [
+      { name: { $regex: search, $options: 'i' } },
+      { description: { $regex: search, $options: 'i' } }
+    ];
+  }
+
+  try {
+    // Execute query with pagination
+    const [tags, totalCount] = await Promise.all([
+      Tag.find(query)
+        .sort({ [sortBy]: sortOrder === 'desc' ? -1 : 1 })
+        .skip((page - 1) * limit)
+        .limit(parseInt(limit)),
+      Tag.countDocuments(query)
+    ]);
+
+    return responses.ok(res, 'Tags fetched successfully', {
+      data: tags,
+      total: totalCount,
+      page: parseInt(page),
+      limit: parseInt(limit),
+      totalPages: Math.ceil(totalCount / limit)
+    });
+
+  } catch (error) {
+    return responses.internalServerError(res, 'Error fetching tags', error);
+  }
 });
 
 export const getTagById = asyncHandler(async (req, res) => {
