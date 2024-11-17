@@ -4,7 +4,8 @@ import {
   getAllCategories,
   getCategoryById,
   updateCategory,
-  deleteCategory
+  deleteCategory,
+  deleteMultipleCategories
 } from './controller.js';
 
 const router = express.Router();
@@ -14,5 +15,7 @@ router.get('/', getAllCategories);
 router.get('/:id', getCategoryById);
 router.put('/:id', updateCategory);
 router.delete('/:id', deleteCategory);
+router.post('/bulk-delete', deleteMultipleCategories); // Add this new route
+
 
 export default router;
