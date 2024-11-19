@@ -878,7 +878,7 @@ const getStatusCounts = asyncHandler(async (req, res) => {
   try {
     const [all, mine, published, draft, trash, scheduled] = await Promise.all([
       Blog.countDocuments({  }),
-      Blog.countDocuments({ author: req.user._id }),
+      Blog.countDocuments({ author: 'Public' }),
       Blog.countDocuments({ visibility: 'Public' }),
       Blog.countDocuments({ visibility: 'Draft' }),
       Blog.countDocuments({ isDeleted: true }),
@@ -896,7 +896,8 @@ const getStatusCounts = asyncHandler(async (req, res) => {
 
     responses.ok(res, 'Blog status counts fetched successfully', counts);
   } catch (error) {
-    responses.serverError(res, 'Error fetching blog status counts', error);
+    console.log(error);
+    // responses.serverError(res, 'Error fetching blog status counts', error);
   }
 });
 
