@@ -22,25 +22,25 @@ const vehicleSchema = new mongoose.Schema({
   featureEndDate: {
     type: Date,
   },
-  carInfo:{
-     make: {
+  carInfo: {
+    make: {
       type: String,
       required: true,
-    
+
     },
     model: {
       type: String,
-         required: true,
+      required: true,
     },
     variant: {
       type: String,
     }
   },
-  address:{
+  address: {
     type: String,
     index: true,
   },
-  owner:{
+  owner: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "User",
   },
@@ -77,13 +77,13 @@ const vehicleSchema = new mongoose.Schema({
     type: Date,
     default: new Date()
   },
-  isUpcoming:{
+  isUpcoming: {
     type: Boolean,
     default: false,
   },
   registeredIn: {
     type: String,
-    enum: ['Registered', 'Un-Registered',"punjab","Sindh","karachi"],
+    enum: ['Registered', 'Un-Registered', "punjab", "Sindh", "karachi"],
     required: true,
   },
   price: {
@@ -95,8 +95,11 @@ const vehicleSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
-
- specifications: {
+  rego: {
+    type: Date,
+    required: true
+  },
+  specifications: {
     stockId: { type: String, index: true },
     bodyType: { type: String, index: true },
     fuelType: { type: String, index: true },
@@ -109,7 +112,7 @@ const vehicleSchema = new mongoose.Schema({
     interiorColor: { type: String, index: true },
     doors: { type: Number, min: 2, max: 5 },
     seats: { type: Number, min: 1, max: 9 },
-    engineCapacity: { type: Number  },
+    engineCapacity: { type: Number },
     payloadCapacity: { type: Number },
     engineType: { type: String },
     assembly: { type: String },
@@ -130,7 +133,7 @@ const vehicleSchema = new mongoose.Schema({
   },
   status: {
     type: String,
-    enum: ['active', 'inactive', 'deleted','pending','expired'],
+    enum: ['active', 'inactive', 'deleted', 'pending', 'expired'],
     default: 'pending',
     index: true,
   },
@@ -152,11 +155,11 @@ const vehicleSchema = new mongoose.Schema({
     type: Date,
 
   },
-  isFavorite:{
+  isFavorite: {
     type: Boolean,
     default: false,
   },
-  isFeatured:{
+  isFeatured: {
     type: Boolean,
     default: false,
   },
