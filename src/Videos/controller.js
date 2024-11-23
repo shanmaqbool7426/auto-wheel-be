@@ -107,12 +107,21 @@ const getVideos = asyncHandler(async (req, res) => {
     }
 
     // Search condition (title or description matches the query)
+    // Ensure that the search query sanitizes the input to prevent regex injection attacks (e.g., invalid or malicious regex patterns).
+    const escapeRegex = (string) => string.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, '\\$&');
     const searchCondition = {
       $or: [
-        { title: { $regex: searchQuery, $options: 'i' } },
-        { description: { $regex: searchQuery, $options: 'i' } },
+        { title: { $regex: escapeRegex(searchQuery), $options: 'i' } },
+        { description: { $regex: escapeRegex(searchQuery), $options: 'i' } },
       ],
     };
+
+    // const searchCondition = {
+    //   $or: [
+    //     { title: { $regex: searchQuery, $options: 'i' } },
+    //     { description: { $regex: searchQuery, $options: 'i' } },
+    //   ],
+    // };
 
     const searchVideosQuery = Video.find(searchCondition).sort({ dateUploaded: -1 });
 
