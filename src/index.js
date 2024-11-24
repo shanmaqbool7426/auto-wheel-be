@@ -20,6 +20,8 @@ import newVehicleRoutes from './NewVehicle/route.js'
 import comparisonRoutes from './Comparison/route.js'
 import reviewRoutes from './Review/route.js'
 import userReviewRoutes from './UserReviews/route.js'
+import roleRoutes from './Roles/route.js'
+import locationRoutes from './Location/route.js'
 import { errorHandler } from "./Middleware/errorHandler.js"
 import { uploadOnCloudinary } from "./Utils/cloudinary.js";
 import morgan from "morgan"
@@ -66,6 +68,7 @@ app.use(express.json());
 app.use(express.urlencoded({ limit: '50mb' }));
 
 app.use('/api/user', authRoutes);
+app.use('/api/location', locationRoutes);
 app.use('/api/browes-by-make', browesByMakeRoutes);
 app.use('/api/browes-by-body', browesByBodyRoutes);
 app.use('/api/vehicle', vehicleRoutes);
@@ -78,6 +81,7 @@ app.use('/api/user-reviews', userReviewRoutes);
 app.use('/api/video', videoRoutes);
 app.use('/api/new-vehicles', newVehicleRoutes);
 app.use('/api/comparison', comparisonRoutes);
+app.use('/api/roles', roleRoutes);
 
 app.use('/upload-image', upload.array('images', 10), async (req, res) => {
   try {

@@ -7,6 +7,22 @@ const userSchema = mongoose.Schema(
     fullName: { type: String,default:"" },
     firstName: { type: String,default:"" },
     lastName: { type: String,default:"" },
+    roles: [{
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'Role',
+      required: true
+  }],
+  permissions: [{
+      resource: String,
+      actions: [String]
+  }],
+  isActive: {
+      type: Boolean,
+      default: true
+  },
+  lastLogin: {
+      type: Date
+  },
     loginType: [],
     email: { type: String, required: true, unique: true },
     phone: { type: String },
