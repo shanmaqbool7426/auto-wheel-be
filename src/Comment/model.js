@@ -18,15 +18,31 @@ const commentSchema = new mongoose.Schema({
     ref: 'Blog',
     required: true,
   },
+  isDeleted: {
+    type: Boolean,
+    default: false,
+  },
   parentComment: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Comment',
     default: null,
   },
+  replyMessage: {
+    type: String,
+    default: null
+  },
+  repliedBy: {
+    type: String,  // Admin name who replied
+    default: null
+  },
+  repliedAt: {
+    type: Date,
+    default: null
+  },
   status: {
     type: String,
     enum: ['pending', 'approved', 'spam', 'trash'],
-    default: 'pending',
+    default: 'approved',
   },
 }, { timestamps: true });
 
