@@ -9,6 +9,7 @@ import sendVerificationEmail from '../Utils/sendEmail.js';
 // const { sendVerificationEmail } = require('../utils/sendEmail');
 import { registerValidation, loginValidation } from '../Validations/authValidation.js';
 import { otpTemplete } from '../Views/otpTemplete.js';
+import Role from '../Roles/model.js';
 
 
 const registerUser = asyncHandler(async (req, res) => {
@@ -438,6 +439,101 @@ const getFollowers = asyncHandler(async (req, res) => {
   });
 });
 
+const getUsers = asyncHandler(async (req, res) => {
+  const { 
+    search, 
+    accountType, 
+    roles, // Can be single role or comma-separated roles
+    sort = 'createdAt', 
+    page = 1, 
+    limit = 10,
+    isActive 
+  } = req.query;
+
+  // Build query object
+  let query = {};
+
+  // Add search functionality across multiple fields
+  if (search) {
+    query.$or = [
+      { firstName: { $regex: search, $options: 'i' } },
+      { lastName: { $regex: search, $options: 'i' } },
+      { email: { $regex: search, $options: 'i' } },
+      { phone: { $regex: search, $options: 'i' } }
+    ];
+  }
+
+  // Filter by account type
+  if (accountType) {
+    query.accountType = accountType;
+  }
+
+  // Filter by roles
+  if (roles) {
+    const roleArray = roles.split(',').map(role => role.trim());
+    // Find role IDs from role names
+    const roleDocuments = await Role.find({ name: { $in: roleArray } });
+    const roleIds = roleDocuments.map(role => role._id);
+    query.roles = { $in: roleIds };
+  }
+
+  // Filter by active status
+  if (isActive !== undefined) {
+    query.isActive = isActive === 'true';
+  }
+
+  // Build sort options
+  let sortOption = {};
+  switch (sort) {
+    case 'name':
+      sortOption = { firstName: 1, lastName: 1 };
+      break;
+    case 'email':
+      sortOption = { email: 1 };
+      break;
+    case 'createdAt':
+      sortOption = { createdAt: -1 };
+      break;
+    case 'role':
+      sortOption = { roles: 1 };
+      break;
+    default:
+      sortOption = { createdAt: -1 };
+  }
+
+  try {
+    // Execute query with population of roles
+    const users = await User.find(query)
+      .populate('roles', 'name') // Populate roles with just the name field
+      .sort(sortOption)
+      .select('-password')
+      .skip((page - 1) * limit)
+      .limit(Number(limit));
+
+    const totalUsers = await User.countDocuments(query);
+    const totalPages = Math.ceil(totalUsers / limit);
+
+    // Get all available roles for filters
+    const availableRoles = await Role.find().select('name');
+
+    return responses.ok(res, 'Users fetched successfully', {
+      users,
+      totalUsers,
+      totalPages,
+      currentPage: Number(page),
+      filters: {
+        availableRoles: availableRoles.map(role => role.name),
+        accountTypes: ['Individual', 'Dealer', 'Admin'] // Add your actual account types
+      }
+    });
+
+  } catch (error) {
+    console.error('Error fetching users:', error);
+    return responses.serverError(res, 'Error fetching users');
+  }
+});
+
+
 
 const followUser = asyncHandler(async (req, res) => {
   try {
@@ -530,6 +626,79 @@ const unfollowUser = asyncHandler(async (req, res) => {
 
 
 
+export const createUser = asyncHandler(async (req, res) => {
+  try {
+      const { firstName, lastName, email, role } = req.body;
+
+      // Validate input
+      if (!firstName || !lastName || !email || !role) {
+          return responses.badRequest(res, 'Please provide all required fields');
+      }
+
+      // Check if email already exists
+      const existingUser = await User.findOne({ email });
+      if (existingUser) {
+          return responses.conflict(res, 'Email already registered');
+      }
+
+      // Get role ID from role name
+      const userRole = await Role.findOne({ name: role });
+      if (!userRole) {
+          return responses.badRequest(res, 'Invalid role specified');
+      }
+
+      // Generate random password
+      const tempPassword = Math.random().toString(36).slice(-8);
+      const hashedPassword = await bcrypt.hash(tempPassword, 10);
+
+      // Create user
+      const user = await User.create({
+          firstName,
+          lastName,
+          email,
+          password: hashedPassword,
+          roles: [userRole._id],
+          isActive: true
+      });
+
+      // Remove password from response
+      const userResponse = user.toObject();
+      delete userResponse.password;
+
+      // Send email with credentials
+      const emailTemplate = `
+          Hello ${firstName} ${lastName},
+          
+          Your account has been created on AutoWheels.pk
+          
+          Your login credentials:
+          Email: ${email}
+          Temporary Password: ${tempPassword}
+          
+          Please change your password after first login.
+          
+          Best regards,
+          AutoWheels Team
+      `;
+
+      // await sendEmail({
+      //     to: email,
+      //     subject: 'Welcome to AutoWheels - Your Account Details',
+      //     text: emailTemplate
+      // });
+
+      return responses.created(res, 'User created successfully', {
+          user: userResponse,
+          passwordSent: true
+      });
+
+  } catch (error) {
+      console.error('Create user error:', error);
+      // return responses.error(res, 'Error creating user');
+  }
+});
+
+
 export {
   registerUser,
   login,
@@ -550,5 +719,6 @@ export {
   getFollowing,
   followUser,
   unfollowUser,
+  getUsers,
   updateProfileImages
 };
