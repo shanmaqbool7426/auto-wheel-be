@@ -25,7 +25,9 @@ import {
   connectAccount,
   disconnectAccount,
   getProfile,
-  updateProfileImages
+  updateProfileImages,
+  createUser,
+  getUsers
 } from './controller.js';
 import { getFavoriteVehiclesByUserId, getVehiclesByUserId, toggleFavoriteVehicle } from '../Vehicle/controller.js';
 import { protect } from '../Middleware/auth.js';
@@ -37,6 +39,7 @@ const router = express.Router();
 
 router.post('/register', registerUser);
 router.get('/get-dealers', getDealers);
+router.get('/get-users', getUsers);
 
 router.post('/login', login);
 router.post('/verify-user', verifyUser);
@@ -61,7 +64,8 @@ router.get('/:userId/following', getFollowing);
 router.post('/:userId/follow',protect, followUser);
 router.post('/:userId/unfollow',protect, unfollowUser);
 router.put('/update-profile-images', protect, updateProfileImages);
-
+// router.post('/create', protect, hasPermission('users', 'create'), createUser);
+ router.post('/create',  createUser);
 
 export default router;
 
