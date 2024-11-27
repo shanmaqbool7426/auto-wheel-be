@@ -345,7 +345,7 @@ const getDealers = asyncHandler(async (req, res) => {
   let query = { accountType: 'Dealer' };
 
   if (location) query.location = { $regex: location, $options: 'i' };
-  if (type) query.type = type.toLowerCase(); // Add type to the query if provided
+  if (type && type.toLowerCase() !== 'all') query.type = type.toLowerCase(); // Add type to the query if provided
 
   let sortOption = {};
   if (sort === 'rating') {
