@@ -50,6 +50,10 @@ const login = asyncHandler(async (req, res) => {
   const user = await User.findOne({ email });
 
   if (user && (await user.matchPassword(password))) {
+    // Update last login timestamp
+    user.lastLogin = new Date();
+    await user.save();
+
     return responses.ok(res, 'User authenticated successfully', {
       user,
       token: generateToken(user._id),
