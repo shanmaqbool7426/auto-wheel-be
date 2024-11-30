@@ -1,7 +1,8 @@
 import asyncHandler from 'express-async-handler';
-import Message from './model.js';
 import User from '../User/model.js';
 import responses from '../Utils/response.js';
+import ChatMessage from './model.js';
+import mongoose from 'mongoose';
 
 const sendMessage = asyncHandler(async (req, res) => {
   const { receiverId, content } = req.body;
@@ -12,7 +13,7 @@ const sendMessage = asyncHandler(async (req, res) => {
     return responses.notFound(res, 'Receiver not found');
   }
 
-  const message = await Message.create({
+  const message = await ChatMessage.create({
     sender: senderId,
     receiver: receiverId,
     content
@@ -22,26 +23,41 @@ const sendMessage = asyncHandler(async (req, res) => {
 });
 
 const getConversation = asyncHandler(async (req, res) => {
-  const { userId } = req.params;
-  const currentUserId = req.user._id;
-
-  const messages = await Message.find({
+  const { userId, currentUserId } = req.body;
+  const { conversationId } = req.params;
+  
+  // Use currentUserId if available, otherwise use conversationId
+  const participantId = currentUserId || conversationId;
+  
+  const messages = await ChatMessage.find({
     $or: [
-      { sender: currentUserId, receiver: userId },
-      { sender: userId, receiver: currentUserId }
+      { 
+        sender: new mongoose.Types.ObjectId(participantId), 
+        receiver: new mongoose.Types.ObjectId(userId) 
+      },
+      { 
+        sender: new mongoose.Types.ObjectId(userId), 
+        receiver: new mongoose.Types.ObjectId(participantId) 
+      }
     ]
-  }).sort({ createdAt: 1 });
+  })
+  .sort({ createdAt: 1 })
+  .populate('sender', 'fullName email')
+  .populate('receiver', 'fullName email');
+
+  if (!messages || messages.length === 0) {
+    return responses.ok(res, 'No messages found', []);
+  }
 
   return responses.ok(res, 'Conversation retrieved successfully', messages);
 });
-
 const getConversationList = asyncHandler(async (req, res) => {
-  const currentUserId = req.user._id;
+  const currentUserId = req.params.userId;
 
-  const conversations = await Message.aggregate([
+  const conversations = await ChatMessage.aggregate([
     {
       $match: {
-        $or: [{ sender: currentUserId }, { receiver: currentUserId }]
+        $or: [{ sender: new mongoose.Types.ObjectId(currentUserId) }, { receiver: new mongoose.Types.ObjectId(currentUserId) }]
       }
     },
     {
