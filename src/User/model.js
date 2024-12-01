@@ -6,7 +6,8 @@ const userSchema = mongoose.Schema(
   {
     fullName: { type: String,default:"" },
     lastLogin: {
-      type: Date
+      type: Date,
+      default: Date.now()
   },
     firstName: { type: String,default:"" },
     lastName: { type: String,default:"" },
