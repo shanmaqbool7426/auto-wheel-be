@@ -87,6 +87,28 @@ console.log('userData',userData)
   return responses.ok(res, 'User profile updated successfully', userData); // Return success response
 });
 
+const updateUserProfileByUserByEmail = asyncHandler(async (req, res) => {
+  console.log('>>>>>> req.body',req.body)
+  const { firstName, lastName, phoneNumber, email, showEmail, whatsAppOnThisNumber } = req.body;
+
+  const user = await User.findOne({email}).populate();
+  if (!user) {
+    return responses.notFound(res, 'User not found');
+  }
+
+  console.log('>>>>>> firstName',firstName,lastName)
+  user.firstName = firstName || user.firstName;
+  user.lastName = lastName || user.lastName;
+  // user.email = email || user.email; // Ensure email is updated if provided
+  user.phone = phoneNumber || user.phone; // Update phone number
+  user.showEmail = showEmail !== undefined ? showEmail : user.showEmail; // Update showEmail if provided
+  user.hasWhatsApp = whatsAppOnThisNumber !== undefined ? whatsAppOnThisNumber : user.whatsAppOnThisNumber; // Update WhatsApp status
+console.log('>>>>>>',user)
+  await user.save(); // Save the updated user information
+  const userData = await User.findById(req.params.userId);
+console.log('userData',userData)
+  return responses.ok(res, 'User profile updated successfully', userData); // Return success response
+});
 const updateDealerInfo = asyncHandler(async (req, res) => {
   const { dealerName, licenseNumber, locationAddress, salesHours, hasWhatsApp, showEmail } = req.body;
 
@@ -132,6 +154,37 @@ const changePassword = asyncHandler(async (req, res) => {
     }
 
     const user = await User.findById(req.user._id);
+    console.log('User found:', user); // Log the user object
+
+    if (!user) {
+      return responses.notFound(res, 'User not found');
+    }
+
+    // Check if the current password matches
+    const isMatch = await user.matchPassword(currentPassword);
+    console.log('Password match:', isMatch); // Log the result of password match
+
+    if (!isMatch) {
+      return responses.unauthorized(res, 'Current password is incorrect');
+    }
+
+    // Update the password
+    user.password = newPassword; // Set the new password
+    await user.save(); // Save the user
+
+    return responses.ok(res, 'Password changed successfully');
+  } catch (error) {
+    console.error('Error changing password:', error);
+    return responses.serverError(res, 'An error occurred while changing the password');
+  }
+});
+
+const changePasswordByUserId = asyncHandler(async (req, res) => {
+  try {
+    const { currentPassword, newPassword ,userId} = req.body;
+
+
+    const user = await User.findById(userId);
     console.log('User found:', user); // Log the user object
 
     if (!user) {
@@ -724,5 +777,7 @@ export {
   followUser,
   unfollowUser,
   getUsers,
-  updateProfileImages
+  updateProfileImages,
+  updateUserProfileByUserByEmail,
+  changePasswordByUserId
 };
