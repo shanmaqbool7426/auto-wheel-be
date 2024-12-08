@@ -5,6 +5,10 @@ import bcrypt from 'bcryptjs';
 const userSchema = mongoose.Schema(
   {
     fullName: { type: String,default:"" },
+    lastLogin: {
+      type: Date,
+      default: Date.now()
+  },
     firstName: { type: String,default:"" },
     lastName: { type: String,default:"" },
     roles: [{
@@ -20,9 +24,7 @@ const userSchema = mongoose.Schema(
       type: Boolean,
       default: true
   },
-  lastLogin: {
-      type: Date
-  },
+
     loginType: [],
     email: { type: String, required: true, unique: true },
     phone: { type: String },

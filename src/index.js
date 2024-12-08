@@ -10,6 +10,7 @@ import { connectDB } from './Utils/connectDB.js';
 import authRoutes from './User/route.js'
 import browesByMakeRoutes from './BrowesByMake/route.js'
 import browesByBodyRoutes from './BrowseByBody/route.js'
+import chatRoutes from './Chat/route.js'
 import vehicleRoutes from './Vehicle/route.js'
 import categoryRoutes from './Category/route.js'
 import commentRoutes from './Comment/route.js'
@@ -27,7 +28,7 @@ import { uploadOnCloudinary } from "./Utils/cloudinary.js";
 import morgan from "morgan"
 import responses from "./Utils/response.js";
 import { upload } from "./Middleware/multer.js";
-import { ChatMessage } from "./Messages/model.js";
+import ChatMessage from "./Chat/model.js";
 import mongoose from "mongoose";
 import User from "./User/model.js";
 // const { errorHandler, notFound } = require('./middleware/errorMiddleware');
@@ -82,7 +83,7 @@ app.use('/api/video', videoRoutes);
 app.use('/api/new-vehicles', newVehicleRoutes);
 app.use('/api/comparison', comparisonRoutes);
 app.use('/api/roles', roleRoutes);
-
+app.use('/api/chat', chatRoutes);
 app.use('/upload-image', upload.array('images', 10), async (req, res) => {
   try {
     const files = req.files; // This will contain all uploaded images
