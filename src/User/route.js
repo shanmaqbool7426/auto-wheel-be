@@ -27,7 +27,9 @@ import {
   getProfile,
   updateProfileImages,
   createUser,
-  getUsers
+  getUsers,
+  updateUserProfileByUserByEmail,
+  changePasswordByUserId
 } from './controller.js';
 import { getFavoriteVehiclesByUserId, getVehiclesByUserId, toggleFavoriteVehicle } from '../Vehicle/controller.js';
 import { protect } from '../Middleware/auth.js';
@@ -51,9 +53,11 @@ router.post('/reset-password', resetPassword);
 router.post('/report', addReport);
 router.get('/reports', getReports);
 router.put('/profile',protect, updateUserProfile); // Update user profile
+router.put('/profile-update-by-email',updateUserProfileByUserByEmail); // Update user profile
 router.put('/dealer-info',protect, updateDealerInfo); // Update dealer information
 router.put('/services-offered',protect, updateServicesOffered); // Update services offered
 router.put('/change-password',protect, changePassword); // Change user password
+router.put('/change-password-by-userId/:userId',changePasswordByUserId); // Change user password
 router.post('/connect-account',protect, connectAccount); // Connect account
 router.post('/disconnect-account',protect, disconnectAccount); // Disconnect account
 router.get('/vehicles-by-user/:userId', getVehiclesByUserId);

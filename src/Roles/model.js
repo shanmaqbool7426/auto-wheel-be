@@ -7,20 +7,47 @@ const roleSchema = new mongoose.Schema({
         unique: true,
         enum: ['superAdmin', 'admin', 'moderator', 'dealer', 'user']
     },
-    permissions: [{
-        resource: {
-            type: String,
-            required: true,
-            enum: ['users', 'vehicles', 'blogs', 'locations', 'reports']
+    permissions: {
+        dashboard: {
+            read: { type: Boolean, default: false },
+            access: { type: Boolean, default: false },
+            edit: { type: Boolean, default: false }
         },
-        actions: [{
-            type: String,
-            enum: ['create', 'read', 'update', 'delete', 'manage']
-        }]
-    }],
-    description: {
-        type: String,
-        required: true
+        blog: {
+            read: { type: Boolean, default: false },
+            access: { type: Boolean, default: false },
+            edit: { type: Boolean, default: false }
+        },
+        comments: {
+            read: { type: Boolean, default: false },
+            access: { type: Boolean, default: false },
+            edit: { type: Boolean, default: false }
+        },
+        location: {
+            read: { type: Boolean, default: false },
+            access: { type: Boolean, default: false },
+            edit: { type: Boolean, default: false }
+        },
+        userManagement: {
+            read: { type: Boolean, default: false },
+            access: { type: Boolean, default: false },
+            edit: { type: Boolean, default: false }
+        },
+        chat: {
+            read: { type: Boolean, default: false },
+            access: { type: Boolean, default: false },
+            edit: { type: Boolean, default: false }
+        },
+        email: {
+            read: { type: Boolean, default: false },
+            access: { type: Boolean, default: false },
+            edit: { type: Boolean, default: false }
+        },
+        fileManager: {
+            read: { type: Boolean, default: false },
+            access: { type: Boolean, default: false },
+            edit: { type: Boolean, default: false }
+        }
     },
     isActive: {
         type: Boolean,
