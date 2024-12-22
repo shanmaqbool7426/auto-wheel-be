@@ -1,6 +1,11 @@
 import mongoose from 'mongoose';
 import bcrypt from 'bcryptjs';
 
+const workingHoursSchema = new mongoose.Schema({
+  isOpen: { type: Boolean, default: false },
+  start: { type: String, default: null },
+  end: { type: String, default: null }
+});
 
 const userSchema = mongoose.Schema(
   {
@@ -57,7 +62,15 @@ const userSchema = mongoose.Schema(
     dealerName: { type: String,default:"" },
     licenseNumber: { type: String,default:"" },
     locationAddress: { type: String,default:"" },
-    salesHours: { type: String,default:"" },
+    workingHours: {
+      monday: workingHoursSchema,
+      tuesday: workingHoursSchema,
+      wednesday: workingHoursSchema,
+      thursday: workingHoursSchema,
+      friday: workingHoursSchema,
+      saturday: workingHoursSchema,
+      sunday: workingHoursSchema
+    },
     hasWhatsApp: { type: Boolean, default: false },
     showEmail: { type: Boolean, default: false },
     servicesOffered: [{ type: String }],

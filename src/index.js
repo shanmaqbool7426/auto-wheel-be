@@ -97,6 +97,20 @@ app.use('/upload-image', upload.array('images', 10), async (req, res) => {
     return responses.badRequest(res, 'Image upload failed');
   }
 });
+app.use('/api/upload-image', upload.array('images', 10), async (req, res) => {
+  try {
+    const files = req.files; // This will contain all uploaded images
+    console.log('files',files)
+    const urls = await Promise.all(files.map(async (file) => {
+      const result = await uploadOnCloudinary(file.path);
+      return result.secure_url; // Return only the secure_url
+    }));
+
+    return responses.created(res, 'Images received', urls); // Return the list of uploaded URLs
+  } catch (error) {
+    return responses.badRequest(res, 'Image upload failed');
+  }
+});
 
 
 // Add this function outside the io.on('connection', ...) block

@@ -110,23 +110,44 @@ console.log('userData',userData)
   return responses.ok(res, 'User profile updated successfully', userData); // Return success response
 });
 const updateDealerInfo = asyncHandler(async (req, res) => {
-  const { dealerName, licenseNumber, locationAddress, salesHours, hasWhatsApp, showEmail } = req.body;
+  const { dealerName, licenseNumber, location, workingHours } = req.body;
 
-  const user = await User.findById(req.user._id);
-  if (!user) {
-    return responses.notFound(res, 'User not found');
+  try {
+    const user = await User.findById(req.user._id);
+    if (!user) {
+      return responses.notFound(res, 'User not found');
+    }
+
+    // Update basic dealer information
+    user.dealerName = dealerName || user.dealerName;
+    user.licenseNumber = licenseNumber || user.licenseNumber;
+    user.locationAddress = location || user.locationAddress;
+
+    // Update working hours if provided
+    if (workingHours) {
+      // First, validate the working hours structure
+      const days = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday'];
+      const validWorkingHours = {};
+
+      for (const day of days) {
+        if (workingHours[day]) {
+          validWorkingHours[day] = {
+            isOpen: workingHours[day].isOpen || false,
+            start: workingHours[day].isOpen ? workingHours[day].start : null,
+            end: workingHours[day].isOpen ? workingHours[day].end : null,
+          };
+        }
+      }
+
+      user.workingHours = validWorkingHours;
+    }
+
+    await user.save();
+    return responses.ok(res, 'Dealer information updated successfully', user);
+  } catch (error) {
+    console.error('Error updating dealer information:', error);
+    return responses.serverError(res, 'Error updating dealer information');
   }
-
-  // Update dealer information
-  user.dealerName = dealerName || user.dealerName;
-  user.licenseNumber = licenseNumber || user.licenseNumber;
-  user.locationAddress = locationAddress || user.locationAddress;
-  user.salesHours = salesHours || user.salesHours;
-  user.hasWhatsApp = hasWhatsApp !== undefined ? hasWhatsApp : user.hasWhatsApp; // Check for undefined
-  user.showEmail = showEmail !== undefined ? showEmail : user.showEmail; // Check for undefined
-
-  await user.save();
-  return responses.ok(res, 'Dealer information updated successfully', user);
 });
 
 const updateServicesOffered = asyncHandler(async (req, res) => {
