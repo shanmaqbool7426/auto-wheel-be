@@ -9,29 +9,91 @@ const createNewVehicle = asyncHandler(async (req, res) => {
     const { type } = req.body;
     let newVehicle;
 
+    // Base vehicle data that's common to all types
+    const baseVehicleData = {
+      type: req.body.type,
+      make: req.body.make,
+      model: req.body.model,
+      variant: req.body.variant,
+      year: req.body.year,
+      bodyType: req.body.bodyType,
+      minPrice: req.body.minPrice,
+      maxPrice: req.body.maxPrice,
+      colors: req.body.colors || [],
+      releaseDate: req.body.releaseDate,
+      description: req.body.description,
+      defaultImage: req.body.defaultImage,
+      images: req.body.images || [],
+      views: req.body.views || 0,
+      pros: req.body.pros,
+      cons: req.body.cons,
+      faqs: req.body.faqs,
+      Info: {
+        make: req.body.make,
+        model: req.body.model,
+        variant: req.body.variant
+      }
+    };
+
     if (type === 'car') {
-      newVehicle = new Car(req.body);  // Create a new Car instance
-    } else if (type === 'bike') {
-      newVehicle = new Bike(req.body);  // Create a new Bike instance
-    } else if (type === 'truck') {
-      newVehicle = new Truck(req.body);  // Create a new Truck instance
-    } else {
-      return response.badRequest(res, 'Invalid vehicle type provided');  // Return error for invalid type
+      // Extract car-specific data
+      const carData = {
+        ...baseVehicleData,
+        ...req.body.carSpecs,
+        brochureLink: req.body.brochureLink
+      };
+
+      // Create new Car instance
+      newVehicle = new Car(carData);
+    } 
+    else if (type === 'bike') {
+      // Extract bike-specific data
+      const bikeData = {
+        ...baseVehicleData,
+        ...req.body.bikeSpecs,
+        brochureLink: req.body.brochureLink
+      };
+
+      // Create new Bike instance
+      newVehicle = new Bike(bikeData);
+    } 
+    else if (type === 'truck') {
+      // Extract truck-specific data
+      const truckData = {
+        ...baseVehicleData,
+        ...req.body.truckSpecs,
+        brochureLink: req.body.brochureLink
+      };
+
+      // Create new Truck instance
+      newVehicle = new Truck(truckData);
+    } 
+    else {
+      return response.badRequest(res, 'Invalid vehicle type provided');
     }
 
-    await newVehicle.save();
+    // Validate the document before saving
+    const validationError = newVehicle.validateSync();
+    if (validationError) {
+      console.error('Validation error:', validationError);
+      return response.badRequest(res, 'Validation failed', validationError);
+    }
 
+    // Save the vehicle
+    await newVehicle.save();
+    
+    // Send success response
     response.ok(res, 'New Vehicle Created Successfully', newVehicle);
+
   } catch (error) {
     console.error('Error creating vehicle:', error);
-    return response.serverError(res, 'Error creating vehicle', error);  // Send error response
+    return response.serverError(res, 'Error creating vehicle', error);
   }
 });
-
 // Get a list of vehicles with optional filters
 const getListNewVehicles = asyncHandler(async (req, res) => {
   try {
-    const { type, make, model, year, minPrice, maxPrice, page = 1, limit = 10 } = req.query;
+    const { type, make, model, year, minPrice, maxPrice, page = 1, limit = 10, search } = req.query;
 
     // Define filters
     const filters = {};
@@ -43,6 +105,15 @@ const getListNewVehicles = asyncHandler(async (req, res) => {
       filters.minPrice = { $gte: minPrice };
       filters.maxPrice = { $lte: maxPrice };
     }
+
+    if (search) {
+      filters.$or = [
+        { make: { $regex: new RegExp(search, 'i') } },
+        { model: { $regex: new RegExp(search, 'i') } },
+        { variant: { $regex: new RegExp(search, 'i') } }
+      ];
+    }
+
 
     // Pagination options
     const options = {
@@ -919,6 +990,13 @@ const getListVehicles = asyncHandler(async (req, res) => {
   return response.ok(res, 'Vehicles retrieved successfully', vehiclesResponse);
 });
 
+// get vehicle by id
+const getVehicleById = asyncHandler(async (req, res) => {
+  const { id } = req.query;
+  const vehicle = await NewVehicle.findById(id);
+  return response.ok(res, 'Vehicle retrieved successfully', vehicle);
+});
+
 
 
 export {
@@ -934,5 +1012,6 @@ export {
   getPopularVehiclesByReviews,
   getNewlyLaunchedVehicles,
   getTopComparisonVehicles,
-  getListVehicles
+  getListVehicles,
+  getVehicleById
 };
