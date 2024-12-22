@@ -13,8 +13,7 @@ import {
   getNewlyLaunchedVehicles,
   getTopComparisonVehicles,
   getComparison,
-  getListVehicles,
-  getVehicleById
+  getListVehicles
 } from "./controller.js";  // Import new vehicle controller
 
 const router = express.Router();
@@ -61,9 +60,9 @@ router.put('/update/:id', updateNewVehicle);
 router.delete('/:id', deleteNewVehicle);
 
 // Get details of a new vehicle by slug
+router.get('/:slug', getNewVehicleBySlug);
+
 router.get('/get-vehicle-by-id', getVehicleById);
-
-
 
 // -------------------- Additional Image Uploader (Optional) --------------------
 // router.post('/upload-image', upload.single("image"), imageUploader);
