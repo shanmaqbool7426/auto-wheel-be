@@ -13,7 +13,8 @@ import {
   getNewlyLaunchedVehicles,
   getTopComparisonVehicles,
   getComparison,
-  getListVehicles
+  getListVehicles,
+  getVehicleById
 } from "./controller.js";  // Import new vehicle controller
 
 const router = express.Router();
