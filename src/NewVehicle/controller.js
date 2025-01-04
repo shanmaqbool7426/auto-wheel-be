@@ -998,7 +998,6 @@ const getVehicleById = asyncHandler(async (req, res) => {
 });
 
 
-
 export {
   createNewVehicle,
   getListNewVehicles,
@@ -1013,5 +1012,6 @@ export {
   getNewlyLaunchedVehicles,
   getTopComparisonVehicles,
   getListVehicles,
-  getVehicleById
+  getVehicleById,
+  
 };

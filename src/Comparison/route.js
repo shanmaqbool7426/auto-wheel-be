@@ -1,16 +1,30 @@
 import express from 'express';
 import {
-  addComparison,
-  getAllComparisons,
-  getComparisonById
+  createCompareSet,
+  getCompareSet,
+  deleteCompareSet,
+  getTopComparisons,
+  getComparisonsList,
+  getComparisonSets
 } from './controller.js';
 
 const router = express.Router();
 
-router.post('/add', addComparison);
+// Create a comparison set
+router.post('/', createCompareSet);
 
-router.get('/', getAllComparisons);
+// Get top comparisons
+router.get('/top', getTopComparisons);
 
-router.get('/:id', getComparisonById);
+// Get list of all comparisons
+router.get('/list', getComparisonSets);
+
+// Get comparison set by ID
+router.get('/:compareSetId', getCompareSet);
+
+// Delete comparison set
+
+router.delete('/:compareSetId', deleteCompareSet);
 
 export default router;
+
