@@ -1,4 +1,3 @@
-
 import asyncHandler from 'express-async-handler';
 import BrowesByMake from './model.js'; 
 import responses from "../Utils/response.js";
@@ -34,10 +33,18 @@ export const createMake = asyncHandler(async (req, res) => {
 
 
 export const getAllMakes = asyncHandler(async (req, res) => {
-  const { type } = req.query;
-  const filter = type ? { type } : {};
-  const makes = await BrowesByMake.find(filter);
-  return responses.ok(res, 'All make entries retrieved successfully', makes);
+  try {
+    const { type } = req.query;
+    // Only apply type filter if type is provided
+    const filter = type ? { type } : {};
+    
+    const makes = await BrowesByMake.find(filter);
+    
+    return responses.ok(res, 'All make entries retrieved successfully', makes);
+  } catch (error) {
+    console.error('Error fetching makes:', error);
+    return responses.serverError(res, 'Error fetching makes', error);
+  }
 });
 
 
