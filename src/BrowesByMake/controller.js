@@ -35,8 +35,9 @@ export const createMake = asyncHandler(async (req, res) => {
 export const getAllMakes = asyncHandler(async (req, res) => {
   try {
     const { type } = req.query;
-    // Only apply type filter if type is provided
-    const filter = type ? { type } : {};
+    
+    // Only apply type filter if type is valid (not undefined, null, or "undefined")
+    const filter = type && type !== 'undefined' ? { type } : {};
     
     const makes = await BrowesByMake.find(filter);
     
