@@ -5,13 +5,17 @@ import {
   deleteCompareSet,
   getTopComparisons,
   getComparisonsList,
-  getComparisonSets
+  getComparisonSets,
+  updateCompareSet
 } from './controller.js';
 
 const router = express.Router();
 
 // Create a comparison set
 router.post('/', createCompareSet);
+
+// Update a comparison set
+router.put('/:id', updateCompareSet);
 
 // Get top comparisons
 router.get('/top', getTopComparisons);
@@ -24,7 +28,7 @@ router.get('/:compareSetId', getCompareSet);
 
 // Delete comparison set
 
-router.delete('/:compareSetId', deleteCompareSet);
+router.delete('/:id', deleteCompareSet);
 
 export default router;
 

@@ -23,6 +23,7 @@ const router = express.Router();
 
 // Create a new vehicle
 router.post('/', createNewVehicle);
+router.get('/get-vehicle-by-id', getVehicleById);
 
 // List all new vehicles with filters
 router.get('/', getListNewVehicles);
@@ -63,7 +64,6 @@ router.delete('/:id', deleteNewVehicle);
 // Get details of a new vehicle by slug
 router.get('/:slug', getNewVehicleBySlug);
 
-router.get('/get-vehicle-by-id', getVehicleById);
 
 // -------------------- Additional Image Uploader (Optional) --------------------
 // router.post('/upload-image', upload.single("image"), imageUploader);

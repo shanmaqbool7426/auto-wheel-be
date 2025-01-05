@@ -11,7 +11,6 @@ export const createCompareSet = asyncHandler(async (req, res) => {
   try {
     const { vehicles, type } = req.body;
 
-    console.log('vehicles>>>',req.body)
     if (!vehicles || !Array.isArray(vehicles) || vehicles.length < 2) {
       return response.badRequest(res, 'At least two vehicles are required');
     }
@@ -20,16 +19,25 @@ export const createCompareSet = asyncHandler(async (req, res) => {
       return response.badRequest(res, 'Valid vehicle type is required');
     }
 
+    // Parse vehicle strings into make, model, variant
+    const parsedVehicles = vehicles.map(vehicleStr => {
+      const parts = vehicleStr.split(' ');
+      return {
+        make: parts[0],
+        model: parts[1],
+        variant: parts.slice(2).join(' ') || undefined
+      };
+    });
+
     // Find vehicle IDs based on Info field
     const vehicleIds = await Promise.all(
-      vehicles.map(async (vehicle) => {
+      parsedVehicles.map(async (vehicle) => {
         const query = {
           type: type,
           'Info.make': { $regex: new RegExp(`^${vehicle.make}$`, 'i') },
           'Info.model': { $regex: new RegExp(`^${vehicle.model}$`, 'i') },
         };
 
-        // Add variant to query if provided
         if (vehicle.variant) {
           query['Info.variant'] = { $regex: new RegExp(`^${vehicle.variant}$`, 'i') };
         }
@@ -39,11 +47,12 @@ export const createCompareSet = asyncHandler(async (req, res) => {
         if (!foundVehicle) {
           throw new Error(`Vehicle not found: ${vehicle.make} ${vehicle.model} ${vehicle.variant || ''}`);
         }
-
+        
         return foundVehicle._id;
       })
     );
-
+    
+    console.log("query idssss",vehicleIds)
     // Create a unique comparison set ID
     const compareSetId = uuidv4();
 
@@ -159,9 +168,9 @@ export const getCompareSet = asyncHandler(async (req, res) => {
 // Delete comparison set
 export const deleteCompareSet = asyncHandler(async (req, res) => {
   try {
-    const { compareSetId } = req.params;
+    const { id } = req.params;
 
-    const result = await Comparison.findOneAndDelete({ compareSetId });
+    const result = await Comparison.findOneAndDelete({ _id: id });
 
     if (!result) {
       return response.notFound(res, 'Comparison set not found');
@@ -467,6 +476,19 @@ export const getComparisonSets = asyncHandler(async (req, res) => {
   } catch (error) {
     console.error('Error retrieving comparison sets:', error);
     return response.serverError(res, 'Error retrieving comparison sets');
+  }
+});
+
+// Update a comparison set
+export const updateCompareSet = asyncHandler(async (req, res) => {
+  try {
+    const { data } = req.body;
+    const {id} = req.params
+    const result = await Comparison.findByIdAndUpdate(id, data, { new: true });
+    response.ok(res, 'Comparison set updated successfully', result);
+  } catch (error) {
+    console.error('Error updating comparison set:', error);
+    return response.serverError(res, 'Error updating comparison set');
   }
 });
 

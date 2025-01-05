@@ -29,7 +29,8 @@ import {
   createUser,
   getUsers,
   updateUserProfileByUserByEmail,
-  changePasswordByUserId
+  changePasswordByUserId,
+  getLatestUsers
 } from './controller.js';
 import { getFavoriteVehiclesByUserId, getVehiclesByUserId, toggleFavoriteVehicle } from '../Vehicle/controller.js';
 import { protect } from '../Middleware/auth.js';
@@ -70,6 +71,7 @@ router.post('/:userId/unfollow',protect, unfollowUser);
 router.put('/update-profile-images', protect, updateProfileImages);
 // router.post('/create', protect, hasPermission('users', 'create'), createUser);
  router.post('/create',  createUser);
+router.get('/latest-users', getLatestUsers);
 
 export default router;
 
