@@ -1,9 +1,11 @@
 import express from "express"
-import { createBlog, getBlogs,browseBlogs, getBlogById, updateBlog, deleteBlog, bulkDeleteBlogs, searchBlogs, duplicateBlog, duplicateBlogs, getStatusCounts } from "./controller.js"
+import { createBlog, getBlogs,browseBlogs, getBlogById, updateBlog, deleteBlog, bulkDeleteBlogs, searchBlogs, duplicateBlog, duplicateBlogs, getStatusCounts, getTopPerformingPosts, getLatestPosts } from "./controller.js"
 import {upload} from "../Middleware/multer.js"
 
 const router = express.Router();
 
+router.get('/top-performing', getTopPerformingPosts);
+router.get('/latest', getLatestPosts);
 router.get('/status-counts', getStatusCounts);
 router.post('/',upload.single("imageUrl"),createBlog);
 router.get('/blog-listing/*', getBlogs);

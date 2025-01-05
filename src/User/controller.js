@@ -776,6 +776,20 @@ export const createUser = asyncHandler(async (req, res) => {
   }
 });
 
+// Get latest users
+const getLatestUsers = asyncHandler(async (req, res) => {
+  const { limit = 6 } = req.query;
+
+  const latestUsers = await User.find({ 
+    isActive: true 
+  })
+    .sort({ createdAt: -1 })
+    .limit(parseInt(limit))
+    .select('fullName email accountType city createdAt profileImage followers activeAds pendingAds')
+    .lean();
+
+  responses.ok(res, 'Latest users fetched successfully', latestUsers);
+});
 
 export {
   registerUser,
@@ -800,5 +814,6 @@ export {
   getUsers,
   updateProfileImages,
   updateUserProfileByUserByEmail,
-  changePasswordByUserId
+  changePasswordByUserId,
+  getLatestUsers
 };

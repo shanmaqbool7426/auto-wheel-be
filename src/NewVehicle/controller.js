@@ -992,6 +992,7 @@ const getListVehicles = asyncHandler(async (req, res) => {
 
 // get vehicle by id
 const getVehicleById = asyncHandler(async (req, res) => {
+  console.log("id>>>>>>>>>>>>", req.query)
   const { id } = req.query;
   const vehicle = await NewVehicle.findById(id);
   return response.ok(res, 'Vehicle retrieved successfully', vehicle);
