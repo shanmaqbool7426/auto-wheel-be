@@ -5,7 +5,8 @@ import {
   getBannerById, 
   updateBanner, 
   deleteBanner,
-  updateBannerOrder
+  updateBannerOrder,
+  getAllActiveBanners
 } from './controller.js';
 
 const router = express.Router();
@@ -15,6 +16,9 @@ router.post('/', createBanner);
 
 // Get all banners
 router.get('/', getAllBanners);
+
+// Get all active banners
+router.get('/active', getAllActiveBanners);
 
 // Get a specific banner by ID
 router.get('/:id', getBannerById);

@@ -20,7 +20,7 @@ const bannerSchema = new mongoose.Schema({
     type: String,
     required: [true, 'Banner image URL is required']
   },
-  isActive: {
+  status: {
     type: Boolean,
     default: true
   },
