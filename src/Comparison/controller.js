@@ -132,13 +132,35 @@ export const getCompareSet = asyncHandler(async (req, res) => {
         $lookup: {
           from: 'reviews',
           localField: '_id',
-          foreignField: 'vehicle',
-          as: 'reviews'
+          foreignField: 'vehicleId',
+          as: 'reviews',
+          pipeline: [
+            {
+              $project: {
+                _id: 1,
+                ratings: 1,
+                title: 1,
+                comment: 1,
+                overAllRating: 1,
+                reviewBy: 1,
+                createdAt: 1
+              }
+            },
+            { $sort: { createdAt: -1 } }
+          ]
         }
       },
       {
         $addFields: {
-          averageRating: {
+          averageRatings: {
+            mileage: { $avg: '$reviews.ratings.mileage' },
+            maintenance: { $avg: '$reviews.ratings.maintenance' },
+            safety: { $avg: '$reviews.ratings.safety' },
+            comfort: { $avg: '$reviews.ratings.comfort' },
+            features: { $avg: '$reviews.ratings.features' },
+            performance: { $avg: '$reviews.ratings.performance' }
+          },
+          overallAverageRating: {
             $cond: {
               if: { $gt: [{ $size: '$reviews' }, 0] },
               then: { $round: [{ $avg: '$reviews.overAllRating' }, 1] },
@@ -146,6 +168,29 @@ export const getCompareSet = asyncHandler(async (req, res) => {
             }
           },
           reviewCount: { $size: '$reviews' }
+        }
+      },
+      {
+        $project: {
+          _id: 1,
+          make: 1,
+          model: 1,
+          variant: 1,
+          type: 1,
+          year: 1,
+          minPrice: 1,
+          maxPrice: 1,
+          defaultImage: 1,
+          reviews: 1,
+          averageRatings: 1,
+          overallAverageRating: 1,
+          reviewCount: 1,
+          Info: 1,
+          bodyType: 1,
+          colors: 1,
+          description: 1,
+          pros: 1,
+          cons: 1
         }
       }
     ]);

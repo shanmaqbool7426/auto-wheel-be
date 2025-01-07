@@ -13,6 +13,8 @@ import browesByBodyRoutes from './BrowseByBody/route.js'
 import chatRoutes from './Chat/route.js'
 import vehicleRoutes from './Vehicle/route.js'
 import categoryRoutes from './Category/route.js'
+import bannerRoutes from './Banner/route.js';
+
 import commentRoutes from './Comment/route.js'
 import tagRoutes from './Tag/route.js'
 import blogRoutes from './Blog/route.js'
@@ -84,6 +86,7 @@ app.use('/api/new-vehicles', newVehicleRoutes);
 app.use('/api/comparison', comparisonRoutes);
 app.use('/api/roles', roleRoutes);
 app.use('/api/chat', chatRoutes);
+app.use('/api/banners', bannerRoutes);
 app.use('/upload-image', upload.array('images', 10), async (req, res) => {
   try {
     const files = req.files; // This will contain all uploaded images
@@ -93,7 +96,7 @@ app.use('/upload-image', upload.array('images', 10), async (req, res) => {
     }));
 
     return responses.created(res, 'Images received', urls); // Return the list of uploaded URLs
-  } catch (error) {
+  } catch (error)    {
     return responses.badRequest(res, 'Image upload failed');
   }
 });
