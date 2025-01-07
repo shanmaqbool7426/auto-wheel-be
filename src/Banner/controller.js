@@ -41,7 +41,20 @@ const getNextOrder = async () => {
 // Get all banners
 export const getAllBanners = asyncHandler(async (req, res) => {
   try {
-    const banners = await Banner.find({ isActive: true })
+    const banners = await Banner.find({ })
+      .sort({ order: 1, createdAt: -1 });
+
+    response.ok(res, 'Banners retrieved successfully', banners);
+  } catch (error) {
+    console.error('Error retrieving banners:', error);
+    response.serverError(res, 'Error retrieving banners');
+  }
+});
+
+// Get all banners
+export const getAllActiveBanners = asyncHandler(async (req, res) => {
+  try {
+    const banners = await Banner.find({ status: true })
       .sort({ order: 1, createdAt: -1 });
 
     response.ok(res, 'Banners retrieved successfully', banners);
@@ -70,7 +83,7 @@ export const getBannerById = asyncHandler(async (req, res) => {
 // Update banner
 export const updateBanner = asyncHandler(async (req, res) => {
     try {
-      const { title, description, image, isActive, link, order } = req.body;
+      const { title, description, image, status, link, order } = req.body;
       
       const banner = await Banner.findById(req.params.id);
       
@@ -96,7 +109,7 @@ export const updateBanner = asyncHandler(async (req, res) => {
       banner.image = image || banner.image;
       banner.link = link || banner.link;
       banner.order = order || banner.order;
-      banner.isActive = isActive !== undefined ? isActive : banner.isActive;
+      banner.status = status !== undefined ? status : banner.status;
   
       const updatedBanner = await banner.save();
       
@@ -144,3 +157,5 @@ export const updateBannerOrder = asyncHandler(async (req, res) => {
     response.serverError(res, 'Error updating banner order');
   }
 });
+
+
