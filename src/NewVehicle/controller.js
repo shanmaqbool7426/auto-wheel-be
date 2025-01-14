@@ -140,45 +140,70 @@ const getPopularVehiclesByReviews = asyncHandler(async (req, res) => {
   try {
     const { type, make, model, year, minPrice, maxPrice } = req.query;
 
-    // Define filters
-    const matchFilters = {};
-    if (type) matchFilters.type = type;
-    if (make) matchFilters.make = { $regex: new RegExp(make, 'i') };  // Case-insensitive search
-    if (model) matchFilters.model = { $regex: new RegExp(model, 'i') };
-    if (year) matchFilters.year = year;
+    // Build filter object
+    const filter = {};
+    if (type) filter.type = type;
+    if (make) filter.make = { $regex: new RegExp(make, 'i') };
+    if (model) filter.model = { $regex: new RegExp(model, 'i') };
+    if (year) filter.year = year;
     if (minPrice && maxPrice) {
-      matchFilters.price = { $gte: Number(minPrice), $lte: Number(maxPrice) };
+      filter.minPrice = { $gte: Number(minPrice) };
+      filter.maxPrice = { $lte: Number(maxPrice) };
     }
 
-    const vehicles = await NewVehicle.aggregate([
-      { $match: matchFilters },
-      {
-        $addFields: { // Add a field to count the number of review IDs
-          reviewCount: { $size: { $ifNull: ["$reviewsIds", []] } }
-        }
-      },
-      { $sort: { reviewCount: -1 } },  // Sort by review count in descending order
-      { $limit: 8 },  // Limit to 8 vehicles
-      {
-        $lookup: { // Optionally join with another collection if needed
-          from: 'reviews',  // Assuming 'reviews' is your reviews collection
-          localField: 'reviewsIds',
-          foreignField: '_id',
-          as: 'reviewDetails'
-        }
-      },
-      {
-        $project: { // Define what fields to include in the final output
-          type: 1,
-          make: 1,
-          model: 1,
-          year: 1,
-          price: 1,
-          reviewCount: 1,
-          reviewDetails: 1 // Include review details if necessary
-        }
+    // Get vehicles
+    const vehicles = await NewVehicle.find(filter)
+      .limit(8)
+      .lean();
+
+    // Get reviews for these vehicles
+    const vehicleIds = vehicles.map(v => v._id);
+    const reviews = await Review.find({ vehicleId: { $in: vehicleIds } })
+      .select('vehicleId overAllRating')
+      .lean();
+
+    console.log("reviews", reviews);
+
+    // Calculate average ratings and add review counts
+    const vehiclesWithRatings = vehicles.map(vehicle => {
+      const vehicleReviews = reviews.filter(review => 
+        review.vehicleId.toString() === vehicle._id.toString()
+      );
+      
+      const reviewCount = vehicleReviews.length;
+      let averageRating = 0;
+
+      if (reviewCount > 0) {
+        const totalRating = vehicleReviews.reduce((sum, review) => {
+          return sum + Number(review.overAllRating);
+        }, 0);
+        averageRating = Number((totalRating / reviewCount).toFixed(1));
       }
-    ]);
+
+      return {
+        _id: vehicle._id,
+        make: vehicle.make,
+        model: vehicle.model,
+        variant: vehicle.variant,
+        type: vehicle.type,
+        year: vehicle.year,
+        minPrice: vehicle.minPrice,
+        maxPrice: vehicle.maxPrice,
+        defaultImage: vehicle.defaultImage,
+        views: vehicle.views,
+        slug: vehicle.slug,
+        reviewCount,
+        averageRating
+      };
+    });
+
+    // Sort by review count and then by average rating
+    vehiclesWithRatings.sort((a, b) => {
+      if (b.reviewCount !== a.reviewCount) {
+        return b.reviewCount - a.reviewCount;
+      }
+      return b.averageRating - a.averageRating;
+    });
 
     // Send success response
     response.ok(res, 'Vehicles retrieved successfully', vehicles);
@@ -364,7 +389,7 @@ const getPopularNewVehicles = asyncHandler(async (req, res) => {
         $lookup: {
           from: 'reviews',  // Join with the reviews collection
           localField: '_id',  // Vehicle ID in NewVehicle collection
-          foreignField: 'vehicle',  // Match with vehicle reference in Review collection
+          foreignField: 'vehicleId',  // Changed from 'vehicle' to 'vehicleId'
           as: 'reviews'  // Store the reviews data
         }
       },
@@ -372,14 +397,32 @@ const getPopularNewVehicles = asyncHandler(async (req, res) => {
         $addFields: {
           averageRating: {
             $cond: {
-              if: { $gt: [{ $size: '$reviews' }, 0] },  // Check if there are any reviews
+              if: { $gt: [{ $size: '$reviews' }, 0] },
               then: {
-                $round: [{ $avg: '$reviews.overAllRating' }, 4]  // Calculate the average rating and round to 4 decimal places
+                $round: [
+                  {
+                    $avg: {
+                      $map: {
+                        input: '$reviews',
+                        as: 'review',
+                        in: { 
+                          $convert: {
+                            input: '$$review.overAllRating',
+                            to: 'double',
+                            onError: 0,
+                            onNull: 0
+                          }
+                        }
+                      }
+                    }
+                  },
+                  1  // Round to 1 decimal place
+                ]
               },
-              else: null  // If no reviews, return null
+              else: 0  // Return 0 instead of null when no reviews
             }
           },
-          reviewCount: { $size: '$reviews' }  // Count the number of reviews
+          reviewCount: { $size: '$reviews' }
         }
       },
       {
@@ -395,8 +438,8 @@ const getPopularNewVehicles = asyncHandler(async (req, res) => {
           maxPrice: 1,
           year: 1,
           defaultImage: 1,
-          averageRating: 1,  // Include average rating
-          reviewCount: 1,    // Include review count
+          averageRating: 1,
+          reviewCount: 1,
         }
       }
     ]);

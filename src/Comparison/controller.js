@@ -5,6 +5,7 @@ import mongoose from 'mongoose';
 import { v4 as uuidv4 } from 'uuid';
 import response from '../Utils/response.js';
 import { NewVehicle } from '../NewVehicle/model.js';
+import Review from '../Review/model.js';
 
 // Create a comparison set
 export const createCompareSet = asyncHandler(async (req, res) => {
@@ -32,6 +33,7 @@ export const createCompareSet = asyncHandler(async (req, res) => {
     // Find vehicle IDs based on Info field
     const vehicleIds = await Promise.all(
       parsedVehicles.map(async (vehicle) => {
+        console.log("vehicle",vehicle)      
         const query = {
           type: type,
           'Info.make': { $regex: new RegExp(`^${vehicle.make}$`, 'i') },
@@ -41,7 +43,7 @@ export const createCompareSet = asyncHandler(async (req, res) => {
         if (vehicle.variant) {
           query['Info.variant'] = { $regex: new RegExp(`^${vehicle.variant}$`, 'i') };
         }
-
+console.log("query",query)
         const foundVehicle = await NewVehicle.findOne(query);
         
         if (!foundVehicle) {
@@ -237,109 +239,73 @@ export const getTopComparisons = asyncHandler(async (req, res) => {
   try {
     const limit = parseInt(req.query.limit) || 6; // Default to 6 items
 
-    // Get comparison sets with populated vehicle data and view counts
-    const topComparisons = await Comparison.aggregate([
-      {
-        $sort: { createdAt: -1 } // Sort by newest first
-      },
-      {
-        $limit: limit
-      },
-      {
-        $lookup: {
-          from: 'newvehicles',
-          localField: 'vehicles',
-          foreignField: '_id',
-          as: 'vehicles'
-        }
-      },
-      {
-        $lookup: {
-          from: 'reviews',
-          let: { vehicleIds: '$vehicles._id' },
-          pipeline: [
-            {
-              $match: {
-                $expr: { $in: ['$vehicle', '$$vehicleIds'] }
-              }
-            }
-          ],
-          as: 'allReviews'
-        }
-      },
-      {
-        $addFields: {
-          vehicles: {
-            $map: {
-              input: '$vehicles',
-              as: 'vehicle',
-              in: {
-                $mergeObjects: [
-                  '$$vehicle',
-                  {
-                    reviews: {
-                      $filter: {
-                        input: '$allReviews',
-                        as: 'review',
-                        cond: { $eq: ['$$review.vehicle', '$$vehicle._id'] }
-                      }
-                    },
-                    averageRating: {
-                      $round: [
-                        {
-                          $avg: {
-                            $map: {
-                              input: {
-                                $filter: {
-                                  input: '$allReviews',
-                                  as: 'review',
-                                  cond: { $eq: ['$$review.vehicle', '$$vehicle._id'] }
-                                }
-                              },
-                              as: 'review',
-                              in: '$$review.overAllRating'
-                            }
-                          }
-                        },
-                        1
-                      ]
-                    },
-                    reviewCount: {
-                      $size: {
-                        $filter: {
-                          input: '$allReviews',
-                          as: 'review',
-                          cond: { $eq: ['$$review.vehicle', '$$vehicle._id'] }
-                        }
-                      }
-                    }
-                  }
-                ]
-              }
-            }
-          }
-        }
-      },
-      {
-        $project: {
-          compareSetId: 1,
-          type: 1,
-          vehicles: {
-            _id: 1,
-            make: 1,
-            model: 1,
-            variant: 1,
-            year: 1,
-            defaultImage: 1,
-            averageRating: 1,
-            reviewCount: 1
-          },
-          createdAt: 1
-        }
-      }
-    ]);
+    // Get the most recent comparisons
+    const comparisons = await Comparison.find()
+      .sort({ createdAt: -1 })
+      .limit(limit)
+      .lean();
 
-    response.ok(res, 'Top comparisons retrieved successfully', topComparisons);
+    // Get all vehicle IDs from all comparisons
+    const vehicleIds = comparisons.reduce((ids, comp) => {
+      return [...ids, ...comp.vehicles];
+    }, []);
+
+    // Get all vehicles
+    const vehicles = await NewVehicle.find({ 
+      _id: { $in: vehicleIds } 
+    }).lean();
+
+    // Get all reviews for these vehicles
+    const reviews = await Review.find({ 
+      vehicleId: { $in: vehicleIds } 
+    }).lean();
+
+    // Process vehicles to add review data
+    const vehiclesWithReviews = vehicles.map(vehicle => {
+      const vehicleReviews = reviews.filter(r => 
+        r.vehicleId.toString() === vehicle._id.toString()
+      );
+
+      const reviewCount = vehicleReviews.length;
+      let averageRating = null;
+
+      if (reviewCount > 0) {
+        const totalRating = vehicleReviews.reduce((sum, review) => {
+          return sum + Number(review.overAllRating);
+        }, 0);
+        averageRating = Number((totalRating / reviewCount).toFixed(1));
+      }
+
+      return {
+        _id: vehicle._id,
+        make: vehicle.make,
+        model: vehicle.model,
+        variant: vehicle.variant,
+        type: vehicle.type,
+        year: vehicle.year,
+        minPrice: vehicle.minPrice,
+        maxPrice: vehicle.maxPrice,
+        defaultImage: vehicle.defaultImage,
+        views: vehicle.views || 0,
+        slug: vehicle.slug,
+        averageRating,
+        reviewCount
+      };
+    });
+
+    // Create vehicle pairs from comparisons
+    const vehiclePairs = comparisons.map(comparison => {
+      const vehicleArray = comparison.vehicles.map(vehicleId => 
+        vehiclesWithReviews.find(v => v._id.toString() === vehicleId.toString())
+      ).filter(Boolean);
+
+      return {
+        vehicle1: vehicleArray[0] || null,
+        vehicle2: vehicleArray[1] || null
+      };
+    }).filter(pair => pair.vehicle1 && pair.vehicle2);
+
+    response.ok(res, 'Vehicle pairs for comparison retrieved successfully', vehiclePairs);
   } catch (error) {
     console.error('Error retrieving top comparisons:', error);
     return response.serverError(res, 'Error retrieving top comparisons');
@@ -349,10 +315,11 @@ export const getTopComparisons = asyncHandler(async (req, res) => {
 // Get list of all comparisons with pagination
 export const getComparisonsList = asyncHandler(async (req, res) => {
   try {
+    console.log('aaaaaaaaaaaaa')
     const page = parseInt(req.query.page) || 1;
     const limit = parseInt(req.query.limit) || 10;
     const skip = (page - 1) * limit;
-    const type = req.query.type; // Optional filter by vehicle type
+    const type = req.query.type;
 
     // Build query conditions
     const conditions = {};
@@ -379,8 +346,8 @@ export const getComparisonsList = asyncHandler(async (req, res) => {
       },
       {
         $lookup: {
-          from: 'comparisons',
-          localField: 'NewVehicle',
+          from: 'newvehicles',
+          localField: 'vehicles',
           foreignField: '_id',
           as: 'vehicles'
         }
@@ -392,7 +359,7 @@ export const getComparisonsList = asyncHandler(async (req, res) => {
           pipeline: [
             {
               $match: {
-                $expr: { $in: ['$vehicle', '$$vehicleIds'] }
+                $expr: { $in: ['$vehicleId', '$$vehicleIds'] }
               }
             }
           ],
@@ -410,31 +377,57 @@ export const getComparisonsList = asyncHandler(async (req, res) => {
                   '$$vehicle',
                   {
                     averageRating: {
-                      $round: [
-                        {
-                          $avg: {
-                            $map: {
-                              input: {
+                      $cond: {
+                        if: {
+                          $gt: [
+                            {
+                              $size: {
                                 $filter: {
                                   input: '$allReviews',
                                   as: 'review',
-                                  cond: { $eq: ['$$review.vehicle', '$$vehicle._id'] }
+                                  cond: { $eq: ['$$review.vehicleId', '$$vehicle._id'] }
                                 }
-                              },
-                              as: 'review',
-                              in: '$$review.overAllRating'
-                            }
-                          }
+                              }
+                            },
+                            0
+                          ]
                         },
-                        1
-                      ]
+                        then: {
+                          $round: [
+                            {
+                              $avg: {
+                                $map: {
+                                  input: {
+                                    $filter: {
+                                      input: '$allReviews',
+                                      as: 'review',
+                                      cond: { $eq: ['$$review.vehicleId', '$$vehicle._id'] }
+                                    }
+                                  },
+                                  as: 'review',
+                                  in: {
+                                    $convert: {
+                                      input: '$$review.overAllRating',
+                                      to: 'double',
+                                      onError: 0,
+                                      onNull: 0
+                                    }
+                                  }
+                                }
+                              }
+                            },
+                            1
+                          ]
+                        },
+                        else: 0
+                      }
                     },
                     reviewCount: {
                       $size: {
                         $filter: {
                           input: '$allReviews',
                           as: 'review',
-                          cond: { $eq: ['$$review.vehicle', '$$vehicle._id'] }
+                          cond: { $eq: ['$$review.vehicleId', '$$vehicle._id'] }
                         }
                       }
                     }
@@ -483,6 +476,7 @@ export const getComparisonsList = asyncHandler(async (req, res) => {
 // Get all comparison sets with populated vehicle data
 export const getComparisonSets = asyncHandler(async (req, res) => {
   try {
+    console.log('aaaaaaaaaaaaaaaaaaaaaaaccccccccgggg..mmmmmbb')
     const page = parseInt(req.query.page) || 1;
     const limit = parseInt(req.query.limit) || 10;
     const type = req.query.type;
