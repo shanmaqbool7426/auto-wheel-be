@@ -42,7 +42,7 @@ const app = express();
 const server = http.createServer(app);
 const io = new Server(server, {
   cors: {
-    origin: ["http://localhost:3000", "http://localhost:3001","https://037a-144-48-132-249.ngrok-free.app"], // Add your frontend URL
+    origin: ["http://localhost:3000","https://admin-auto-wheel.vercel.app", "http://localhost:3001","https://037a-144-48-132-249.ngrok-free.app"], // Add your frontend URL
     methods: ["GET", "POST"],
     credentials: true
   }
@@ -58,7 +58,7 @@ app.use(helmet());
 
 const corsOptions = {
   "/": {
-    origin: ["http://localhost:5000", "http://localhost:3000",'https://auto-wheel-be.vercel.app',"https://037a-144-48-132-249.ngrok-free.app"],
+    origin: ["http://localhost:5000","https://admin-auto-wheel.vercel.app", "http://localhost:3000",'https://auto-wheel-be.vercel.app',"https://037a-144-48-132-249.ngrok-free.app"],
     credentials: true,
   }
 }
