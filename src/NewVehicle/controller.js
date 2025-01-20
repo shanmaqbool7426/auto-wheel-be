@@ -9,29 +9,91 @@ const createNewVehicle = asyncHandler(async (req, res) => {
     const { type } = req.body;
     let newVehicle;
 
+    // Base vehicle data that's common to all types
+    const baseVehicleData = {
+      type: req.body.type,
+      make: req.body.make,
+      model: req.body.model,
+      variant: req.body.variant,
+      year: req.body.year,
+      bodyType: req.body.bodyType,
+      minPrice: req.body.minPrice,
+      maxPrice: req.body.maxPrice,
+      colors: req.body.colors || [],
+      releaseDate: req.body.releaseDate,
+      description: req.body.description,
+      defaultImage: req.body.defaultImage,
+      images: req.body.images || [],
+      views: req.body.views || 0,
+      pros: req.body.pros,
+      cons: req.body.cons,
+      faqs: req.body.faqs,
+      Info: {
+        make: req.body.make,
+        model: req.body.model,
+        variant: req.body.variant
+      }
+    };
+
     if (type === 'car') {
-      newVehicle = new Car(req.body);  // Create a new Car instance
-    } else if (type === 'bike') {
-      newVehicle = new Bike(req.body);  // Create a new Bike instance
-    } else if (type === 'truck') {
-      newVehicle = new Truck(req.body);  // Create a new Truck instance
-    } else {
-      return response.badRequest(res, 'Invalid vehicle type provided');  // Return error for invalid type
+      // Extract car-specific data
+      const carData = {
+        ...baseVehicleData,
+        ...req.body.carSpecs,
+        brochureLink: req.body.brochureLink
+      };
+
+      // Create new Car instance
+      newVehicle = new Car(carData);
+    } 
+    else if (type === 'bike') {
+      // Extract bike-specific data
+      const bikeData = {
+        ...baseVehicleData,
+        ...req.body.bikeSpecs,
+        brochureLink: req.body.brochureLink
+      };
+
+      // Create new Bike instance
+      newVehicle = new Bike(bikeData);
+    } 
+    else if (type === 'truck') {
+      // Extract truck-specific data
+      const truckData = {
+        ...baseVehicleData,
+        ...req.body.truckSpecs,
+        brochureLink: req.body.brochureLink
+      };
+
+      // Create new Truck instance
+      newVehicle = new Truck(truckData);
+    } 
+    else {
+      return response.badRequest(res, 'Invalid vehicle type provided');
     }
 
-    await newVehicle.save();
+    // Validate the document before saving
+    const validationError = newVehicle.validateSync();
+    if (validationError) {
+      console.error('Validation error:', validationError);
+      return response.badRequest(res, 'Validation failed', validationError);
+    }
 
+    // Save the vehicle
+    await newVehicle.save();
+    
+    // Send success response
     response.ok(res, 'New Vehicle Created Successfully', newVehicle);
+
   } catch (error) {
     console.error('Error creating vehicle:', error);
-    return response.serverError(res, 'Error creating vehicle', error);  // Send error response
+    return response.serverError(res, 'Error creating vehicle', error);
   }
 });
-
 // Get a list of vehicles with optional filters
 const getListNewVehicles = asyncHandler(async (req, res) => {
   try {
-    const { type, make, model, year, minPrice, maxPrice, page = 1, limit = 10 } = req.query;
+    const { type, make, model, year, minPrice, maxPrice, page = 1, limit = 10, search } = req.query;
 
     // Define filters
     const filters = {};
@@ -43,6 +105,15 @@ const getListNewVehicles = asyncHandler(async (req, res) => {
       filters.minPrice = { $gte: minPrice };
       filters.maxPrice = { $lte: maxPrice };
     }
+
+    if (search) {
+      filters.$or = [
+        { make: { $regex: new RegExp(search, 'i') } },
+        { model: { $regex: new RegExp(search, 'i') } },
+        { variant: { $regex: new RegExp(search, 'i') } }
+      ];
+    }
+
 
     // Pagination options
     const options = {
@@ -69,45 +140,70 @@ const getPopularVehiclesByReviews = asyncHandler(async (req, res) => {
   try {
     const { type, make, model, year, minPrice, maxPrice } = req.query;
 
-    // Define filters
-    const matchFilters = {};
-    if (type) matchFilters.type = type;
-    if (make) matchFilters.make = { $regex: new RegExp(make, 'i') };  // Case-insensitive search
-    if (model) matchFilters.model = { $regex: new RegExp(model, 'i') };
-    if (year) matchFilters.year = year;
+    // Build filter object
+    const filter = {};
+    if (type) filter.type = type;
+    if (make) filter.make = { $regex: new RegExp(make, 'i') };
+    if (model) filter.model = { $regex: new RegExp(model, 'i') };
+    if (year) filter.year = year;
     if (minPrice && maxPrice) {
-      matchFilters.price = { $gte: Number(minPrice), $lte: Number(maxPrice) };
+      filter.minPrice = { $gte: Number(minPrice) };
+      filter.maxPrice = { $lte: Number(maxPrice) };
     }
 
-    const vehicles = await NewVehicle.aggregate([
-      { $match: matchFilters },
-      {
-        $addFields: { // Add a field to count the number of review IDs
-          reviewCount: { $size: { $ifNull: ["$reviewsIds", []] } }
-        }
-      },
-      { $sort: { reviewCount: -1 } },  // Sort by review count in descending order
-      { $limit: 8 },  // Limit to 8 vehicles
-      {
-        $lookup: { // Optionally join with another collection if needed
-          from: 'reviews',  // Assuming 'reviews' is your reviews collection
-          localField: 'reviewsIds',
-          foreignField: '_id',
-          as: 'reviewDetails'
-        }
-      },
-      {
-        $project: { // Define what fields to include in the final output
-          type: 1,
-          make: 1,
-          model: 1,
-          year: 1,
-          price: 1,
-          reviewCount: 1,
-          reviewDetails: 1 // Include review details if necessary
-        }
+    // Get vehicles
+    const vehicles = await NewVehicle.find(filter)
+      .limit(8)
+      .lean();
+
+    // Get reviews for these vehicles
+    const vehicleIds = vehicles.map(v => v._id);
+    const reviews = await Review.find({ vehicleId: { $in: vehicleIds } })
+      .select('vehicleId overAllRating')
+      .lean();
+
+    console.log("reviews", reviews);
+
+    // Calculate average ratings and add review counts
+    const vehiclesWithRatings = vehicles.map(vehicle => {
+      const vehicleReviews = reviews.filter(review => 
+        review.vehicleId.toString() === vehicle._id.toString()
+      );
+      
+      const reviewCount = vehicleReviews.length;
+      let averageRating = 0;
+
+      if (reviewCount > 0) {
+        const totalRating = vehicleReviews.reduce((sum, review) => {
+          return sum + Number(review.overAllRating);
+        }, 0);
+        averageRating = Number((totalRating / reviewCount).toFixed(1));
       }
-    ]);
+
+      return {
+        _id: vehicle._id,
+        make: vehicle.make,
+        model: vehicle.model,
+        variant: vehicle.variant,
+        type: vehicle.type,
+        year: vehicle.year,
+        minPrice: vehicle.minPrice,
+        maxPrice: vehicle.maxPrice,
+        defaultImage: vehicle.defaultImage,
+        views: vehicle.views,
+        slug: vehicle.slug,
+        reviewCount,
+        averageRating
+      };
+    });
+
+    // Sort by review count and then by average rating
+    vehiclesWithRatings.sort((a, b) => {
+      if (b.reviewCount !== a.reviewCount) {
+        return b.reviewCount - a.reviewCount;
+      }
+      return b.averageRating - a.averageRating;
+    });
 
     // Send success response
     response.ok(res, 'Vehicles retrieved successfully', vehicles);
@@ -293,7 +389,7 @@ const getPopularNewVehicles = asyncHandler(async (req, res) => {
         $lookup: {
           from: 'reviews',  // Join with the reviews collection
           localField: '_id',  // Vehicle ID in NewVehicle collection
-          foreignField: 'vehicle',  // Match with vehicle reference in Review collection
+          foreignField: 'vehicleId',  // Changed from 'vehicle' to 'vehicleId'
           as: 'reviews'  // Store the reviews data
         }
       },
@@ -301,14 +397,32 @@ const getPopularNewVehicles = asyncHandler(async (req, res) => {
         $addFields: {
           averageRating: {
             $cond: {
-              if: { $gt: [{ $size: '$reviews' }, 0] },  // Check if there are any reviews
+              if: { $gt: [{ $size: '$reviews' }, 0] },
               then: {
-                $round: [{ $avg: '$reviews.overAllRating' }, 4]  // Calculate the average rating and round to 4 decimal places
+                $round: [
+                  {
+                    $avg: {
+                      $map: {
+                        input: '$reviews',
+                        as: 'review',
+                        in: { 
+                          $convert: {
+                            input: '$$review.overAllRating',
+                            to: 'double',
+                            onError: 0,
+                            onNull: 0
+                          }
+                        }
+                      }
+                    }
+                  },
+                  1  // Round to 1 decimal place
+                ]
               },
-              else: null  // If no reviews, return null
+              else: 0  // Return 0 instead of null when no reviews
             }
           },
-          reviewCount: { $size: '$reviews' }  // Count the number of reviews
+          reviewCount: { $size: '$reviews' }
         }
       },
       {
@@ -324,8 +438,8 @@ const getPopularNewVehicles = asyncHandler(async (req, res) => {
           maxPrice: 1,
           year: 1,
           defaultImage: 1,
-          averageRating: 1,  // Include average rating
-          reviewCount: 1,    // Include review count
+          averageRating: 1,
+          reviewCount: 1,
         }
       }
     ]);
@@ -919,6 +1033,13 @@ const getListVehicles = asyncHandler(async (req, res) => {
   return response.ok(res, 'Vehicles retrieved successfully', vehiclesResponse);
 });
 
+// get vehicle by id
+const getVehicleById = asyncHandler(async (req, res) => {
+  console.log("id>>>>>>>>>>>>", req.query)
+  const { id } = req.query;
+  const vehicle = await NewVehicle.findById(id);
+  return response.ok(res, 'Vehicle retrieved successfully', vehicle);
+});
 
 
 export {
@@ -934,5 +1055,7 @@ export {
   getPopularVehiclesByReviews,
   getNewlyLaunchedVehicles,
   getTopComparisonVehicles,
-  getListVehicles
+  getListVehicles,
+  getVehicleById,
+  
 };

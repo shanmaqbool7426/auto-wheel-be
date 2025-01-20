@@ -1,192 +1,534 @@
-// controllers/comparisonController.js
+import asyncHandler from 'express-async-handler';
+
 import Comparison from './model.js';
-import {NewVehicle} from '../NewVehicle/model.js';
+import mongoose from 'mongoose';
+import { v4 as uuidv4 } from 'uuid';
+import response from '../Utils/response.js';
+import { NewVehicle } from '../NewVehicle/model.js';
+import Review from '../Review/model.js';
 
-// Function to add a new comparison or return existing one
-// export const addComparison = async (req, res) => {
-//   const { vehicleIds } = req.body;
-
-//   if (!vehicleIds || vehicleIds.length < 2 || vehicleIds.length > 3) {
-//     return res.status(400).json({ error: "You must select between 2 and 3 vehicles to compare." });
-//   }
-
-//   try {
-//     // Check if the combination of vehicle IDs already exists
-//     const existingComparison = await Comparison.findOne({
-//       vehicles: { $size: vehicleIds.length, $all: vehicleIds }
-//     }).populate({
-//       path: 'vehicles',
-//       model: 'NewVehicle',
-//       populate: [
-//         { path: 'Car', model: 'Car' },
-//         { path: 'Bike', model: 'Bike' },
-//         { path: 'Truck', model: 'Truck' }
-//       ]
-//     });
-
-//     if (existingComparison) {
-//       // If comparison already exists, return it
-//       return res.status(200).json({
-//         message: "Comparison already exists",
-//         comparison: existingComparison
-//       });
-//     }
-
-//     // If not found, create a new comparison
-//     const newComparison = new Comparison({
-//       vehicles: vehicleIds
-//     });
-
-//     await newComparison.save();
-
-//     // Populate the vehicle details before returning
-//     const populatedComparison = await Comparison.findById(newComparison._id).populate({
-//       path: 'vehicles',
-//       model: 'NewVehicle',
-//       populate: [
-//         { path: 'Car', model: 'Car' },
-//         { path: 'Bike', model: 'Bike' },
-//         { path: 'Truck', model: 'Truck' }
-//       ]
-//     });
-
-//     res.status(201).json({
-//       message: "New comparison created successfully",
-//       comparison: populatedComparison
-//     });
-//   } catch (error) {
-//     res.status(500).json({ error: error.message });
-//   }
-// };
-
-// controllers/comparisonController.js
-
-export const addComparison = async (req, res) => {
-  const { vehicle1, vehicle2, vehicle3 } = req.body;
-
-  // Check that at least two vehicles are provided
-  if (!vehicle1 || !vehicle2 || (vehicle1 && !vehicle2 && vehicle3)) {
-    return res.status(400).json({ error: "You must select at least two vehicles to compare." });
-  }
-
+// Create a comparison set
+export const createCompareSet = asyncHandler(async (req, res) => {
   try {
-    // Function to find or return a random vehicle
-    const findOrRandomVehicle = async (vehicle) => {
-      if (vehicle) {
-        const existingVehicle = await NewVehicle.findOne({
-          make: vehicle.make,
-          model: vehicle.model,
-          variant: vehicle.variant
-        });
+    const { vehicles, type } = req.body;
 
-        // If vehicle exists, return its ID
-        if (existingVehicle) {
-          return existingVehicle._id;
+    if (!vehicles || !Array.isArray(vehicles) || vehicles.length < 2) {
+      return response.badRequest(res, 'At least two vehicles are required');
+    }
+
+    if (!type || !['car', 'bike', 'truck'].includes(type)) {
+      return response.badRequest(res, 'Valid vehicle type is required');
+    }
+
+    // Parse vehicle strings into make, model, variant
+    const parsedVehicles = vehicles.map(vehicleStr => {
+      const parts = vehicleStr.split(' ');
+      return {
+        make: parts[0],
+        model: parts[1],
+        variant: parts.slice(2).join(' ') || undefined
+      };
+    });
+
+    // Find vehicle IDs based on Info field
+    const vehicleIds = await Promise.all(
+      parsedVehicles.map(async (vehicle) => {
+        console.log("vehicle",vehicle)      
+        const query = {
+          type: type,
+          'Info.make': { $regex: new RegExp(`^${vehicle.make}$`, 'i') },
+          'Info.model': { $regex: new RegExp(`^${vehicle.model}$`, 'i') },
+        };
+
+        if (vehicle.variant) {
+          query['Info.variant'] = { $regex: new RegExp(`^${vehicle.variant}$`, 'i') };
+        }
+console.log("query",query)
+        const foundVehicle = await NewVehicle.findOne(query);
+        
+        if (!foundVehicle) {
+          throw new Error(`Vehicle not found: ${vehicle.make} ${vehicle.model} ${vehicle.variant || ''}`);
+        }
+        
+        return foundVehicle._id;
+      })
+    );
+    
+    console.log("query idssss",vehicleIds)
+    // Create a unique comparison set ID
+    const compareSetId = uuidv4();
+
+    // Create the comparison set
+    const compareSet = await Comparison.create({
+      vehicles: vehicleIds,
+      type,
+      compareSetId
+    });
+
+    // // Get full vehicle details for response
+    // const populatedVehicles = await NewVehicle.aggregate([
+    //   { $match: { _id: { $in: vehicleIds } } },
+    //   {
+    //     $lookup: {
+    //       from: 'reviews',
+    //       localField: '_id',
+    //       foreignField: 'vehicle',
+    //       as: 'reviews'
+    //     }
+    //   },
+    //   {
+    //     $addFields: {
+    //       averageRating: {
+    //         $cond: {
+    //           if: { $gt: [{ $size: '$reviews' }, 0] },
+    //           then: { $round: [{ $avg: '$reviews.overAllRating' }, 1] },
+    //           else: null
+    //         }
+    //       },
+    //       reviewCount: { $size: '$reviews' }
+    //     }
+    //   },
+    //   {
+    //     $project: {
+    //       _id: 1,
+    //       Info: 1,  // Include Info field
+    //       type: 1,
+    //       year: 1,
+    //       minPrice: 1,
+    //       maxPrice: 1,
+    //       defaultImage: 1,
+    //       averageRating: 1,
+    //       reviewCount: 1
+    //     }
+    //   }
+    // ]);
+
+    response.created(res, 'Comparison set created successfully', {
+      compareSetId: compareSet.compareSetId,
+    });
+
+  } catch (error) {
+    console.error('Error creating comparison set:', error);
+    return response.serverError(res, error.message || 'Error creating comparison set');
+  }
+});
+// Get comparison set by ID
+export const getCompareSet = asyncHandler(async (req, res) => {
+  try {
+    const { compareSetId } = req.params;
+
+    const compareSet = await Comparison.findOne({ compareSetId });
+
+    if (!compareSet) {
+      return response.notFound(res, 'Comparison set not found');
+    }
+
+    // Get detailed vehicle information with reviews
+    const vehicles = await NewVehicle.aggregate([
+      {
+        $match: {
+          _id: { $in: compareSet.vehicles }
+        }
+      },
+      {
+        $lookup: {
+          from: 'reviews',
+          localField: '_id',
+          foreignField: 'vehicleId',
+          as: 'reviews',
+          pipeline: [
+            {
+              $project: {
+                _id: 1,
+                ratings: 1,
+                title: 1,
+                comment: 1,
+                overAllRating: 1,
+                reviewBy: 1,
+                createdAt: 1
+              }
+            },
+            { $sort: { createdAt: -1 } }
+          ]
+        }
+      },
+      {
+        $addFields: {
+          averageRatings: {
+            mileage: { $avg: '$reviews.ratings.mileage' },
+            maintenance: { $avg: '$reviews.ratings.maintenance' },
+            safety: { $avg: '$reviews.ratings.safety' },
+            comfort: { $avg: '$reviews.ratings.comfort' },
+            features: { $avg: '$reviews.ratings.features' },
+            performance: { $avg: '$reviews.ratings.performance' }
+          },
+          overallAverageRating: {
+            $cond: {
+              if: { $gt: [{ $size: '$reviews' }, 0] },
+              then: { $round: [{ $avg: '$reviews.overAllRating' }, 1] },
+              else: null
+            }
+          },
+          reviewCount: { $size: '$reviews' }
+        }
+      },
+      {
+        $project: {
+          _id: 1,
+          make: 1,
+          model: 1,
+          variant: 1,
+          type: 1,
+          year: 1,
+          minPrice: 1,
+          maxPrice: 1,
+          defaultImage: 1,
+          reviews: 1,
+          averageRatings: 1,
+          overallAverageRating: 1,
+          reviewCount: 1,
+          Info: 1,
+          bodyType: 1,
+          colors: 1,
+          description: 1,
+          pros: 1,
+          cons: 1
         }
       }
+    ]);
 
-      // If vehicle doesn't exist or not provided, return a random vehicle ID
-      const randomVehicle = await NewVehicle.aggregate([{ $sample: { size: 1 } }]);
-      return randomVehicle[0]._id;
+    const comparisonData = {
+      compareSetId: compareSet.compareSetId,
+      type: compareSet.type,
+      vehicles,
+      createdAt: compareSet.createdAt
     };
 
-    // Check each vehicle
-    const vehicleIds = [];
-    vehicleIds.push(await findOrRandomVehicle(vehicle1));
-    vehicleIds.push(await findOrRandomVehicle(vehicle2));
+    response.ok(res, 'Comparison set retrieved successfully', comparisonData);
 
-    if (vehicle3) {
-      vehicleIds.push(await findOrRandomVehicle(vehicle3));
+  } catch (error) {
+    console.error('Error retrieving comparison set:', error);
+    return response.serverError(res, 'Error retrieving comparison set');
+  }
+});
+
+// Delete comparison set
+export const deleteCompareSet = asyncHandler(async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    const result = await Comparison.findOneAndDelete({ _id: id });
+
+    if (!result) {
+      return response.notFound(res, 'Comparison set not found');
     }
 
-    // Check if the combination of vehicle IDs already exists
-    const existingComparison = await Comparison.findOne({
-      vehicles: { $size: vehicleIds.length, $all: vehicleIds }
-    }).populate({
-      path: 'vehicles',
-      model: 'NewVehicle',
-      populate: [
-        { path: 'Car', model: 'Car' },
-        { path: 'Bike', model: 'Bike' },
-        { path: 'Truck', model: 'Truck' }
-      ]
+    response.ok(res, 'Comparison set deleted successfully');
+
+  } catch (error) {
+    console.error('Error deleting comparison set:', error);
+    return response.serverError(res, 'Error deleting comparison set');
+  }
+});
+
+
+// ... existing imports and code ...
+
+// Get top comparisons (most viewed/recent)
+export const getTopComparisons = asyncHandler(async (req, res) => {
+  try {
+    const limit = parseInt(req.query.limit) || 6; // Default to 6 items
+
+    // Get the most recent comparisons
+    const comparisons = await Comparison.find()
+      .sort({ createdAt: -1 })
+      .limit(limit)
+      .lean();
+
+    // Get all vehicle IDs from all comparisons
+    const vehicleIds = comparisons.reduce((ids, comp) => {
+      return [...ids, ...comp.vehicles];
+    }, []);
+
+    // Get all vehicles
+    const vehicles = await NewVehicle.find({ 
+      _id: { $in: vehicleIds } 
+    }).lean();
+
+    // Get all reviews for these vehicles
+    const reviews = await Review.find({ 
+      vehicleId: { $in: vehicleIds } 
+    }).lean();
+
+    // Process vehicles to add review data
+    const vehiclesWithReviews = vehicles.map(vehicle => {
+      const vehicleReviews = reviews.filter(r => 
+        r.vehicleId.toString() === vehicle._id.toString()
+      );
+
+      const reviewCount = vehicleReviews.length;
+      let averageRating = null;
+
+      if (reviewCount > 0) {
+        const totalRating = vehicleReviews.reduce((sum, review) => {
+          return sum + Number(review.overAllRating);
+        }, 0);
+        averageRating = Number((totalRating / reviewCount).toFixed(1));
+      }
+
+      return {
+        _id: vehicle._id,
+        make: vehicle.make,
+        model: vehicle.model,
+        variant: vehicle.variant,
+        type: vehicle.type,
+        year: vehicle.year,
+        minPrice: vehicle.minPrice,
+        maxPrice: vehicle.maxPrice,
+        defaultImage: vehicle.defaultImage,
+        views: vehicle.views || 0,
+        slug: vehicle.slug,
+        averageRating,
+        reviewCount
+      };
     });
 
-    if (existingComparison) {
-      // If comparison already exists, return it
-      return res.status(200).json({
-        message: "Comparison already exists",
-        comparison: existingComparison
-      });
+    // Create vehicle pairs from comparisons
+    const vehiclePairs = comparisons.map(comparison => {
+      const vehicleArray = comparison.vehicles.map(vehicleId => 
+        vehiclesWithReviews.find(v => v._id.toString() === vehicleId.toString())
+      ).filter(Boolean);
+
+      return {
+        vehicle1: vehicleArray[0] || null,
+        vehicle2: vehicleArray[1] || null
+      };
+    }).filter(pair => pair.vehicle1 && pair.vehicle2);
+
+    response.ok(res, 'Vehicle pairs for comparison retrieved successfully', vehiclePairs);
+  } catch (error) {
+    console.error('Error retrieving top comparisons:', error);
+    return response.serverError(res, 'Error retrieving top comparisons');
+  }
+});
+
+// Get list of all comparisons with pagination
+export const getComparisonsList = asyncHandler(async (req, res) => {
+  try {
+    console.log('aaaaaaaaaaaaa')
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 10;
+    const skip = (page - 1) * limit;
+    const type = req.query.type;
+
+    // Build query conditions
+    const conditions = {};
+    if (type) {
+      conditions.type = type;
     }
 
-    // If not found, create a new comparison
-    const newComparison = new Comparison({
-      vehicles: vehicleIds
-    });
+    // Get total count for pagination
+    const total = await Comparison.countDocuments(conditions);
 
-    await newComparison.save();
+    // Get comparison sets with pagination
+    const comparisons = await Comparison.aggregate([
+      {
+        $match: conditions
+      },
+      {
+        $sort: { createdAt: -1 }
+      },
+      {
+        $skip: skip
+      },
+      {
+        $limit: limit
+      },
+      {
+        $lookup: {
+          from: 'newvehicles',
+          localField: 'vehicles',
+          foreignField: '_id',
+          as: 'vehicles'
+        }
+      },
+      {
+        $lookup: {
+          from: 'reviews',
+          let: { vehicleIds: '$vehicles._id' },
+          pipeline: [
+            {
+              $match: {
+                $expr: { $in: ['$vehicleId', '$$vehicleIds'] }
+              }
+            }
+          ],
+          as: 'allReviews'
+        }
+      },
+      {
+        $addFields: {
+          vehicles: {
+            $map: {
+              input: '$vehicles',
+              as: 'vehicle',
+              in: {
+                $mergeObjects: [
+                  '$$vehicle',
+                  {
+                    averageRating: {
+                      $cond: {
+                        if: {
+                          $gt: [
+                            {
+                              $size: {
+                                $filter: {
+                                  input: '$allReviews',
+                                  as: 'review',
+                                  cond: { $eq: ['$$review.vehicleId', '$$vehicle._id'] }
+                                }
+                              }
+                            },
+                            0
+                          ]
+                        },
+                        then: {
+                          $round: [
+                            {
+                              $avg: {
+                                $map: {
+                                  input: {
+                                    $filter: {
+                                      input: '$allReviews',
+                                      as: 'review',
+                                      cond: { $eq: ['$$review.vehicleId', '$$vehicle._id'] }
+                                    }
+                                  },
+                                  as: 'review',
+                                  in: {
+                                    $convert: {
+                                      input: '$$review.overAllRating',
+                                      to: 'double',
+                                      onError: 0,
+                                      onNull: 0
+                                    }
+                                  }
+                                }
+                              }
+                            },
+                            1
+                          ]
+                        },
+                        else: 0
+                      }
+                    },
+                    reviewCount: {
+                      $size: {
+                        $filter: {
+                          input: '$allReviews',
+                          as: 'review',
+                          cond: { $eq: ['$$review.vehicleId', '$$vehicle._id'] }
+                        }
+                      }
+                    }
+                  }
+                ]
+              }
+            }
+          }
+        }
+      },
+      {
+        $project: {
+          compareSetId: 1,
+          type: 1,
+          vehicles: {
+            _id: 1,
+            make: 1,
+            model: 1,
+            variant: 1,
+            year: 1,
+            defaultImage: 1,
+            averageRating: 1,
+            reviewCount: 1
+          },
+          createdAt: 1
+        }
+      }
+    ]);
 
-    // Populate the vehicle details before returning
-    const populatedComparison = await Comparison.findById(newComparison._id).populate({
-      path: 'vehicles',
-      model: 'NewVehicle',
-      populate: [
-        { path: 'Car', model: 'Car' },
-        { path: 'Bike', model: 'Bike' },
-        { path: 'Truck', model: 'Truck' }
-      ]
-    });
-
-    res.status(201).json({
-      message: "New comparison created successfully",
-      comparison: populatedComparison
+    response.ok(res, 'Comparisons list retrieved successfully', {
+      comparisons,
+      pagination: {
+        total,
+        page,
+        pages: Math.ceil(total / limit),
+        limit
+      }
     });
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    console.error('Error retrieving comparisons list:', error);
+    return response.serverError(res, 'Error retrieving comparisons list');
   }
-};
+});
 
 
-
-// Function to get all comparisons
-export const getAllComparisons = async (req, res) => {
-    try {
-      const comparisons = await Comparison.find().populate({
-        path: 'vehicles',
-        model: 'NewVehicle',
-        populate: [
-          { path: 'Car', model: 'Car' },
-          { path: 'Bike', model: 'Bike' },
-          { path: 'Truck', model: 'Truck' }
-        ]
-      });
-      res.json(comparisons);
-    } catch (error) {
-      res.status(500).json({ error: error.message });
+// Get all comparison sets with populated vehicle data
+export const getComparisonSets = asyncHandler(async (req, res) => {
+  try {
+    console.log('aaaaaaaaaaaaaaaaaaaaaaaccccccccgggg..mmmmmbb')
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 10;
+    const type = req.query.type;
+    
+    const skip = (page - 1) * limit;
+    
+    // Build query conditions
+    const conditions = {};
+    if (type) {
+      conditions.type = type;
     }
-  };
-  
 
-// Function to get a single comparison by ID
-export const getComparisonById = async (req, res) => {
-    try {
-      const comparison = await Comparison.findById(req.params.id).populate({
+    // Get total count for pagination
+    const total = await Comparison.countDocuments(conditions);
+
+    // Get comparison sets with populated vehicle data
+    const comparisons = await Comparison.find(conditions)
+      .populate({
         path: 'vehicles',
-        model: 'NewVehicle',
-        populate: [
-          { path: 'Car', model: 'Car' },
-          { path: 'Bike', model: 'Bike' },
-          { path: 'Truck', model: 'Truck' }
-        ]
-      });
-  
-      if (!comparison) {
-        return res.status(404).json({ error: "Comparison not found" });
+        select: 'make model variant year type minPrice maxPrice defaultImage'
+      })
+      .sort({ createdAt: -1 })
+      .skip(skip)
+      .limit(limit);
+
+    response.ok(res, 'Comparison sets retrieved successfully', {
+      comparisons,
+      pagination: {
+        total,
+        page,
+        pages: Math.ceil(total / limit),
+        limit
       }
-      res.json(comparison);
-    } catch (error) {
-      res.status(500).json({ error: error.message });
-    }
-  };
-  
+    });
+
+  } catch (error) {
+    console.error('Error retrieving comparison sets:', error);
+    return response.serverError(res, 'Error retrieving comparison sets');
+  }
+});
+
+// Update a comparison set
+export const updateCompareSet = asyncHandler(async (req, res) => {
+  try {
+    const { data } = req.body;
+    const {id} = req.params
+    const result = await Comparison.findByIdAndUpdate(id, data, { new: true });
+    response.ok(res, 'Comparison set updated successfully', result);
+  } catch (error) {
+    console.error('Error updating comparison set:', error);
+    return response.serverError(res, 'Error updating comparison set');
+  }
+});
+
+// ... existing code ...

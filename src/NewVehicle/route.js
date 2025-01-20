@@ -13,7 +13,8 @@ import {
   getNewlyLaunchedVehicles,
   getTopComparisonVehicles,
   getComparison,
-  getListVehicles
+  getListVehicles,
+  getVehicleById
 } from "./controller.js";  // Import new vehicle controller
 
 const router = express.Router();
@@ -22,6 +23,7 @@ const router = express.Router();
 
 // Create a new vehicle
 router.post('/', createNewVehicle);
+router.get('/get-vehicle-by-id', getVehicleById);
 
 // List all new vehicles with filters
 router.get('/', getListNewVehicles);
@@ -61,7 +63,6 @@ router.delete('/:id', deleteNewVehicle);
 
 // Get details of a new vehicle by slug
 router.get('/:slug', getNewVehicleBySlug);
-
 
 
 // -------------------- Additional Image Uploader (Optional) --------------------

@@ -8,11 +8,13 @@ const sendMessage = asyncHandler(async (req, res) => {
   const { receiverId, content } = req.body;
   const senderId = req.user._id;
 
+  
   const receiver = await User.findById(receiverId);
   if (!receiver) {
     return responses.notFound(res, 'Receiver not found');
   }
 
+  
   const message = await ChatMessage.create({
     sender: senderId,
     receiver: receiverId,

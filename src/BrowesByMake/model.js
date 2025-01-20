@@ -1,18 +1,21 @@
 import mongoose from 'mongoose';
 
 const variantSchema = new mongoose.Schema({
-  name: { type: String, required: true }
+  name: { type: String, required: true },
 });
 
 const modelSchema = new mongoose.Schema({
   name: { type: String, required: true },
+  _id: { type: mongoose.Schema.Types.ObjectId, auto: true }, // Add ID for models
   variants: []
 });
+
 
 const BrowesByMakeSchema = new mongoose.Schema(
   {
     companyImage: { type: String },
     name: { type: String, required: true },
+    slug: { type: String },
     type: {
       type: String,
      

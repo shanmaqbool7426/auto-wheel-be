@@ -1,27 +1,27 @@
 import mongoose from 'mongoose';
 
-const comparisonSchema = new mongoose.Schema({
-  vehicles: [
-    {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: 'NewVehicle',
-      required: true
-    }
-  ],
-  comparisonCount: {
-    type: Number,
-    default: 0
+const compareSetSchema = new mongoose.Schema({
+  vehicles: [{
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'NewVehicle',
+    required: true
+  }],
+  type: {
+    type: String,
+    enum: ['car', 'bike', 'truck'],
+    required: true
   },
-  isFeatured: {
-    type: Boolean,
-    default: false
+  compareSetId: {
+    type: String,
+    unique: true,
+    required: true
   },
   createdAt: {
     type: Date,
-    default: Date.now
+    default: Date.now,
+    expires: 7 * 24 * 60 * 60 // Documents will be automatically deleted after 7 days
   }
-}, { timestamps: true });
+});
 
-const Comparison = mongoose.model('Comparison', comparisonSchema);
-
-export default Comparison;
+const CompareSet = mongoose.model('Comparison', compareSetSchema);
+export default CompareSet;

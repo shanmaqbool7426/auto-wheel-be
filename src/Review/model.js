@@ -22,7 +22,12 @@ const reviewSchema = new mongoose.Schema({
   title: { type: String },
   reviewBy: { type: String },
   comment: { type: String },
-  overAllRating: { type: String },
+  overAllRating: {
+    type: Number,
+    required: true,
+    set: v => parseFloat(v).toFixed(1),
+    get: v => parseFloat(v).toFixed(1)
+  },
   type: { type: String }
 }, { timestamps: true });
 

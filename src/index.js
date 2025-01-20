@@ -13,6 +13,8 @@ import browesByBodyRoutes from './BrowseByBody/route.js'
 import chatRoutes from './Chat/route.js'
 import vehicleRoutes from './Vehicle/route.js'
 import categoryRoutes from './Category/route.js'
+import bannerRoutes from './Banner/route.js';
+
 import commentRoutes from './Comment/route.js'
 import tagRoutes from './Tag/route.js'
 import blogRoutes from './Blog/route.js'
@@ -40,7 +42,7 @@ const app = express();
 const server = http.createServer(app);
 const io = new Server(server, {
   cors: {
-    origin: ["http://localhost:3000", "http://localhost:3001","https://037a-144-48-132-249.ngrok-free.app"], // Add your frontend URL
+    origin: ["http://localhost:3000","https://admin-auto-wheel.vercel.app", "http://localhost:3001","https://037a-144-48-132-249.ngrok-free.app"], // Add your frontend URL
     methods: ["GET", "POST"],
     credentials: true
   }
@@ -56,7 +58,7 @@ app.use(helmet());
 
 const corsOptions = {
   "/": {
-    origin: ["http://localhost:5000", "http://localhost:3000",'https://auto-wheel-be.vercel.app',"https://037a-144-48-132-249.ngrok-free.app"],
+    origin: ["http://localhost:5000","https://admin-auto-wheel.vercel.app", "http://localhost:3000",'https://auto-wheel-be.vercel.app',"https://037a-144-48-132-249.ngrok-free.app"],
     credentials: true,
   }
 }
@@ -84,9 +86,24 @@ app.use('/api/new-vehicles', newVehicleRoutes);
 app.use('/api/comparison', comparisonRoutes);
 app.use('/api/roles', roleRoutes);
 app.use('/api/chat', chatRoutes);
+app.use('/api/banners', bannerRoutes);
 app.use('/upload-image', upload.array('images', 10), async (req, res) => {
   try {
     const files = req.files; // This will contain all uploaded images
+    const urls = await Promise.all(files.map(async (file) => {
+      const result = await uploadOnCloudinary(file.path);
+      return result.secure_url; // Return only the secure_url
+    }));
+
+    return responses.created(res, 'Images received', urls); // Return the list of uploaded URLs
+  } catch (error)    {
+    return responses.badRequest(res, 'Image upload failed');
+  }
+});
+app.use('/api/upload-image', upload.array('images', 10), async (req, res) => {
+  try {
+    const files = req.files; // This will contain all uploaded images
+    console.log('files',files)
     const urls = await Promise.all(files.map(async (file) => {
       const result = await uploadOnCloudinary(file.path);
       return result.secure_url; // Return only the secure_url
