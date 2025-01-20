@@ -1,20 +1,36 @@
+// BrowesByMake/route.js
 import express from 'express';
-import multer from "multer"
 import {
   createMake,
   getAllMakes,
   getMakeById,
   updateMakeById,
-  deleteMakeById
-} from './controller.js'; 
+  deleteMakeById,
+  addModel,
+  addVariant,
+  updateModel,
+  updateVariant,
+  deleteModel,
+  deleteVariant
+} from './controller.js';
+import { upload } from "../Middleware/multer.js";
+
 const router = express.Router();
-import {upload} from "../Middleware/multer.js"
 
-
-router.post('/', upload.single("companyImage"),createMake);
+// Make routes
+router.post('/', upload.single("companyImage"), createMake);
 router.get('/', getAllMakes);
 router.get('/:id', getMakeById);
-router.put('/:id', updateMakeById);
+router.put('/:id',upload.single("companyImage"), updateMakeById);
 router.delete('/:id', deleteMakeById);
+// Model routes
+router.post('/:makeId/models', addModel);
+router.put('/:makeId/models/:modelId', updateModel);
+router.delete('/:makeId/models/:modelId', deleteModel);
+
+// Variant routes
+router.post('/:makeId/models/:modelId/variants', addVariant);
+router.put('/:makeId/models/:modelId/variants', updateVariant);
+router.delete('/:makeId/models/:modelId/variants/:variantId', deleteVariant);
 
 export default router;

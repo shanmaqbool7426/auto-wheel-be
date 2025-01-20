@@ -901,6 +901,38 @@ const getStatusCounts = asyncHandler(async (req, res) => {
   }
 });
 
+// Get top performing posts based on view count
+const getTopPerformingPosts = asyncHandler(async (req, res) => {
+  const { limit = 6 } = req.query;
+
+  const topPosts = await Blog.find({ 
+    visibility: 'Public',
+    isDeleted: false 
+  })
+    .sort({ viewCount: -1 })
+    .limit(parseInt(limit))
+    .select('title imageUrl type publishDate viewCount')
+    .lean();
+
+  responses.ok(res, 'Top performing posts fetched successfully', topPosts);
+});
+
+// Get latest posts
+const getLatestPosts = asyncHandler(async (req, res) => {
+  const { limit = 6 } = req.query;
+
+  const latestPosts = await Blog.find({ 
+    visibility: 'Public',
+    isDeleted: false 
+  })
+    .sort({ createdAt: -1 })
+    .limit(parseInt(limit))
+    .select('title imageUrl type publishDate author viewCount')
+    .lean();
+
+  responses.ok(res, 'Latest posts fetched successfully', latestPosts);
+});
+
 export {
   createBlog,
   getBlogs,
@@ -912,5 +944,7 @@ export {
   searchBlogs,
   duplicateBlog,
   duplicateBlogs,
-  getStatusCounts
+  getStatusCounts,
+  getTopPerformingPosts,
+  getLatestPosts
 };

@@ -11,9 +11,14 @@ const locationSchema = new mongoose.Schema({
     enum: ['country', 'province', 'city', 'suburb'],
     required: true
   },
-  parent: {
+  parentId: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Location',
+    default: null
+  },
+  parentType: {
+    type: String,
+    enum: ['country', 'province', 'city', 'suburb'],
     default: null
   },
   slug: {
@@ -23,25 +28,11 @@ const locationSchema = new mongoose.Schema({
   isActive: {
     type: Boolean,
     default: true
-  },
-  vehicleCount: {
-    type: Number,
-    default: 0
   }
 }, { 
-  timestamps: true,
-  toJSON: { virtuals: true },
-  toObject: { virtuals: true }
+  timestamps: true 
 });
 
-// Virtual for child locations
-locationSchema.virtual('children', {
-  ref: 'Location',
-  localField: '_id',
-  foreignField: 'parent'
-});
-
-// Pre-save middleware to generate slug
 locationSchema.pre('save', function(next) {
   if (this.isModified('name')) {
     this.slug = this.name.toLowerCase().replace(/[^a-z0-9]+/g, '-');
