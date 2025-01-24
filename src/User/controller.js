@@ -5,6 +5,7 @@ import User from "./model.js"
 import responses from "../Utils/response.js";
 import generateToken from '../Utils/generateToken.js';
 import sendVerificationEmail from '../Utils/sendEmail.js';
+import { verifyGoogleToken, verifyFacebookToken } from '../Utils/socialAuthVerify.js';
 
 // const { sendVerificationEmail } = require('../utils/sendEmail');
 import { registerValidation, loginValidation } from '../Validations/authValidation.js';
@@ -63,6 +64,107 @@ const login = asyncHandler(async (req, res) => {
   }
 });
 
+const socialLogin = asyncHandler(async (req, res) => {
+  const { provider, accessToken, email } = req.body;
+
+  try {
+    let verifiedData;
+
+    // Verify token based on provider
+    switch (provider) {
+      case 'google':
+        verifiedData = await verifyGoogleToken(accessToken);
+        break;
+      case 'facebook':
+        verifiedData = await verifyFacebookToken(accessToken);
+        break;
+      default:
+        return responses.badRequest(res, 'Invalid provider');
+    }
+
+    // Verify email matches
+    if (email !== verifiedData.email) {
+      return responses.unauthorized(res, 'Invalid credentials');
+    }
+
+    // Check if user exists
+    let user = await User.findOne({ email: verifiedData.email });
+    
+    if (user) {
+      // Update existing user
+      if (!user.loginType.includes(provider)) {
+        user.loginType.push(provider);
+      }
+
+      // Update profile image if not already set
+      if (verifiedData.picture && !user.profileImage) {
+        user.profileImage = verifiedData.picture;
+      }
+
+      // Update last login
+      user.lastLogin = new Date();
+      
+      await user.save();
+
+      // Generate JWT token
+      const token = generateToken(user._id);
+
+      return responses.ok(res, 'Login successful', {
+        user: {
+          _id: user._id,
+          firstName: user.firstName,
+          lastName: user.lastName,
+          email: user.email,
+          profileImage: user.profileImage,
+          loginType: user.loginType,
+          isVerified: user.isVerified,
+          createdAt: user.createdAt,
+          lastLogin: user.lastLogin
+        },
+        token
+      });
+    } else {
+      // Create new user
+      const names = verifiedData.name.split(' ');
+      const firstName = names[0];
+      const lastName = names.length > 1 ? names.slice(1).join(' ') : '';
+
+      // Create new user
+      const newUser = await User.create({
+        firstName,
+        lastName,
+        email: verifiedData.email,
+        profileImage: verifiedData.picture,
+        loginType: [provider],
+        isVerified: true, // Social login users are automatically verified
+        password: crypto.randomBytes(16).toString('hex'), // Random password for social users
+        lastLogin: new Date()
+      });
+
+      // Generate JWT token
+      const token = generateToken(newUser._id);
+
+      return responses.created(res, 'Account created successfully', {
+        user: {
+          _id: newUser._id,
+          firstName: newUser.firstName,
+          lastName: newUser.lastName,
+          email: newUser.email,
+          profileImage: newUser.profileImage,
+          loginType: newUser.loginType,
+          isVerified: newUser.isVerified,
+          createdAt: newUser.createdAt,
+          lastLogin: newUser.lastLogin
+        },
+        token
+      });
+    }
+
+  } catch (error) {
+    console.error('Social login error:', error);
+    return responses.unauthorized(res, error.message);
+  }
+});
 
 const updateUserProfile = asyncHandler(async (req, res) => {
   console.log('>>>>>> req.body',req.body)
@@ -423,7 +525,7 @@ const getDealers = asyncHandler(async (req, res) => {
   let query = { accountType: 'Dealer' };
 
   if (location) query.location = { $regex: location, $options: 'i' };
-  if (type) query.type = type.toLowerCase(); // Add type to the query if provided
+  if (type && type.toLowerCase() !== 'all') query.type = type.toLowerCase(); // Add type to the query if provided
 
   let sortOption = {};
   if (sort === 'rating') {
@@ -793,6 +895,7 @@ const getLatestUsers = asyncHandler(async (req, res) => {
 
 export {
   registerUser,
+  socialLogin,
   login,
   getProfile,
   updateUserProfile,
