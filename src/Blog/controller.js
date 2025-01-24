@@ -540,8 +540,8 @@ const updateBlog = asyncHandler(async (req, res) => {
   if (!blog) {
     return responses.notFound(res, 'Blog post not found');
   }
-  const categoryIds = categories ?JSON.parse(categories):[];
-  const tagIds = tags ? JSON.parse(tags):[];
+  const categoryIds = categories
+  const tagIds = tags
 
   blog.title = title || blog.title;
   blog.content = content || blog.content;

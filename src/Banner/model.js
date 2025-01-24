@@ -8,12 +8,10 @@ const bannerSchema = new mongoose.Schema({
   },
   description: {
     type: String,
-    required: [true, 'Banner description is required'],
     trim: true
   },
   link: {
     type: String,
-    required: [true, 'Banner link is required'],
     trim: true
   },
   image: {
