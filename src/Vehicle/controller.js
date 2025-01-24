@@ -286,8 +286,12 @@ const getVehicleBySlug = asyncHandler(async (req, res) => {
     const vehicleDetail = await Vehicle.findOneAndUpdate(
       { slug },
       { $inc: { views: 1 } },  // Increment the views count by 1
-      { new: true }            // Return the updated document
-    );
+      { new: true, timestamps: false }            // Return the updated document
+    ).populate({
+      path: 'seller',          // This should match the field name in Vehicle model
+      model: 'User',           // Explicitly specify the model to populate from
+      select: '-password -loginType -isVerified -isActive -createdAt -updatedAt' // Exclude sensitive fields
+    });;
 
     if (!vehicleDetail) {
       return response.notFound(res, 'Vehicle not found');
