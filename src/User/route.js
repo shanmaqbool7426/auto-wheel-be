@@ -30,7 +30,8 @@ import {
   getUsers,
   updateUserProfileByUserByEmail,
   changePasswordByUserId,
-  getLatestUsers
+  getLatestUsers,
+  socialLogin
 } from './controller.js';
 import { getFavoriteVehiclesByUserId, getVehiclesByUserId, toggleFavoriteVehicle } from '../Vehicle/controller.js';
 import { protect } from '../Middleware/auth.js';
@@ -41,6 +42,7 @@ const router = express.Router();
 
 
 router.post('/register', registerUser);
+router.post('/social-login', socialLogin);
 router.get('/get-dealers', getDealers);
 router.get('/get-users', getUsers);
 
