@@ -540,7 +540,7 @@ const deleteVehicle = asyncHandler(async (req, res) => {
 
     return response.ok(res, 'Vehicle deleted successfully',  vehicle);
   } catch (error) {
-    console.error('Error deleting vehicle:', error);
+    console.error('Error deleting vehiclewww:', error);
     return response.serverError(res, 'An error occurred while deleting the vehicle: ' + error.message);
   }
 });
