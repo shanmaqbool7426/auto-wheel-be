@@ -29,8 +29,37 @@ export const createBody = asyncHandler(async (req, res) => {
 
 export const getAllBodies = asyncHandler(async (req, res) => {
   const { type } = req.params;
-  const Bodies = await BrowesByBody.find({type});
-  return responses.ok(res, 'All Body entries retrieved successfully', Bodies);
+  const { page = 1, limit = 10, search } = req.query;
+
+  try {
+    // Build filter based on type and search
+    let filter = type === 'all' ? {} : { type };
+    
+    // Add search filter if search query exists
+    if (search) {
+      filter = {
+        ...filter,
+        title: { $regex: new RegExp(search, 'i') } // Case-insensitive search on title
+      };
+    }
+
+    // Calculate skip value for pagination
+    const skip = (parseInt(page) - 1) * parseInt(limit);
+
+    // Execute queries in parallel
+    const [totalCount, bodies] = await Promise.all([
+      BrowesByBody.countDocuments(filter),
+      BrowesByBody.find(filter)
+        .skip(skip)
+        .limit(parseInt(limit))
+        .sort({ createdAt: -1 })
+    ]);
+
+    return responses.ok(res, 'All Body entries retrieved successfully',bodies);
+  } catch (error) {
+    console.error('Error fetching bodies:', error);
+    return responses.serverError(res, 'Error retrieving body entries');
+  }
 });
 
 export const getBodyById = asyncHandler(async (req, res) => {
@@ -67,7 +96,7 @@ export const updateBody = asyncHandler(async (req, res) => {
     return responses.notFound(res, 'Body type not found');
   }
 
-  return responses.success(res, 'Body type updated successfully', body);
+  return responses.ok(res, 'Body type updated successfully', body);
 });
 
 export const deleteBodyById = asyncHandler(async (req, res) => {

@@ -19,7 +19,7 @@ const createNewVehicle = asyncHandler(async (req, res) => {
       bodyType: req.body.bodyType,
       minPrice: req.body.minPrice,
       maxPrice: req.body.maxPrice,
-      colors: req.body.colors || [],
+      colorsAvailable: req.body.colorsAvailable || [],
       releaseDate: req.body.releaseDate,
       description: req.body.description,
       defaultImage: req.body.defaultImage,
@@ -90,6 +90,81 @@ const createNewVehicle = asyncHandler(async (req, res) => {
     return response.serverError(res, 'Error creating vehicle', error);
   }
 });
+
+
+// Update a vehicle by ID
+const updateNewVehicle = asyncHandler(async (req, res) => {
+  const { id } = req.params;
+  const { type } = req.body; // Extract the type from request body
+
+  try {
+    let updatedVehicle;
+    const baseVehicleData = {
+      type: req.body.type,
+      make: req.body.make,
+      model: req.body.model,
+      variant: req.body.variant,
+      year: req.body.year,
+      bodyType: req.body.bodyType,
+      minPrice: req.body.minPrice,
+      maxPrice: req.body.maxPrice,
+      colorsAvailable: req.body.colorsAvailable || [],
+      releaseDate: req.body.releaseDate,
+      description: req.body.description,
+      defaultImage: req.body.defaultImage,
+      images: req.body.images || [],
+      views: req.body.views || 0,
+      pros: req.body.pros,
+      cons: req.body.cons,
+      faqs: req.body.faqs,
+      Info: {
+        make: req.body.make,
+        model: req.body.model,
+        variant: req.body.variant
+      }
+    };
+
+    console.log("<<<<<<<<<<<<<<", baseVehicleData?.colorsAvailable)
+    // Choose the appropriate model based on the type
+    if (type === 'car') {
+      const carData = {
+        ...baseVehicleData,
+        ...req.body.carSpecs,
+        brochureLink: req.body.brochureLink
+      };
+      console.log(">>>>>>>>>>>>>>>>>>", req.body)
+      updatedVehicle = await Car.findByIdAndUpdate(id, carData, { new: true });
+    } else if (type === 'bike') {
+      const bikeData = {
+        ...baseVehicleData,
+        ...req.body.bikeSpecs,
+        brochureLink: req.body.brochureLink
+      };
+      updatedVehicle = await Bike.findByIdAndUpdate(id, bikeData, { new: true });
+    } else if (type === 'truck') {
+      const truckData = {
+        ...baseVehicleData,
+        ...req.body.truckSpecs,
+        brochureLink: req.body.brochureLink
+      };
+      updatedVehicle = await Truck.findByIdAndUpdate(id, truckData, { new: true });
+    } else {
+      return response.badRequest(res, 'Invalid vehicle type provided');
+    }
+
+    // If vehicle is not found, return 404 error
+    if (!updatedVehicle) {
+      return response.notFound(res, 'Vehicle not found');
+    }
+
+    // Return success response with updated vehicle data
+    response.ok(res, 'Vehicle updated successfully', updatedVehicle);
+  } catch (error) {
+    console.error('Error updating vehicle:', error);
+    return response.serverError(res, 'Error updating vehicle', error);
+  }
+});
+ 
 // Get a list of vehicles with optional filters
 const getListNewVehicles = asyncHandler(async (req, res) => {
   try {
@@ -162,7 +237,6 @@ const getPopularVehiclesByReviews = asyncHandler(async (req, res) => {
       .select('vehicleId overAllRating')
       .lean();
 
-    console.log("reviews", reviews);
 
     // Calculate average ratings and add review counts
     const vehiclesWithRatings = vehicles.map(vehicle => {
@@ -292,37 +366,6 @@ const getNewVehicleBySlug = asyncHandler(async (req, res) => {
 //   }
 // });
 
-// Update a vehicle by ID
-const updateNewVehicle = asyncHandler(async (req, res) => {
-  const { id } = req.params;
-  const { type } = req.body; // Extract the type from request body
-
-  try {
-    let updatedVehicle;
-
-    // Choose the appropriate model based on the type
-    if (type === 'car') {
-      updatedVehicle = await Car.findByIdAndUpdate(id, req.body, { new: true });
-    } else if (type === 'bike') {
-      updatedVehicle = await Bike.findByIdAndUpdate(id, req.body, { new: true });
-    } else if (type === 'truck') {
-      updatedVehicle = await Truck.findByIdAndUpdate(id, req.body, { new: true });
-    } else {
-      return response.badRequest(res, 'Invalid vehicle type provided');
-    }
-
-    // If vehicle is not found, return 404 error
-    if (!updatedVehicle) {
-      return response.notFound(res, 'Vehicle not found');
-    }
-
-    // Return success response with updated vehicle data
-    response.ok(res, 'Vehicle updated successfully', updatedVehicle);
-  } catch (error) {
-    console.error('Error updating vehicle:', error);
-    return response.serverError(res, 'Error updating vehicle', error);
-  }
-});
 
 
 // Delete a vehicle by ID
@@ -339,7 +382,32 @@ const deleteNewVehicle = asyncHandler(async (req, res) => {
     response.ok(res, 'Vehicle deleted successfully');
   } catch (error) {
     console.error('Error deleting vehicle:', error);
-    return response.serverError(res, 'Error deleting vehicle', error);
+    return response.serverError(res, 'An error occurred while deleting the vehicle: ' + error.message);
+  }
+});
+
+// Bulk delete vehicles
+const bulkDeleteVehicles = asyncHandler(async (req, res) => {
+  const { ids } = req.body; // Expect an array of vehicle IDs
+
+  try {
+    console.log('sssssssssssssss')
+    // Validate that ids is an array and not empty
+    if (!Array.isArray(ids) || ids.length === 0) {
+      return response.badRequest(res, 'Please provide an array of vehicle IDs');
+    }
+
+    // Delete multiple vehicles
+    const result = await NewVehicle.deleteMany({ _id: { $in: ids } });
+
+    if (result.deletedCount === 0) {
+      return response.notFound(res, 'No vehicles found to delete');
+    }
+
+    response.ok(res, `Successfully deleted ${result.deletedCount} vehicles`);
+  } catch (error) {
+    console.error('Error bulk deleting vehicles:', error);
+    return response.serverError(res, 'Error bulk deleting vehicles', error);
   }
 });
 
@@ -851,7 +919,6 @@ const getNewlyLaunchedVehicles = asyncHandler(async (req, res) => {
       return response.notFound(res, 'No newly launched vehicles found');
     }
 
-    console.log('newlyLaunchedVehicles', newlyLaunchedVehicles)
 
     response.ok(res, 'Newly launched vehicles retrieved successfully', newlyLaunchedVehicles);
   } catch (error) {
@@ -1035,7 +1102,6 @@ const getListVehicles = asyncHandler(async (req, res) => {
 
 // get vehicle by id
 const getVehicleById = asyncHandler(async (req, res) => {
-  console.log("id>>>>>>>>>>>>", req.query)
   const { id } = req.query;
   const vehicle = await NewVehicle.findById(id);
   return response.ok(res, 'Vehicle retrieved successfully', vehicle);
@@ -1048,6 +1114,7 @@ export {
   getNewVehicleBySlug,
   updateNewVehicle,
   deleteNewVehicle,
+  bulkDeleteVehicles,
   getSimilarNewVehicles,
   getPopularNewVehicles,
   getUpcomingNewVehicles,

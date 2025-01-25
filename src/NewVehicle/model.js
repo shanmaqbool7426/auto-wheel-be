@@ -92,6 +92,10 @@ const newVehicleSchema = new mongoose.Schema({
     type: Number,
     default: 0
   },
+  colorsAvailable: {
+    type: [String],
+    default: []
+  },
   slug: {
     type: String,
     unique: true,
