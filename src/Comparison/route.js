@@ -11,7 +11,7 @@ import {
 
 const router = express.Router();
 
-// Create a comparison set
+// Create a comparison set  
 router.post('/', createCompareSet);
 
 // Update a comparison set
