@@ -306,6 +306,7 @@ export const getTopComparisons = asyncHandler(async (req, res) => {
     }).filter(pair => pair.vehicle1 && pair.vehicle2);
 
     response.ok(res, 'Vehicle pairs for comparison retrieved successfully', vehiclePairs);
+    console.log("vehiclePairs>>>>>>>>>",vehiclePairs)
   } catch (error) {
     console.error('Error retrieving top comparisons:', error);
     return response.serverError(res, 'Error retrieving top comparisons');
@@ -315,35 +316,21 @@ export const getTopComparisons = asyncHandler(async (req, res) => {
 // Get list of all comparisons with pagination
 export const getComparisonsList = asyncHandler(async (req, res) => {
   try {
-    console.log('aaaaaaaaaaaaa')
     const page = parseInt(req.query.page) || 1;
     const limit = parseInt(req.query.limit) || 10;
     const skip = (page - 1) * limit;
     const type = req.query.type;
 
-    // Build query conditions
     const conditions = {};
-    if (type) {
-      conditions.type = type;
-    }
+    if (type) conditions.type = type;
 
-    // Get total count for pagination
     const total = await Comparison.countDocuments(conditions);
 
-    // Get comparison sets with pagination
     const comparisons = await Comparison.aggregate([
-      {
-        $match: conditions
-      },
-      {
-        $sort: { createdAt: -1 }
-      },
-      {
-        $skip: skip
-      },
-      {
-        $limit: limit
-      },
+      { $match: conditions },
+      { $sort: { createdAt: -1 } },
+      { $skip: skip },
+      { $limit: limit },
       {
         $lookup: {
           from: 'newvehicles',
@@ -355,15 +342,9 @@ export const getComparisonsList = asyncHandler(async (req, res) => {
       {
         $lookup: {
           from: 'reviews',
-          let: { vehicleIds: '$vehicles._id' },
-          pipeline: [
-            {
-              $match: {
-                $expr: { $in: ['$vehicleId', '$$vehicleIds'] }
-              }
-            }
-          ],
-          as: 'allReviews'
+          localField: 'vehicles._id',
+          foreignField: 'vehicleId',
+          as: 'reviews'
         }
       },
       {
@@ -376,58 +357,37 @@ export const getComparisonsList = asyncHandler(async (req, res) => {
                 $mergeObjects: [
                   '$$vehicle',
                   {
-                    averageRating: {
-                      $cond: {
-                        if: {
-                          $gt: [
-                            {
-                              $size: {
-                                $filter: {
-                                  input: '$allReviews',
-                                  as: 'review',
-                                  cond: { $eq: ['$$review.vehicleId', '$$vehicle._id'] }
-                                }
-                              }
-                            },
-                            0
-                          ]
-                        },
-                        then: {
-                          $round: [
-                            {
-                              $avg: {
-                                $map: {
-                                  input: {
-                                    $filter: {
-                                      input: '$allReviews',
-                                      as: 'review',
-                                      cond: { $eq: ['$$review.vehicleId', '$$vehicle._id'] }
-                                    }
-                                  },
-                                  as: 'review',
-                                  in: {
-                                    $convert: {
-                                      input: '$$review.overAllRating',
-                                      to: 'double',
-                                      onError: 0,
-                                      onNull: 0
-                                    }
-                                  }
-                                }
-                              }
-                            },
-                            1
-                          ]
-                        },
-                        else: 0
-                      }
-                    },
                     reviewCount: {
                       $size: {
                         $filter: {
-                          input: '$allReviews',
+                          input: '$reviews',
                           as: 'review',
                           cond: { $eq: ['$$review.vehicleId', '$$vehicle._id'] }
+                        }
+                      }
+                    },
+                    averageRating: {
+                      $let: {
+                        vars: {
+                          vehicleReviews: {
+                            $filter: {
+                              input: '$reviews',
+                              as: 'review',
+                              cond: { $eq: ['$$review.vehicleId', '$$vehicle._id'] }
+                            }
+                          }
+                        },
+                        in: {
+                          $cond: {
+                            if: { $gt: [{ $size: '$$vehicleReviews' }, 0] },
+                            then: {
+                              $round: [
+                                { $avg: '$$vehicleReviews.overAllRating' },
+                                1
+                              ]
+                            },
+                            else: 0
+                          }
                         }
                       }
                     }
@@ -442,6 +402,7 @@ export const getComparisonsList = asyncHandler(async (req, res) => {
         $project: {
           compareSetId: 1,
           type: 1,
+          createdAt: 1,
           vehicles: {
             _id: 1,
             make: 1,
@@ -450,9 +411,10 @@ export const getComparisonsList = asyncHandler(async (req, res) => {
             year: 1,
             defaultImage: 1,
             averageRating: 1,
-            reviewCount: 1
-          },
-          createdAt: 1
+            reviewCount: 1,
+            minPrice: 1,
+            maxPrice: 1
+          }
         }
       }
     ]);
@@ -472,35 +434,91 @@ export const getComparisonsList = asyncHandler(async (req, res) => {
   }
 });
 
-
-// Get all comparison sets with populated vehicle data
 export const getComparisonSets = asyncHandler(async (req, res) => {
   try {
-    console.log('aaaaaaaaaaaaaaaaaaaaaaaccccccccgggg..mmmmmbb')
     const page = parseInt(req.query.page) || 1;
     const limit = parseInt(req.query.limit) || 10;
     const type = req.query.type;
-    
     const skip = (page - 1) * limit;
     
-    // Build query conditions
     const conditions = {};
-    if (type) {
-      conditions.type = type;
-    }
+    if (type) conditions.type = type;
 
-    // Get total count for pagination
     const total = await Comparison.countDocuments(conditions);
 
-    // Get comparison sets with populated vehicle data
-    const comparisons = await Comparison.find(conditions)
-      .populate({
-        path: 'vehicles',
-        select: 'make model variant year type minPrice maxPrice defaultImage'
-      })
-      .sort({ createdAt: -1 })
-      .skip(skip)
-      .limit(limit);
+    const comparisons = await Comparison.aggregate([
+      { $match: conditions },
+      { $sort: { createdAt: -1 } },
+      { $skip: skip },
+      { $limit: limit },
+      {
+        $lookup: {
+          from: 'newvehicles',
+          localField: 'vehicles',
+          foreignField: '_id',
+          as: 'vehicles'
+        }
+      },
+      {
+        $lookup: {
+          from: 'reviews',
+          localField: 'vehicles._id',
+          foreignField: 'vehicleId',
+          as: 'reviews'
+        }
+      },
+      {
+        $addFields: {
+          vehicles: {
+            $map: {
+              input: '$vehicles',
+              as: 'vehicle',
+              in: {
+                $mergeObjects: [
+                  '$$vehicle',
+                  {
+                    reviewCount: {
+                      $size: {
+                        $filter: {
+                          input: '$reviews',
+                          as: 'review',
+                          cond: { $eq: ['$$review.vehicleId', '$$vehicle._id'] }
+                        }
+                      }
+                    },
+                    averageRating: {
+                      $let: {
+                        vars: {
+                          vehicleReviews: {
+                            $filter: {
+                              input: '$reviews',
+                              as: 'review',
+                              cond: { $eq: ['$$review.vehicleId', '$$vehicle._id'] }
+                            }
+                          }
+                        },
+                        in: {
+                          $cond: {
+                            if: { $gt: [{ $size: '$$vehicleReviews' }, 0] },
+                            then: {
+                              $round: [
+                                { $avg: '$$vehicleReviews.overAllRating' },
+                                1
+                              ]
+                            },
+                            else: 0
+                          }
+                        }
+                      }
+                    }
+                  }
+                ]
+              }
+            }
+          }
+        }
+      }
+    ]);
 
     response.ok(res, 'Comparison sets retrieved successfully', {
       comparisons,
@@ -511,7 +529,6 @@ export const getComparisonSets = asyncHandler(async (req, res) => {
         limit
       }
     });
-
   } catch (error) {
     console.error('Error retrieving comparison sets:', error);
     return response.serverError(res, 'Error retrieving comparison sets');
