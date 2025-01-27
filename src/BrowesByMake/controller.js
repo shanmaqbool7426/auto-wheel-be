@@ -35,12 +35,10 @@ export const createMake = asyncHandler(async (req, res) => {
 export const getAllMakes = asyncHandler(async (req, res) => {
   try {
     const { type } = req.query;
-    console.log("type>>>>>>>>>.........",type)
     // Only apply type filter if type is valid (not undefined, null, or "undefined")
     const filter = type && type !== 'undefined' ? { type } : {};
     
     const makes = await BrowesByMake.find(filter);
-    console.log("makes>>>>>>>>>",makes)
     return responses.ok(res, 'All make entries retrieved successfully', makes);
   } catch (error) {
     console.error('Error fetching makes:', error);

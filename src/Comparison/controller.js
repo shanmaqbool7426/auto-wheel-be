@@ -238,9 +238,9 @@ export const deleteCompareSet = asyncHandler(async (req, res) => {
 export const getTopComparisons = asyncHandler(async (req, res) => {
   try {
     const limit = parseInt(req.query.limit) || 6; // Default to 6 items
-
+console.log("type>>>>>>>>>..........",req.query.type)
     // Get the most recent comparisons
-    const comparisons = await Comparison.find()
+    const comparisons = await Comparison.find({type: req.query.type})
       .sort({ createdAt: -1 })
       .limit(limit)
       .lean();
@@ -444,84 +444,68 @@ export const getComparisonSets = asyncHandler(async (req, res) => {
     const conditions = {};
     if (type) conditions.type = type;
 
+    // Get total count
     const total = await Comparison.countDocuments(conditions);
 
-    const comparisons = await Comparison.aggregate([
-      { $match: conditions },
-      { $sort: { createdAt: -1 } },
-      { $skip: skip },
-      { $limit: limit },
-      {
-        $lookup: {
-          from: 'newvehicles',
-          localField: 'vehicles',
-          foreignField: '_id',
-          as: 'vehicles'
-        }
-      },
-      {
-        $lookup: {
-          from: 'reviews',
-          localField: 'vehicles._id',
-          foreignField: 'vehicleId',
-          as: 'reviews'
-        }
-      },
-      {
-        $addFields: {
-          vehicles: {
-            $map: {
-              input: '$vehicles',
-              as: 'vehicle',
-              in: {
-                $mergeObjects: [
-                  '$$vehicle',
-                  {
-                    reviewCount: {
-                      $size: {
-                        $filter: {
-                          input: '$reviews',
-                          as: 'review',
-                          cond: { $eq: ['$$review.vehicleId', '$$vehicle._id'] }
-                        }
-                      }
-                    },
-                    averageRating: {
-                      $let: {
-                        vars: {
-                          vehicleReviews: {
-                            $filter: {
-                              input: '$reviews',
-                              as: 'review',
-                              cond: { $eq: ['$$review.vehicleId', '$$vehicle._id'] }
-                            }
-                          }
-                        },
-                        in: {
-                          $cond: {
-                            if: { $gt: [{ $size: '$$vehicleReviews' }, 0] },
-                            then: {
-                              $round: [
-                                { $avg: '$$vehicleReviews.overAllRating' },
-                                1
-                              ]
-                            },
-                            else: 0
-                          }
-                        }
-                      }
-                    }
-                  }
-                ]
-              }
-            }
-          }
-        }
-      }
+    // Get base comparisons with pagination
+    const comparisons = await Comparison.find(conditions)
+      .sort({ createdAt: -1 })
+      .skip(skip)
+      .limit(limit)
+      .lean();
+
+    // Get all vehicle IDs
+    const vehicleIds = comparisons.reduce((ids, comp) => {
+      return [...ids, ...comp.vehicles];
+    }, []);
+
+    // Get all vehicles and reviews in parallel
+    const [vehicles, reviews] = await Promise.all([
+      NewVehicle.find({ _id: { $in: vehicleIds } }).lean(),
+      Review.find({ vehicleId: { $in: vehicleIds } }).lean()
     ]);
 
+    // Process vehicles with reviews
+    const vehiclesWithReviews = vehicles.map(vehicle => {
+      const vehicleReviews = reviews.filter(r => 
+        r.vehicleId.toString() === vehicle._id.toString()
+      );
+
+      const reviewCount = vehicleReviews.length;
+      let averageRating = 0;
+
+      if (reviewCount > 0) {
+        const totalRating = vehicleReviews.reduce((sum, review) => 
+          sum + Number(review.overAllRating), 0
+        );
+        averageRating = Number((totalRating / reviewCount).toFixed(1));
+      }
+
+      return {
+        _id: vehicle._id,
+        make: vehicle.make,
+        model: vehicle.model,
+        variant: vehicle.variant,
+        type: vehicle.type,
+        year: vehicle.year,
+        minPrice: vehicle.minPrice,
+        maxPrice: vehicle.maxPrice,
+        defaultImage: vehicle.defaultImage,
+        averageRating,
+        reviewCount
+      };
+    });
+
+    // Map comparisons to include processed vehicles
+    const processedComparisons = comparisons.map(comparison => ({
+      ...comparison,
+      vehicles: comparison.vehicles.map(vehicleId =>
+        vehiclesWithReviews.find(v => v._id.toString() === vehicleId.toString())
+      ).filter(Boolean)
+    }));
+
     response.ok(res, 'Comparison sets retrieved successfully', {
-      comparisons,
+      comparisons: processedComparisons,
       pagination: {
         total,
         page,
