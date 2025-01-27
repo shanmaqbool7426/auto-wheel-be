@@ -4,12 +4,12 @@ import responses from "../Utils/response.js";
 
 
 const createVideo = asyncHandler(async (req, res) => {
-  const { title, url, thumbnail, category, description } = req.body;
-  if (!title || !url || !thumbnail || !description || !category) {
+  const { title, url, thumbnail, category, description ,type} = req.body;
+  if (!title || !url || !thumbnail || !description || !category || !type) {
     return responses.badRequest(res, 'All fields are required');
   }
 
-  const video = new Video({ title, url, thumbnail, description, category });
+  const video = new Video({ title, url, thumbnail, description, category,type });
   await video.save();
 
   responses.created(res, 'Video created successfully', video);
@@ -17,7 +17,7 @@ const createVideo = asyncHandler(async (req, res) => {
 
 
 const browseVideos = asyncHandler(async (req, res) => {
-  const { slug, search } = req.query;
+  const { slug, search,type } = req.query;
 
   try {
     let currentVideo = null;
@@ -34,6 +34,7 @@ const browseVideos = asyncHandler(async (req, res) => {
       // Fetch related videos in the same category (excluding the current video)
       suggestions = await Video.find({
         category: currentVideo.category,
+        // type: currentVideo.type,
         _id: { $ne: currentVideo._id },
       }).limit(4);
     } else if (search) {
@@ -50,7 +51,7 @@ const browseVideos = asyncHandler(async (req, res) => {
       // Fetch related videos in the same category (excluding the current video)
       suggestions = await Video.find({
         category: currentVideo.category,
-        _id: { $ne: currentVideo._id },
+        _id: { $ne: currentVideo._id }
       }).limit(4);
     } else {
       // Fetch the latest video
@@ -63,7 +64,7 @@ const browseVideos = asyncHandler(async (req, res) => {
       // Fetch related videos in the same category (excluding the current video)
       suggestions = await Video.find({
         category: currentVideo.category,
-        _id: { $ne: currentVideo._id },
+        _id: { $ne: currentVideo._id }
       }).limit(4);
     }
 
@@ -82,6 +83,7 @@ const getVideosForAdmin = asyncHandler(async (req, res) => {
     const limit = parseInt(req.query.limit) || 10;
     const search = req.query.search?.trim() || '';
     const category = req.query.category?.trim() || '';
+    const type = req.query.type?.trim() || '';
 
     // Build search condition
     const condition = {};
@@ -97,13 +99,17 @@ const getVideosForAdmin = asyncHandler(async (req, res) => {
       condition.$or = [
         { title: { $regex: searchPattern, $options: 'i' } },
         { description: { $regex: searchPattern, $options: 'i' } },
-        { categorySlug: { $regex: searchPattern, $options: 'i' } }    
+        { categorySlug: { $regex: searchPattern, $options: 'i' } },
+        { type: { $regex: searchPattern, $options: 'i' } }    
       ];
     }
 
     // Add category filter if provided
     if (category) {
       condition.categorySlug = { $regex: new RegExp(category, 'i') }; // Case-insensitive match for category
+    }
+    if (type) {
+      condition.type = { $regex: new RegExp(type, 'i') }; // Case-insensitive match for type
     }
 
 
@@ -124,6 +130,7 @@ const getVideosForAdmin = asyncHandler(async (req, res) => {
     // Log for debugging
     console.log('Search Query:', search);
     console.log('Category Filter:', category);
+    console.log('Type Filter:', type);
     console.log('Search Condition:', condition);
     console.log('Found Videos:', videos.length);
 

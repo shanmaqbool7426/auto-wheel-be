@@ -19,7 +19,7 @@ const createVehicle = asyncHandler(async (req, res) => {
     await user.save();
     response.ok(res, "Vehicle Created Successfully", vehicle);
   } catch (error) {
-    console.error(error);
+    console.error('Error creating vehicle:', error);
     response.internalServerError(res, 'Failed to create vehicle');
   }
 });
