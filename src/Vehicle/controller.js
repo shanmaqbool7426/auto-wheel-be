@@ -705,4 +705,83 @@ cron.schedule('0 0 * * *', () => {
 });
 
 
-export {deleteBulkVehicles,getVehiclesForAdmin,updateVehicleStatus, createVehicle,getVehiclesByUserId,toggleFavoriteVehicle,toggleFeaturedVehicle,getFavoriteVehiclesByUserId, getBrowseByVehicles,deleteVehicle, getListVehicles, getVehicleBySlug, getSimilarVehicles, getPopularVehicles, getPopularVehiclesByReviews }
+const getOverviewStats = asyncHandler(async (req, res) => {
+  const { userId } = req.params;
+  const { month, year } = req.query;
+  try {
+    // Get start and end date for the selected month
+    const startDate = new Date(year, month - 1, 1);
+    const endDate = new Date(year, month, 0);
+
+    // Get all vehicles stats for this user within the date range
+    const stats = await Vehicle.aggregate([
+      {
+        $match: {
+          seller: userId,
+          // createdAt: { $gte: startDate, $lte: endDate }
+        }
+      },
+      {
+        $facet: {
+          // Total page views
+          totalViews: [
+            {
+              $group: {
+                _id: null,
+                total: { $sum: "$views" }
+              }
+            }
+          ],
+          // // Count of vehicles with no views
+          noViews: [
+            {
+              $match: { views: 0 }
+            },
+            {
+              $count: "count"
+            }
+          ],
+          // Count by status
+          statusCounts: [
+            {
+              $group: {
+                _id: "$status",
+                count: { $sum: 1 }
+              }
+            }
+          ]
+        }
+      }
+    ]);
+    // Process the aggregation results
+    const totalViews = stats[0].totalViews[0]?.total || 0;
+    const noViews = stats[0].noViews[0]?.count || 0;
+    
+    // Convert status counts array to object
+    const statusCounts = stats[0].statusCounts.reduce((acc, curr) => {
+      acc[curr._id] = curr.count;
+      return acc;
+    }, {
+      active: 0,
+      pending: 0,
+      inactive: 0
+    });
+
+    const overview = {
+      pageViews: totalViews,
+      clicks: totalViews, // Using views as clicks
+      noViews: totalViews,
+      activeAds: statusCounts.active || 0,
+      pendingAds: statusCounts.pending || 0,
+      inactiveAds: statusCounts.inactive || 0
+    };
+
+    return response.ok(res, 'Overview statistics retrieved successfully', overview);
+
+  } catch (error) {
+    console.error('Error getting overview stats:', error);
+    return response.serverError(res, 'Error retrieving overview statistics');
+  }
+});
+
+export {getOverviewStats,deleteBulkVehicles,getVehiclesForAdmin,updateVehicleStatus, createVehicle,getVehiclesByUserId,toggleFavoriteVehicle,toggleFeaturedVehicle,getFavoriteVehiclesByUserId, getBrowseByVehicles,deleteVehicle, getListVehicles, getVehicleBySlug, getSimilarVehicles, getPopularVehicles, getPopularVehiclesByReviews }
