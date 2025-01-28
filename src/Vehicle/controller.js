@@ -24,9 +24,23 @@ const createVehicle = asyncHandler(async (req, res) => {
   }
 });
 
+//  update vehicle status
+const updateVehicleStatus = asyncHandler(async (req, res) => {
+  //not soft deleted
+  const { vehicleId } = req.params;
+  try { 
+    const { status } = req.body;
+    const vehicle = await Vehicle.findByIdAndUpdate(vehicleId, { status }, { new: true });
+    response.ok(res, 'Vehicle status updated successfully', vehicle);
+  } catch (error) {
+    console.error('Error updating vehicle status:', error);
+    response.serverError(res, 'An error occurred while updating the vehicle status');
+  }
+});
 
 const getBrowseByVehicles = asyncHandler(async (req, res) => {
   try {
+    // not include deleted vehicles 
     const { type } = req.query;
     let vehicles;
     if (type) {
@@ -39,7 +53,8 @@ const getBrowseByVehicles = asyncHandler(async (req, res) => {
         { $project: { vehicles: { $slice: ['$vehicles', 8] } } },
         { $unwind: '$vehicles' },
         { $replaceRoot: { newRoot: '$vehicles' } },
-        { $sample: { size: 8 } }
+        { $sample: { size: 8 } },
+        { $match: { status: { $ne: 'deleted' } } }
       ]);
     }
     return response.ok(res, 'Vehicles retrieved successfully', vehicles);
@@ -49,9 +64,9 @@ const getBrowseByVehicles = asyncHandler(async (req, res) => {
 });
 
 const getListVehicles = asyncHandler(async (req, res) => {
+  // not include deleted vehicles 
   const pathSegments = req.params[0].split('/');
   const features = [];
-  console.log('>>>>>>>>>111', pathSegments);
   const filters = {};
   const options = {
     limit: parseInt(req.query.limit, 10) || 10,
@@ -183,6 +198,7 @@ const getListVehicles = asyncHandler(async (req, res) => {
     filters.isFeatured = true;
     filters.featureEndDate = { $gt: now }; 
   }
+  filters.status = { $ne: 'deleted' };
 
   options.skip = (page - 1) * options.limit;
 
@@ -356,7 +372,11 @@ const getPopularVehicles = asyncHandler(async (req, res) => {
 
 const getPopularVehiclesByReviews = asyncHandler(async (req, res) => {
   try {
+    // not include deleted vehicles 
     const popularVehicles = await Review.aggregate([
+      {
+        $match: { status: { $ne: 'deleted' } },
+      },
       {
         $group: {
           _id: '$vehicle',              // Group by vehicle ID
@@ -459,6 +479,7 @@ const getVehiclesByUserId = asyncHandler(async (req, res) => {
 
 
 const getFavoriteVehiclesByUserId = asyncHandler(async (req, res) => {
+  // not include deleted vehicles 
   const { userId } = req.params;
   const { search, sort } = req.query; // Get search and sort from query parameters
 
@@ -472,13 +493,10 @@ const getFavoriteVehiclesByUserId = asyncHandler(async (req, res) => {
 
     // Filter by vehicle ID if search parameter is provided
     if (search) {
-      console.log('>>> search', search);
       favoriteVehicles = favoriteVehicles.filter(vehicle => {
         // Convert the vehicle ID to string and check if it includes the search term
         return vehicle._id.toString().includes(search)
       });
-    
-      console.log('>>>>', favoriteVehicles);
     }
 
     // Sort the vehicles based on the sort parameter
@@ -535,9 +553,10 @@ const toggleFavoriteVehicle = asyncHandler(async (req, res) => {
 
 const deleteVehicle = asyncHandler(async (req, res) => {
   try {
+    // soft delete
     const { vehicleId } = req.params;
    const id= new mongoose.Types.ObjectId(vehicleId)
-    const vehicle = await Vehicle.deleteOne({_id:id});
+    const vehicle = await Vehicle.updateOne({_id:id}, { $set: { status: 'deleted' } });
     if (!vehicle) {
       return response.notFound(res, 'Vehicle not found');
     }
@@ -584,6 +603,7 @@ const toggleFeaturedVehicle = asyncHandler(async (req, res) => {
 // Add a new function to check and update expired featured listings
 const updateExpiredFeaturedListings = asyncHandler(async () => {
   try {
+    
     const now = new Date();
     await Vehicle.updateMany(
       {
@@ -604,6 +624,78 @@ const updateExpiredFeaturedListings = asyncHandler(async () => {
   }
 });
 
+
+// list vehicles for admin
+const getVehiclesForAdmin = asyncHandler(async (req, res) => {
+  try {
+    const { type, search, page = 1, limit = 8, status } = req.query;
+    const skip = (page - 1) * parseInt(limit);
+
+    // Base query
+    const baseQuery = {};
+
+    // Add type filter if provided
+    if (type) {
+      baseQuery.type = type;
+    } else {
+      baseQuery.type = { $in: ['car', 'bike', 'truck'] };
+    }
+
+    if (status) {
+      baseQuery.status = status;
+    }
+
+    // Add search filter if provided
+    if (search) {
+      baseQuery.$or = [
+        { 'Info.make': { $regex: search, $options: 'i' } },
+        { 'Info.model': { $regex: search, $options: 'i' } },
+        { 'Info.variant': { $regex: search, $options: 'i' } },
+        { 'city': { $regex: search, $options: 'i' } }
+      ];
+    }
+
+    // Execute queries in parallel
+    const [totalVehicles, vehicles] = await Promise.all([
+      Vehicle.countDocuments(baseQuery),
+      Vehicle.find(baseQuery)
+        .sort({ createdAt: -1 })
+        .skip(skip)
+        .limit(parseInt(limit))
+        .select('make model variant type price city status year images Info') // Select only needed fields
+        .lean() // Convert to plain JavaScript objects
+    ]);
+
+    const totalPages = Math.ceil(totalVehicles / limit);
+
+    return response.ok(res, 'Vehicles retrieved successfully', {
+      vehicles,
+      pagination: {
+        currentPage: parseInt(page),
+        totalPages,
+        totalVehicles,
+        limit: parseInt(limit)
+      }
+    });
+  } catch (error) {
+    console.error('Error in getVehiclesForAdmin:', error);
+    return response.error(res, 'Error retrieving vehicles', error);
+  }
+});
+
+// delete bulk vehicles soft delete
+const deleteBulkVehicles = asyncHandler(async (req, res) => {
+  try {
+    const { ids } = req.body; // Expect an array of vehicle IDs
+    console.log("ids>>>>>>>>", ids);
+    const vehicles = await Vehicle.updateMany({ _id: { $in: ids } }, { $set: { status: 'deleted' } });
+    return response.ok(res, 'Vehicles deleted successfully', vehicles);
+  } catch (error) {
+    console.error('Error deleting vehicles:', error);
+    return response.serverError(res, 'An error occurred while deleting the vehicles: ' + error.message);
+  }
+});
+
 // You can set up a cron job or scheduled task to run this function periodically
 // For example, using node-cron:
 
@@ -613,4 +705,4 @@ cron.schedule('0 0 * * *', () => {
 });
 
 
-export { createVehicle,getVehiclesByUserId,toggleFavoriteVehicle,toggleFeaturedVehicle,getFavoriteVehiclesByUserId, getBrowseByVehicles,deleteVehicle, getListVehicles, getVehicleBySlug, getSimilarVehicles, getPopularVehicles, getPopularVehiclesByReviews }
+export {deleteBulkVehicles,getVehiclesForAdmin,updateVehicleStatus, createVehicle,getVehiclesByUserId,toggleFavoriteVehicle,toggleFeaturedVehicle,getFavoriteVehiclesByUserId, getBrowseByVehicles,deleteVehicle, getListVehicles, getVehicleBySlug, getSimilarVehicles, getPopularVehicles, getPopularVehiclesByReviews }
