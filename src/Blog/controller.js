@@ -246,9 +246,10 @@ const browseBlogs = asyncHandler(async (req, res) => {
 // });
 
 const getBlogs = asyncHandler(async (req, res) => {
+  console.log('getBlogs called');
   const { 0: routePath } = req.params;
   const parts = routePath ? routePath.split('/').filter(Boolean) : [];
-
+console.log('>>>>>>>>>111...........', parts);
   // Default pagination settings
   const limit = 5;
   let currentPage = 1;
@@ -470,7 +471,11 @@ const getBlogs = asyncHandler(async (req, res) => {
       .populate('categories', 'name slug')
       .populate('tags', 'name slug')
       .lean();
-
+  // First increment the view count
+  await Blog.findOneAndUpdate(
+    { slug: blogSlug }, 
+    { $inc: { viewCount: 1 } }
+  );
     if (blog) {
       // Fetch approved comments for this blog
       const comments = await Comment.find({ postId: blog._id, status: 'approved' }).sort({ createdAt: -1 }).lean();
@@ -540,8 +545,8 @@ const updateBlog = asyncHandler(async (req, res) => {
   if (!blog) {
     return responses.notFound(res, 'Blog post not found');
   }
-  const categoryIds = categories ?JSON.parse(categories):[];
-  const tagIds = tags ? JSON.parse(tags):[];
+  const categoryIds = categories
+  const tagIds = tags
 
   blog.title = title || blog.title;
   blog.content = content || blog.content;
