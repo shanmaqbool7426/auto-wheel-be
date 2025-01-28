@@ -379,7 +379,7 @@ const deleteNewVehicle = asyncHandler(async (req, res) => {
       return response.notFound(res, 'Vehicle not found');
     }
 
-    response.ok(res, 'Vehicle deleted successfully');
+    response.ok(res, 'Vehicle deleted successfully.........,,,');
   } catch (error) {
     console.error('Error deleting vehicle:', error);
     return response.serverError(res, 'An error occurred while deleting the vehicle: ' + error.message);
@@ -720,6 +720,8 @@ const getUpcomingNewVehicles = asyncHandler(async (req, res) => {
       ...(make && { make })   // Add make to filter if provided
     };
 
+
+    console.log(">>>>>>>filter",type, make);
     // Find all vehicles where the release date is in the future, with filters
     const upcomingVehicles = await NewVehicle.find(filter).sort({ releaseDate: 1 });
 

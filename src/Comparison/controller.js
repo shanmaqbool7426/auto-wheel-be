@@ -16,34 +16,24 @@ export const createCompareSet = asyncHandler(async (req, res) => {
       return response.badRequest(res, 'At least two vehicles are required');
     }
 
+    console.log("AAAAAAAAAAAAA",vehicles)
     if (!type || !['car', 'bike', 'truck'].includes(type)) {
       return response.badRequest(res, 'Valid vehicle type is required');
     }
 
-    // Parse vehicle strings into make, model, variant
-    const parsedVehicles = vehicles.map(vehicleStr => {
-      const parts = vehicleStr.split(' ');
-      return {
-        make: parts[0],
-        model: parts[1],
-        variant: parts.slice(2).join(' ') || undefined
-      };
-    });
-
-    // Find vehicle IDs based on Info field
+    // Find vehicle IDs using the vehicle objects directly
     const vehicleIds = await Promise.all(
-      parsedVehicles.map(async (vehicle) => {
-        console.log("vehicle",vehicle)      
+      vehicles.map(async (vehicle) => {
         const query = {
-          type: type,
-          'Info.make': { $regex: new RegExp(`^${vehicle.make}$`, 'i') },
-          'Info.model': { $regex: new RegExp(`^${vehicle.model}$`, 'i') },
+          type,
+          make: { $regex: new RegExp(`^${vehicle.make}$`, 'i') },
+          model: { $regex: new RegExp(`^${vehicle.model}$`, 'i') }
         };
 
         if (vehicle.variant) {
-          query['Info.variant'] = { $regex: new RegExp(`^${vehicle.variant}$`, 'i') };
+          query.variant = { $regex: new RegExp(`^${vehicle.variant}$`, 'i') };
         }
-console.log("query",query)
+
         const foundVehicle = await NewVehicle.findOne(query);
         
         if (!foundVehicle) {
@@ -53,55 +43,12 @@ console.log("query",query)
         return foundVehicle._id;
       })
     );
-    
-    console.log("query idssss",vehicleIds)
-    // Create a unique comparison set ID
-    const compareSetId = uuidv4();
 
-    // Create the comparison set
     const compareSet = await Comparison.create({
       vehicles: vehicleIds,
       type,
-      compareSetId
+      compareSetId: uuidv4()
     });
-
-    // // Get full vehicle details for response
-    // const populatedVehicles = await NewVehicle.aggregate([
-    //   { $match: { _id: { $in: vehicleIds } } },
-    //   {
-    //     $lookup: {
-    //       from: 'reviews',
-    //       localField: '_id',
-    //       foreignField: 'vehicle',
-    //       as: 'reviews'
-    //     }
-    //   },
-    //   {
-    //     $addFields: {
-    //       averageRating: {
-    //         $cond: {
-    //           if: { $gt: [{ $size: '$reviews' }, 0] },
-    //           then: { $round: [{ $avg: '$reviews.overAllRating' }, 1] },
-    //           else: null
-    //         }
-    //       },
-    //       reviewCount: { $size: '$reviews' }
-    //     }
-    //   },
-    //   {
-    //     $project: {
-    //       _id: 1,
-    //       Info: 1,  // Include Info field
-    //       type: 1,
-    //       year: 1,
-    //       minPrice: 1,
-    //       maxPrice: 1,
-    //       defaultImage: 1,
-    //       averageRating: 1,
-    //       reviewCount: 1
-    //     }
-    //   }
-    // ]);
 
     response.created(res, 'Comparison set created successfully', {
       compareSetId: compareSet.compareSetId,
