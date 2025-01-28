@@ -6,7 +6,15 @@ const videoSchema = new mongoose.Schema({
     required: true,
     index: true
   },
+  currentVideo: {
+    type: Boolean,
+    default: false
+  },
   url: {
+    type: String,
+    required: true
+  },
+  type: {
     type: String,
     required: true
   },

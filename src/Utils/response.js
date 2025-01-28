@@ -18,6 +18,7 @@ const statusCodes = {
   notFound: 404,
   conflict: 409,
   internalServerError: 500,
+  serverError:500,
   serviceUnavailable: 503,
 };
 

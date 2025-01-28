@@ -3,8 +3,8 @@ import mongoose from 'mongoose';
 const BrowesBodySchema = mongoose.Schema(
     {
         bodyImage: { type: String },
-        name: { type: String, required: true },
-        
+        title: { type: String, required: true },
+        slug: { type: String, required: true }, 
         type: {
             type: String,
             enum: ['car', 'bike', 'truck'],
