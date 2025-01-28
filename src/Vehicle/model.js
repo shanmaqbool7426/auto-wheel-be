@@ -22,7 +22,7 @@ const vehicleSchema = new mongoose.Schema({
   featureEndDate: {
     type: Date,
   },
-  carInfo: {
+  Info: {
     make: {
       type: String,
       required: true,
@@ -61,6 +61,7 @@ const vehicleSchema = new mongoose.Schema({
     type: String,
     enum: ['used', 'new', 'certified'],
     required: true,
+    default: 'used',
     index: true
   },
   city: {
@@ -130,10 +131,10 @@ const vehicleSchema = new mongoose.Schema({
   },
   images: {
     type: [String]
-  },
+  },  
   status: {
     type: String,
-    enum: ['active', 'inactive', 'deleted', 'pending', 'expired'],
+    enum: ['active', 'inactive', 'deleted', 'pending', 'expired', 'sold','featured'],
     default: 'pending',
     index: true,
   },
@@ -195,14 +196,14 @@ const vehicleSchema = new mongoose.Schema({
 }, { timestamps: true });
 vehicleSchema.pre('save', function (next) {
   if (!this.isModified('slug')) {
-    const baseSlug = `${this.carInfo.make}-${this.carInfo.model}-${this.year}`.toLowerCase().replace(/ /g, '-');
+    const baseSlug = `${this.Info.make}-${this.Info.model}-${this.year}`.toLowerCase().replace(/ /g, '-');
     this.slug = `${baseSlug}-${this._id}`;
     next();
   }
 });
 
 
-vehicleSchema.index({ city: 1, carInfo: 1, 'specifications.fuelType': 1 });
+vehicleSchema.index({ city: 1, Info: 1, 'specifications.fuelType': 1 });
 
 const Vehicle = mongoose.model('Vehicle', vehicleSchema);
 

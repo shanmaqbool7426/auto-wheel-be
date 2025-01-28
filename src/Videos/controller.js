@@ -18,14 +18,14 @@ const createVideo = asyncHandler(async (req, res) => {
 
 const browseVideos = asyncHandler(async (req, res) => {
   const { slug, search,type } = req.query;
-
+console.log(">>>>>>>type",type);
   try {
     let currentVideo = null;
     let suggestions = [];
 
     if (slug) {
       // Fetch the video by slug and related videos from the same category
-      currentVideo = await Video.findOne({ slug });
+      currentVideo = await Video.findOne({ slug,type });
 
       if (!currentVideo) {
         return responses.notFound(res, 'Video not found');
@@ -34,12 +34,12 @@ const browseVideos = asyncHandler(async (req, res) => {
       // Fetch related videos in the same category (excluding the current video)
       suggestions = await Video.find({
         category: currentVideo.category,
-        // type: currentVideo.type,
+        type: currentVideo.type,
         _id: { $ne: currentVideo._id },
       }).limit(4);
     } else if (search) {
       // Fetch videos by search query
-      const videos = await Video.find({ title: new RegExp(search, 'i') }).sort({ dateUploaded: -1 });
+      const videos = await Video.find({ title: new RegExp(search, 'i'),type }).sort({ dateUploaded: -1 });
 
       if (videos.length === 0) {
         return responses.notFound(res, 'No videos found for the search query');
@@ -51,11 +51,12 @@ const browseVideos = asyncHandler(async (req, res) => {
       // Fetch related videos in the same category (excluding the current video)
       suggestions = await Video.find({
         category: currentVideo.category,
+        type: currentVideo.type,
         _id: { $ne: currentVideo._id }
       }).limit(4);
     } else {
       // Fetch the latest video
-      currentVideo = await Video.findOne().sort({ createdAt: -1 });
+      currentVideo = await Video.findOne({type}).sort({ createdAt: -1 });
 
       if (!currentVideo) {
         return responses.notFound(res, 'No videos found');
@@ -64,6 +65,7 @@ const browseVideos = asyncHandler(async (req, res) => {
       // Fetch related videos in the same category (excluding the current video)
       suggestions = await Video.find({
         category: currentVideo.category,
+        type: currentVideo.type,
         _id: { $ne: currentVideo._id }
       }).limit(4);
     }
