@@ -784,4 +784,69 @@ const getOverviewStats = asyncHandler(async (req, res) => {
   }
 });
 
-export {getOverviewStats,deleteBulkVehicles,getVehiclesForAdmin,updateVehicleStatus, createVehicle,getVehiclesByUserId,toggleFavoriteVehicle,toggleFeaturedVehicle,getFavoriteVehiclesByUserId, getBrowseByVehicles,deleteVehicle, getListVehicles, getVehicleBySlug, getSimilarVehicles, getPopularVehicles, getPopularVehiclesByReviews }
+const getTopPerformingPostsBySeller = async (req, res) => {
+  try {
+    const { limit = 10, page = 1 } = req.query;
+    const skip = (page - 1) * limit;
+    
+    // Get the seller ID from the authenticated user
+    const { userId } = req.params;
+
+    const posts = await Vehicle.find(
+      { 
+        seller: userId,
+        // status: 'active' 
+      },
+      {
+        _id:1,
+        make: 1,
+        slug:1,
+        model: 1,
+        year: 1,
+        views: 1,
+        defaultImage: 1,
+        createdAt: 1,
+        status:1
+      }
+    )
+    .sort({ views: -1 }) // Sort by views in descending order
+    .skip(skip)
+    .limit(parseInt(limit));
+
+    const total = await Vehicle.countDocuments({ 
+      seller: userId,
+      // status: 'active' 
+    });
+
+    // Format the response data
+    const formattedPosts = posts.map(post => ({
+      id:post._id,
+      slug:post.slug,
+      post: `${post.make} ${post.Info.model} ${post.year}`,
+      created: post.createdAt,
+      views: post.views,
+      clicks: post.views
+    }));
+
+    return res.status(200).json({
+      success: true,
+      data: {
+        posts: formattedPosts,
+        pagination: {
+          current: parseInt(page),
+          total: Math.ceil(total / limit),
+          count:total,
+          limit: parseInt(limit)
+        }
+      }
+    });
+
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      message: 'Error fetching top performing posts',
+      error: error.message
+    });
+  }
+};
+export {getTopPerformingPostsBySeller,getOverviewStats,deleteBulkVehicles,getVehiclesForAdmin,updateVehicleStatus, createVehicle,getVehiclesByUserId,toggleFavoriteVehicle,toggleFeaturedVehicle,getFavoriteVehiclesByUserId, getBrowseByVehicles,deleteVehicle, getListVehicles, getVehicleBySlug, getSimilarVehicles, getPopularVehicles, getPopularVehiclesByReviews }
