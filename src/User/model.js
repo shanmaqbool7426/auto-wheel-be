@@ -16,11 +16,7 @@ const userSchema = mongoose.Schema(
   },
     firstName: { type: String,default:"" },
     lastName: { type: String,default:"" },
-    roles: [{
-      type: mongoose.Schema.Types.ObjectId,
-      ref: 'Role',
-      required: true
-  }],
+    roles: { type: String },
   permissions: [{
       resource: String,
       actions: [String]
@@ -34,7 +30,7 @@ const userSchema = mongoose.Schema(
     email: { type: String, required: true, unique: true },
     phone: { type: String },
     password: { type: String },
-    accountType: { type: String, enum: ['Personal', 'Dealer'],default:"Dealer" },
+    accountType: { type: String, enum: ['Personal', 'Dealer'] },
     rating: { type: Number, default: 0 },
     isVerified: { type: Boolean, default: false },
     verificationCode: { type: Number },

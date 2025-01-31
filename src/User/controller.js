@@ -50,6 +50,7 @@ const login = asyncHandler(async (req, res) => {
 
   const user = await User.findOne({ email });
 
+  console.log('>>>>>> user',user)
   if (user && (await user.matchPassword(password))) {
     // Update last login timestamp
     user.lastLogin = new Date();
@@ -191,7 +192,7 @@ console.log('userData',userData)
 
 const updateUserProfileByUserByEmail = asyncHandler(async (req, res) => {
   console.log('>>>>>> req.body',req.body)
-  const { firstName, lastName, phoneNumber, email, showEmail, whatsAppOnThisNumber } = req.body;
+  const { firstName, lastName, phoneNumber, email, showEmail, whatsAppOnThisNumber,role } = req.body;
 
   const user = await User.findOne({email}).populate();
   if (!user) {
@@ -200,6 +201,7 @@ const updateUserProfileByUserByEmail = asyncHandler(async (req, res) => {
 
   console.log('>>>>>> firstName',firstName,lastName)
   user.firstName = firstName || user.firstName;
+  user.role = role || user.role;
   user.lastName = lastName || user.lastName;
   // user.email = email || user.email; // Ensure email is updated if provided
   user.phone = phoneNumber || user.phone; // Update phone number
@@ -821,15 +823,26 @@ export const createUser = asyncHandler(async (req, res) => {
           return responses.conflict(res, 'Email already registered');
       }
 
+      // [ {
+      //   name: 'Administrator',
+      //   totalUsers: 5,
+      //   permissions: [Object],
+      //   capabilities: [Array],
+      //   isActive: true
+      // },]
+      
       // Get role ID from role name
-      const userRole = await Role.findOne({ name: role });
-      if (!userRole) {
-          return responses.badRequest(res, 'Invalid role specified');
-      }
+      // const userRole = await Role.findOne({ });
+      // console.log('>>>userRole',userRole)
+      // userRole.filter(role=>role.name===role)
+      // if (!userRole) {
+      //     return responses.badRequest(res, 'Invalid role specified');
+      // }
 
       // Generate random password
       const tempPassword = Math.random().toString(36).slice(-8);
-      const hashedPassword = await bcrypt.hash(tempPassword, 10);
+      const hashedPassword = await bcrypt.hash('12345678', 10);
+
 
       // Create user
       const user = await User.create({
@@ -837,10 +850,11 @@ export const createUser = asyncHandler(async (req, res) => {
           lastName,
           email,
           password: hashedPassword,
-          roles: [userRole._id],
+          roles: role,
           isActive: true
       });
 
+      console.log('>>>user',user)
       // Remove password from response
       const userResponse = user.toObject();
       delete userResponse.password;
@@ -867,13 +881,14 @@ export const createUser = asyncHandler(async (req, res) => {
       //     text: emailTemplate
       // });
 
-      return responses.created(res, 'User created successfully', {
+      return responses.ok(res, 'User created successfully', {
           user: userResponse,
           passwordSent: true
       });
 
   } catch (error) {
       console.error('Create user error:', error);
+      return responses.error(res, 'Error creating user');
       // return responses.error(res, 'Error creating user');
   }
 });
