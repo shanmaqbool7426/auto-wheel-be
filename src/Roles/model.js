@@ -5,7 +5,7 @@ const roleSchema = new mongoose.Schema({
         type: String,
         required: true,
         unique: true,
-        enum: ['superAdmin', 'admin', 'moderator', 'dealer', 'user']
+        enum: ['superAdmin', 'admin', 'moderator', 'dealer', 'user','developer','editor','administrator']
     },
     permissions: {
         dashboard: {

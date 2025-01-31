@@ -90,6 +90,7 @@ export const updateRole = asyncHandler(async (req, res) => {
     try {
         const { id } = req.params;
         const { permissions, isActive } = req.body;
+        console.log(">>>>permissions>>", permissions);
 
         // Use findOneAndUpdate with proper options
         const role = await Role.findByIdAndUpdate(

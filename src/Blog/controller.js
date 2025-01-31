@@ -9,6 +9,7 @@ import Comment from "../Comment/model.js";
 
 // Update the create blog function
 const createBlog = asyncHandler(async (req, res) => {
+  
   const { 
     title, 
     content, 
