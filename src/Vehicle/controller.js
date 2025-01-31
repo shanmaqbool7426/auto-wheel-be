@@ -302,8 +302,12 @@ const getVehicleBySlug = asyncHandler(async (req, res) => {
     const vehicleDetail = await Vehicle.findOneAndUpdate(
       { slug },
       { $inc: { views: 1 } },  // Increment the views count by 1
-      { new: true }            // Return the updated document
-    );
+      { new: true, timestamps: false }            // Return the updated document
+    ).populate({
+      path: 'seller',          // This should match the field name in Vehicle model
+      model: 'User',           // Explicitly specify the model to populate from
+      select: '-password -loginType -isVerified -isActive -createdAt -updatedAt' // Exclude sensitive fields
+    });;
 
     if (!vehicleDetail) {
       return response.notFound(res, 'Vehicle not found');
@@ -701,4 +705,148 @@ cron.schedule('0 0 * * *', () => {
 });
 
 
-export {deleteBulkVehicles,getVehiclesForAdmin,updateVehicleStatus, createVehicle,getVehiclesByUserId,toggleFavoriteVehicle,toggleFeaturedVehicle,getFavoriteVehiclesByUserId, getBrowseByVehicles,deleteVehicle, getListVehicles, getVehicleBySlug, getSimilarVehicles, getPopularVehicles, getPopularVehiclesByReviews }
+const getOverviewStats = asyncHandler(async (req, res) => {
+  const { userId } = req.params;
+  const { month, year } = req.query;
+  try {
+    // Get start and end date for the selected month
+    const startDate = new Date(year, month - 1, 1);
+    const endDate = new Date(year, month, 0);
+
+    // Get all vehicles stats for this user within the date range
+    const stats = await Vehicle.aggregate([
+      {
+        $match: {
+          seller: userId,
+          // createdAt: { $gte: startDate, $lte: endDate }
+        }
+      },
+      {
+        $facet: {
+          // Total page views
+          totalViews: [
+            {
+              $group: {
+                _id: null,
+                total: { $sum: "$views" }
+              }
+            }
+          ],
+          // // Count of vehicles with no views
+          noViews: [
+            {
+              $match: { views: 0 }
+            },
+            {
+              $count: "count"
+            }
+          ],
+          // Count by status
+          statusCounts: [
+            {
+              $group: {
+                _id: "$status",
+                count: { $sum: 1 }
+              }
+            }
+          ]
+        }
+      }
+    ]);
+    // Process the aggregation results
+    const totalViews = stats[0].totalViews[0]?.total || 0;
+    const noViews = stats[0].noViews[0]?.count || 0;
+    
+    // Convert status counts array to object
+    const statusCounts = stats[0].statusCounts.reduce((acc, curr) => {
+      acc[curr._id] = curr.count;
+      return acc;
+    }, {
+      active: 0,
+      pending: 0,
+      inactive: 0
+    });
+
+    const overview = {
+      pageViews: totalViews,
+      clicks: totalViews, // Using views as clicks
+      noViews: totalViews,
+      activeAds: statusCounts.active || 0,
+      pendingAds: statusCounts.pending || 0,
+      inactiveAds: statusCounts.inactive || 0
+    };
+
+    return response.ok(res, 'Overview statistics retrieved successfully', overview);
+
+  } catch (error) {
+    console.error('Error getting overview stats:', error);
+    return response.serverError(res, 'Error retrieving overview statistics');
+  }
+});
+
+const getTopPerformingPostsBySeller = async (req, res) => {
+  try {
+    const { limit = 10, page = 1 } = req.query;
+    const skip = (page - 1) * limit;
+    
+    // Get the seller ID from the authenticated user
+    const { userId } = req.params;
+
+    const posts = await Vehicle.find(
+      { 
+        seller: userId,
+        // status: 'active' 
+      },
+      {
+        _id:1,
+        make: 1,
+        slug:1,
+        model: 1,
+        year: 1,
+        views: 1,
+        defaultImage: 1,
+        createdAt: 1,
+        status:1
+      }
+    )
+    .sort({ views: -1 }) // Sort by views in descending order
+    .skip(skip)
+    .limit(parseInt(limit));
+
+    const total = await Vehicle.countDocuments({ 
+      seller: userId,
+      // status: 'active' 
+    });
+
+    // Format the response data
+    const formattedPosts = posts.map(post => ({
+      id:post._id,
+      slug:post.slug,
+      post: `${post.make} ${post.Info.model} ${post.year}`,
+      created: post.createdAt,
+      views: post.views,
+      clicks: post.views
+    }));
+
+    return res.status(200).json({
+      success: true,
+      data: {
+        posts: formattedPosts,
+        pagination: {
+          current: parseInt(page),
+          total: Math.ceil(total / limit),
+          count:total,
+          limit: parseInt(limit)
+        }
+      }
+    });
+
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      message: 'Error fetching top performing posts',
+      error: error.message
+    });
+  }
+};
+export {getTopPerformingPostsBySeller,getOverviewStats,deleteBulkVehicles,getVehiclesForAdmin,updateVehicleStatus, createVehicle,getVehiclesByUserId,toggleFavoriteVehicle,toggleFeaturedVehicle,getFavoriteVehiclesByUserId, getBrowseByVehicles,deleteVehicle, getListVehicles, getVehicleBySlug, getSimilarVehicles, getPopularVehicles, getPopularVehiclesByReviews }
