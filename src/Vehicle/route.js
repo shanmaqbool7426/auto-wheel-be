@@ -9,6 +9,7 @@ import {
   //   updateVehicle,
   //   deleteVehicle,
   getListVehicles,
+  getOverviewStats,
   getPopularVehicles,
   getPopularVehiclesByReviews,
   getSimilarVehicles,
@@ -16,6 +17,7 @@ import {
   getVehiclesForAdmin,
   toggleFeaturedVehicle,
   updateVehicleStatus,
+  getTopPerformingPostsBySeller
   // imageUploader
 } from "./controller.js"
 import { protect } from "../Middleware/auth.js";
@@ -25,7 +27,8 @@ const router = express.Router();
 router.put('/:vehicleId/toggle-featured', toggleFeaturedVehicle);
 router.get('/vehicles-by-type', getBrowseByVehicles);
 router.get('/get-popular-vehicles', getPopularVehicles);
-
+router.get('/get-user-dashboard-overview',protect,getOverviewStats);
+router.get('/get-user-top-performing-posts',protect,getTopPerformingPostsBySeller);
 
 
 router.get('/get-popular-by-reviews-vehicles', getPopularVehiclesByReviews);
