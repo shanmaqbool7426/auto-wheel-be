@@ -101,10 +101,10 @@ export const updateBody = asyncHandler(async (req, res) => {
 
 export const deleteBodyById = asyncHandler(async (req, res) => {
   const { id } = req.params;
-  const Body = await BrowesByBody.findById(id);
+  const Body = await BrowesByBody.findByIdAndDelete(id);
   if (!Body) {
     return responses.notFound(res, 'Body entry not found');
   }
-  await Body.remove();
+ 
   return responses.ok(res, 'Body entry deleted successfully');
 });
