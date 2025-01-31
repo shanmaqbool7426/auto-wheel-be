@@ -209,7 +209,7 @@ const updateUserProfileByUserByEmail = asyncHandler(async (req, res) => {
   user.hasWhatsApp = whatsAppOnThisNumber !== undefined ? whatsAppOnThisNumber : user.whatsAppOnThisNumber; // Update WhatsApp status
 console.log('>>>>>>',user)
   await user.save(); // Save the updated user information
-  const userData = await User.findById(req.params.userId);
+  const userData = await User.findById(user._id);
 console.log('userData',userData)
   return responses.ok(res, 'User profile updated successfully', userData); // Return success response
 });
@@ -306,9 +306,9 @@ const changePassword = asyncHandler(async (req, res) => {
 
 const changePasswordByUserId = asyncHandler(async (req, res) => {
   try {
-    const { currentPassword, newPassword ,userId} = req.body;
+    const { currentPassword, newPassword} = req.body;
 
-
+const userId = req.params.userId;
     const user = await User.findById(userId);
     console.log('User found:', user); // Log the user object
 
