@@ -190,28 +190,18 @@ const getAllReviews = asyncHandler(async (req, res) => {
   }
 
   // Initialize filter
-  let filter = {};
+  let filter = { overAllRating: { $gte: 0 } }; // Ensure valid ratings
 
   if (filterType && filterType !== 'all') {
     filter[`ratings.${filterType}`] = { $exists: true };
   }
 
-  // Fetch the most recent review
-  const lastReview = await Review.findOne(filter).sort({ createdAt: -1 });
+  // Fetch all matching reviews
+  const reviews = await Review.find(filter).sort({ createdAt: -1 });
 
-  if (!lastReview) {
+  if (!reviews.length) {
     return res.status(200).json({ message: 'No reviews found' });
   }
-
-  const vehicleIdentifier = lastReview.vehicle || lastReview.makeAndModel;
-
-  // Filter reviews by vehicle
-  filter['vehicle'] = vehicleIdentifier;
-
-  // Ensure overAllRating is a valid number
-  filter['overAllRating'] = { $gte: 0 }; // Prevent NaN, null, or negative values
-
-  const reviews = await Review.find(filter).sort({ createdAt: -1 });
 
   // Dynamic aggregation
   const stats = await Review.aggregate([
@@ -228,7 +218,7 @@ const getAllReviews = asyncHandler(async (req, res) => {
         totalRating: { 
           $sum: { 
             $cond: [
-              { $and: [{ $ifNull: ['$overAllRating', false] }, { $gt: ['$overAllRating', 0] }] },
+              { $and: [{ $ifNull: ['$overAllRating', false] }, { $gte: ['$overAllRating', 0] }] },
               { $toDouble: '$overAllRating' },
               0
             ] 
