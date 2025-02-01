@@ -76,7 +76,6 @@ const sendMessage = asyncHandler(async (req, res) => {
 
 
 
-  console.log('content',req.body)
   if (!content) {
     throw new ApiError(400, "Message content is required");
   }

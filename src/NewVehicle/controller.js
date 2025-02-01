@@ -141,7 +141,6 @@ const updateNewVehicle = asyncHandler(async (req, res) => {
       }
     };
 
-    console.log("<<<<<<<<<<<<<<", baseVehicleData?.colorsAvailable)
     // Choose the appropriate model based on the type
     if (type === 'car') {
       const carData = {
@@ -149,7 +148,6 @@ const updateNewVehicle = asyncHandler(async (req, res) => {
         ...req.body.carSpecs,
         brochureLink: req.body.brochureLink
       };
-      console.log(">>>>>>>>>>>>>>>>>>", req.body)
       updatedVehicle = await Car.findByIdAndUpdate(id, carData, { new: true });
     } else if (type === 'bike') {
       const bikeData = {
@@ -408,7 +406,6 @@ const bulkDeleteVehicles = asyncHandler(async (req, res) => {
   const { ids } = req.body; // Expect an array of vehicle IDs
 
   try {
-    console.log('sssssssssssssss')
     // Validate that ids is an array and not empty
     if (!Array.isArray(ids) || ids.length === 0) {
       return response.badRequest(res, 'Please provide an array of vehicle IDs');
@@ -738,7 +735,6 @@ const getUpcomingNewVehicles = asyncHandler(async (req, res) => {
     };
 
 
-    console.log(">>>>>>>filter",type, make);
     // Find all vehicles where the release date is in the future, with filters
     const upcomingVehicles = await NewVehicle.find(filter).sort({ releaseDate: 1 });
 

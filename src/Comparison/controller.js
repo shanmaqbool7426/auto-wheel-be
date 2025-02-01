@@ -16,7 +16,6 @@ export const createCompareSet = asyncHandler(async (req, res) => {
       return response.badRequest(res, 'At least two vehicles are required');
     }
 
-    console.log("AAAAAAAAAAAAA",vehicles)
     if (!type || !['car', 'bike', 'truck'].includes(type)) {
       return response.badRequest(res, 'Valid vehicle type is required');
     }
@@ -185,7 +184,6 @@ export const deleteCompareSet = asyncHandler(async (req, res) => {
 export const getTopComparisons = asyncHandler(async (req, res) => {
   try {
     const limit = parseInt(req.query.limit) || 6; // Default to 6 items
-console.log("type>>>>>>>>>..........",req.query.type)
     // Get the most recent comparisons
     const comparisons = await Comparison.find({type: req.query.type})
       .sort({ createdAt: -1 })
@@ -253,7 +251,6 @@ console.log("type>>>>>>>>>..........",req.query.type)
     }).filter(pair => pair.vehicle1 && pair.vehicle2);
 
     response.ok(res, 'Vehicle pairs for comparison retrieved successfully', vehiclePairs);
-    console.log("vehiclePairs>>>>>>>>>",vehiclePairs)
   } catch (error) {
     console.error('Error retrieving top comparisons:', error);
     return response.serverError(res, 'Error retrieving top comparisons');

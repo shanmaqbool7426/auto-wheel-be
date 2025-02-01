@@ -7,7 +7,6 @@ import { ApiError } from "../utils/ApiError.js";
 
 
 const mountJoinChatEvent = (socket) => {
-  console.log('mountJoinChatEvent',socket);
   socket.on(ChatEventEnum.JOIN_CHAT_EVENT, (chatId) => {
     socket.join(chatId);
   });
@@ -16,7 +15,6 @@ const mountJoinChatEvent = (socket) => {
 
 const mountParticipantTypingEvent = (socket) => {
   socket.on(ChatEventEnum.TYPING_EVENT, (chatId) => {
-    console.log('>> typingggggggggggggg')
     socket.in(chatId).emit(ChatEventEnum.TYPING_EVENT, chatId);
   });
 };

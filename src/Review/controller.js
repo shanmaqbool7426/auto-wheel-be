@@ -32,7 +32,6 @@ const submitReview = asyncHandler(async (req, res) => {
     'Info.model': { $regex: new RegExp('^' + model, 'i') },
     'Info.variant': { $regex: new RegExp('^' + variant, 'i') }
   });
-  console.log('vehicleIdget',vehicleIdget)
   if (!vehicleIdget) {
     return res.status(404).json({ message: 'Vehicle not found' });
   }
@@ -209,8 +208,8 @@ const getAllReviews = asyncHandler(async (req, res) => {
   // Filter reviews by vehicle
   filter['vehicle'] = vehicleIdentifier;
 
-  // Exclude reviews with errors (e.g., missing `overAllRating`)
-  filter['overAllRating'] = { $ne: null }; // Ensure `overAllRating` is not null
+  // Ensure overAllRating is a valid number
+  filter['overAllRating'] = { $gte: 0 }; // Prevent NaN, null, or negative values
 
   const reviews = await Review.find(filter).sort({ createdAt: -1 });
 
@@ -226,7 +225,15 @@ const getAllReviews = asyncHandler(async (req, res) => {
         comfort: { $sum: { $cond: [{ $ifNull: ['$ratings.comfort', false] }, 1, 0] } },
         maintenance: { $sum: { $cond: [{ $ifNull: ['$ratings.maintenance', false] }, 1, 0] } },
         total: { $sum: 1 },
-        totalRating: { $sum: { $toDouble: '$overAllRating' } },
+        totalRating: { 
+          $sum: { 
+            $cond: [
+              { $and: [{ $ifNull: ['$overAllRating', false] }, { $gt: ['$overAllRating', 0] }] },
+              { $toDouble: '$overAllRating' },
+              0
+            ] 
+          }
+        },
         filterSpecificRatingSum: {
           $sum: {
             $cond: [
@@ -276,7 +283,7 @@ const getAllReviews = asyncHandler(async (req, res) => {
 
   return responses.ok(res, 'Reviews fetched successfully', {
     reviews,
-    stats: stats[0],
+    stats: stats[0] || {},
     filterSpecificAverageRating: filterType === 'all' ? null : stats[0]?.filterSpecificAverageRating,
   });
 });

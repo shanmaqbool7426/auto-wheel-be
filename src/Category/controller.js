@@ -127,7 +127,6 @@ export const deleteCategory = asyncHandler(async (req, res) => {
 // Add this new controller function for bulk delete
 export const deleteMultipleCategories = asyncHandler(async (req, res) => {
   const { ids } = req.body;
-  console.log('ids>>>', ids);
   // Validate input
   if (!Array.isArray(ids) || ids.length === 0) {
     return responses.badRequest(res, 'Please provide an array of category IDs');

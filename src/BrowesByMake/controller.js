@@ -64,7 +64,6 @@ export const updateMakeById = asyncHandler(async (req, res) => {
   const { name, type, models } = req.body;
 
   const make = await BrowesByMake.findById(id);
-   console.log(">>>>>>>>",req.body)
   if (!make) {
     return responses.notFound(res, 'Make entry not found');
   }
@@ -128,8 +127,7 @@ export const addVariant = asyncHandler(async (req, res) => {
 
   try {
     // Validate ObjectIds
-    console.log("makeId",makeId)
-    console.log("modelId",modelId)
+
     if (!mongoose.Types.ObjectId.isValid(makeId) || !mongoose.Types.ObjectId.isValid(modelId)) {
       return responses.badRequest(res, 'Invalid makeId or modelId');
     }
@@ -172,8 +170,6 @@ export const updateModel = asyncHandler(async (req, res) => {
   const { makeId, modelId } = req.params;
   const { name } = req.body;
 
-  console.log("makeId",makeId)
-  console.log("modelId",modelId)
 
   const updatedMake = await BrowesByMake.findOneAndUpdate(
     { 
