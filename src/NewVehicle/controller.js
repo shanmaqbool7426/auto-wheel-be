@@ -87,6 +87,23 @@ const createNewVehicle = asyncHandler(async (req, res) => {
 
   } catch (error) {
     console.error('Error creating vehicle:', error);
+    
+    // Check for duplicate key error (code 11000)
+    if (error.code === 11000) {
+      // Check if the duplicate key is for the slug field
+      if (error.keyPattern && error.keyPattern.slug) {
+        return response.badRequest(
+          res, 
+          'A vehicle with this make, model, and variant combination already exists. Please modify the details.',
+          {
+            field: 'slug',
+            value: error.keyValue.slug
+          }
+        );
+      }
+      return response.badRequest(res, 'Duplicate entry found', error.keyValue);
+    }
+
     return response.serverError(res, 'Error creating vehicle', error);
   }
 });
