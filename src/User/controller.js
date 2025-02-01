@@ -35,7 +35,6 @@ const registerUser = asyncHandler(async (req, res) => {
     to: user.email, subject: 'Verification Code', text: templete
   }
 
-  console.log('>>>>>',mailOptions)
   // await sendVerificationEmail(mailOptions);
 
   return responses.created(res, 'Verification code sent to your email address', user.verificationCode);
@@ -50,7 +49,6 @@ const login = asyncHandler(async (req, res) => {
 
   const user = await User.findOne({ email });
 
-  console.log('>>>>>> user',user)
   if (user && (await user.matchPassword(password))) {
     // Update last login timestamp
     user.lastLogin = new Date();
@@ -168,7 +166,6 @@ const socialLogin = asyncHandler(async (req, res) => {
 });
 
 const updateUserProfile = asyncHandler(async (req, res) => {
-  console.log('>>>>>> req.body',req.body)
   const { firstName, lastName, phoneNumber, email, showEmail, whatsAppOnThisNumber } = req.body;
 
   const user = await User.findById(req.user._id);
@@ -176,22 +173,18 @@ const updateUserProfile = asyncHandler(async (req, res) => {
     return responses.notFound(res, 'User not found');
   }
 
-  console.log('>>>>>> firstName',firstName,lastName)
   user.firstName = firstName || user.firstName;
   user.lastName = lastName || user.lastName;
   // user.email = email || user.email; // Ensure email is updated if provided
   user.phone = phoneNumber || user.phone; // Update phone number
   user.showEmail = showEmail !== undefined ? showEmail : user.showEmail; // Update showEmail if provided
   user.hasWhatsApp = whatsAppOnThisNumber !== undefined ? whatsAppOnThisNumber : user.whatsAppOnThisNumber; // Update WhatsApp status
-console.log('>>>>>>',user)
   await user.save(); // Save the updated user information
   const userData = await User.findById(req.user._id);
-console.log('userData',userData)
   return responses.ok(res, 'User profile updated successfully', userData); // Return success response
 });
 
 const updateUserProfileByUserByEmail = asyncHandler(async (req, res) => {
-  console.log('>>>>>> req.body',req.body)
   const { firstName, lastName, phoneNumber, email, showEmail, whatsAppOnThisNumber,role } = req.body;
 
   const user = await User.findOne({email}).populate();
@@ -207,7 +200,6 @@ const updateUserProfileByUserByEmail = asyncHandler(async (req, res) => {
   user.phone = phoneNumber || user.phone; // Update phone number
   user.showEmail = showEmail !== undefined ? showEmail : user.showEmail; // Update showEmail if provided
   user.hasWhatsApp = whatsAppOnThisNumber !== undefined ? whatsAppOnThisNumber : user.whatsAppOnThisNumber; // Update WhatsApp status
-console.log('>>>>>>',user)
   await user.save(); // Save the updated user information
   const userData = await User.findById(user._id);
 console.log('userData',userData)
@@ -279,7 +271,6 @@ const changePassword = asyncHandler(async (req, res) => {
     }
 
     const user = await User.findById(req.user._id);
-    console.log('User found:', user); // Log the user object
 
     if (!user) {
       return responses.notFound(res, 'User not found');
@@ -468,7 +459,6 @@ const requestPasswordReset = asyncHandler(async (req, res) => {
     };
 
     await sendVerificationEmail(mailOptions);
-    console.log('aaaaaaaaaaaaaa')
     responses.ok(res, "Password reset link sent to email")
 });
 

@@ -40,13 +40,28 @@ connectDB();
 const app = express();
 
 const server = http.createServer(app);
+
+// Update Socket.IO configuration with proper CORS settings
 const io = new Server(server, {
   cors: {
-    origin: ["http://localhost:3000","https://admin-auto-wheel.vercel.app", "http://localhost:3001","https://037a-144-48-132-249.ngrok-free.app"], // Add your frontend URL
-    methods: ["GET", "POST"],
-    credentials: true
-  }
+    origin: [
+      "http://localhost:3000",
+      "http://localhost:3001",
+      "https://admin-auto-wheel.vercel.app",
+      "https://auto-wheel-be.vercel.app",
+      "https://8111-2400-adc5-11b-d00-95c3-9ddf-7d12-1d2e.ngrok-free.app",
+      "https://037a-144-48-132-249.ngrok-free.app"
+    ],
+    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+    allowedHeaders: ["Content-Type", "Authorization"],
+    credentials: true,
+    transports: ['websocket', 'polling']
+  },
+  allowEIO3: true, // Allow Engine.IO version 3
+  pingTimeout: 60000,
+  pingInterval: 25000
 });
+
 app.use(helmet());
 
 // const limiter = rateLimit({
@@ -56,13 +71,19 @@ app.use(helmet());
 // });
 // app.use('/api/', limiter);
 
-const corsOptions = {
-  "/": {
-    origin: ["http://localhost:5000","https://admin-auto-wheel.vercel.app", "http://localhost:3000",'https://auto-wheel-be.vercel.app',"https://037a-144-48-132-249.ngrok-free.app"],
-    credentials: true,
-  }
-}
-app.use(cors(corsOptions));
+// Update Express CORS settings to match Socket.IO
+app.use(cors({
+  origin: [
+    "http://localhost:3000",
+    "http://localhost:3001",
+    "https://admin-auto-wheel.vercel.app",
+    "https://auto-wheel-be.vercel.app",
+    "https://8111-2400-adc5-11b-d00-95c3-9ddf-7d12-1d2e.ngrok-free.app",
+    "https://037a-144-48-132-249.ngrok-free.app"
+  ],
+  credentials: true,
+  methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"]
+}));
 
 // app.use(compression());
 app.use(morgan('combined'))
@@ -150,13 +171,11 @@ io.on('connection', (socket) => {
   console.log('A user connected');
 
   socket.on('authenticate', (userId) => {
-    console.log('UseFr authenticated:', userId,socket.id);
     connectedUsers.set(userId, socket.id);
     socket.userId = userId;
   });
 
   socket.on('get_conversations', async (userId) => {
-    console.log('userId>>>>',userId)
       try {
         const conversations = await getConversationsForUser(userId);
         socket.emit('conversations_list', conversations);

@@ -12,7 +12,6 @@ const protect = asyncHandler(async (req, res, next) => {
       const decoded = jwt.verify(token, 'token-secret-scv');
 
       req.user = await User.findById(decoded?.id).select('-password');
-      console.log('>>>>>>>>>>>>',req.user)
       // if (!req.user) {
       //   return responses.unauthorized(res, 'Not authorized, user not found');
       // }
