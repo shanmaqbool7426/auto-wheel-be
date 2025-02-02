@@ -15,7 +15,8 @@ import {
   getComparison,
   getListVehicles,
   getVehicleById,
-  bulkDeleteVehicles
+  bulkDeleteVehicles,
+  getVehicleVariants
 } from "./controller.js";  // Import new vehicle controller
 
 const router = express.Router();
@@ -62,11 +63,15 @@ router.put('/update/:id', updateNewVehicle);
 // Delete a new vehicle by ID
 // router.delete('/:id', deleteNewVehicle);
 
+// Get vehicle variants (place this BEFORE the /:slug route)
+
 // Get details of a new vehicle by slug
 router.get('/:slug', getNewVehicleBySlug);
 
 router.delete('/bulk-delete', bulkDeleteVehicles);
 
+// Get vehicle variants
+router.get('/variants/:slug', getVehicleVariants);
 
 
 // -------------------- Additional Image Uploader (Optional) --------------------
