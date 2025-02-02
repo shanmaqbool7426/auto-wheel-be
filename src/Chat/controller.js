@@ -53,6 +53,7 @@ const getConversation = asyncHandler(async (req, res) => {
 
   return responses.ok(res, 'Conversation retrieved successfully', messages);
 });
+
 const getConversationList = asyncHandler(async (req, res) => {
   const currentUserId = req.params.userId;
 
@@ -103,4 +104,87 @@ const getConversationList = asyncHandler(async (req, res) => {
   return responses.ok(res, 'Conversation list retrieved successfully', conversations);
 });
 
-export { sendMessage, getConversation, getConversationList };
+const getConversations = asyncHandler(async (req, res) => {
+  try {
+    const { userId } = req.params;
+
+    if (!userId) {
+      return responses.badRequest(res, 'User ID is required');
+    }
+
+    const objectId = new mongoose.Types.ObjectId(userId);
+    const conversations = await ChatMessage.aggregate([
+      {
+        $match: {
+          $or: [{ sender: objectId }, { receiver: objectId }]
+        }
+      },
+      {
+        $sort: { createdAt: -1 }
+      },
+      {
+        $group: {
+          _id: {
+            $cond: [
+              { $eq: ['$sender', objectId] },
+              '$receiver',
+              '$sender'
+            ]
+          },
+          lastMessage: { $first: '$$ROOT' }
+        }
+      },
+      {
+        $lookup: {
+          from: 'users',
+          localField: '_id',
+          foreignField: '_id',
+          as: 'otherUser'
+        }
+      },
+      {
+        $unwind: '$otherUser'
+      },
+      {
+        $project: {
+          otherUser: {
+            _id: 1,
+            fullName: 1,
+            email: 1
+          },
+          lastMessage: {
+            _id: 1,
+            content: 1,
+            sender: 1,
+            receiver: 1,
+            createdAt: 1
+          }
+        }
+      }
+    ]).exec();
+
+    // Transform the data to match the expected format
+    const transformedConversations = conversations.map(conv => ({
+      id: conv._id,
+      otherUser: {
+        id: conv.otherUser._id,
+        fullName: conv.otherUser.fullName,
+        email: conv.otherUser.email
+      },
+      lastMessage: {
+        id: conv.lastMessage._id,
+        content: conv.lastMessage.content,
+        sender: conv.lastMessage.sender,
+        receiver: conv.lastMessage.receiver,
+        createdAt: conv.lastMessage.createdAt
+      }
+    }));
+
+    return responses.ok(res, 'Conversations retrieved successfully', transformedConversations);
+  } catch (error) {
+    console.error('Error fetching conversations:', error);
+    return responses.serverError(res, 'Failed to fetch conversations');
+  }
+});
+
+export { sendMessage, getConversation, getConversationList, getConversations };
