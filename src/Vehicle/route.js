@@ -17,7 +17,9 @@ import {
   getVehiclesForAdmin,
   toggleFeaturedVehicle,
   updateVehicleStatus,
-  getTopPerformingPostsBySeller
+  getTopPerformingPostsBySeller,
+  getVehicleFromSeller,
+  updateVehicle
   // imageUploader
 } from "./controller.js"
 import { protect } from "../Middleware/auth.js";
@@ -33,9 +35,11 @@ router.get('/get-user-top-performing-posts',protect,getTopPerformingPostsBySelle
 
 router.get('/get-popular-by-reviews-vehicles', getPopularVehiclesByReviews);
 router.get('/getSimilarVehicles/:vehicleId', getSimilarVehicles);
+router.get('/vehicle-by-seller/:vehicleId', protect,getVehicleFromSeller);
 router.get('/:slug', getVehicleBySlug);
 router.get('/vehicles-listing/*', getListVehicles);
 router.post('/', createVehicle); // Assuming authentication middleware is applied
+router.put('/update/:vehicleId', protect,updateVehicle); // Assuming authentication middleware is applied
 // router.put('/:id', updateVehicle);
 router.delete('/:id', deleteVehicle); 
 //  update vehicle status
