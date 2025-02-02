@@ -1142,7 +1142,8 @@ const getVehicleById = asyncHandler(async (req, res) => {
       model: referenceVehicle.model,
       year: referenceVehicle.year,
       _id: { $ne: referenceVehicle._id } // Exclude the reference vehicle
-    }).select('name make model variant year slug price specifications images defaultImage minPrice maxPrice'); 
+    })
+    // .select('name make model variant year slug price specifications images defaultImage minPrice maxPrice'); 
 
     // Group the response
     const response = {
