@@ -49,6 +49,7 @@ const io = new Server(server, {
       "http://localhost:3001",
       "https://admin-auto-wheel.vercel.app",
       "https://auto-wheel-be.vercel.app",
+      "https://new-auto-wheel.netlify.app",
       "https://8111-2400-adc5-11b-d00-95c3-9ddf-7d12-1d2e.ngrok-free.app",
       "https://037a-144-48-132-249.ngrok-free.app"
     ],
@@ -78,6 +79,7 @@ app.use(cors({
     "http://localhost:3001",
     "https://admin-auto-wheel.vercel.app",
     "https://auto-wheel-be.vercel.app",
+    "https://new-auto-wheel.netlify.app",
     "https://8111-2400-adc5-11b-d00-95c3-9ddf-7d12-1d2e.ngrok-free.app",
     "https://037a-144-48-132-249.ngrok-free.app"
   ],
