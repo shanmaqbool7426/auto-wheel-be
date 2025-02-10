@@ -1122,6 +1122,63 @@ const getVehicleById = asyncHandler(async (req, res) => {
   return response.ok(res, 'Vehicle retrieved successfully', vehicle);
 });
 
+ const getVehicleVariants = async (req, res) => {
+  try {
+    const { slug } = req.params;
+
+    // First, find the reference vehicle by slug
+    const referenceVehicle = await NewVehicle.findOne({ slug });
+
+    if (!referenceVehicle) {
+      return res.status(404).json({
+        success: false,
+        message: 'Vehicle not found'
+      });
+    }
+
+    // Find all variants matching make, model, and year
+    const variants = await NewVehicle.find({
+      make: referenceVehicle.make,
+      model: referenceVehicle.model,
+      year: referenceVehicle.year,
+      _id: { $ne: referenceVehicle._id } // Exclude the reference vehicle
+    })
+    // .select('name make model variant year slug price specifications images defaultImage minPrice maxPrice'); 
+
+    // Group the response
+    const response = {
+      referenceVehicle: {
+        _id: referenceVehicle._id,
+        name: referenceVehicle.name,
+        make: referenceVehicle.make,
+        model: referenceVehicle.model,
+        variant: referenceVehicle.variant,
+        year: referenceVehicle.year,
+        slug: referenceVehicle.slug,
+        price: referenceVehicle.price,
+        specifications: referenceVehicle.specifications,
+        images: referenceVehicle.images,
+        defaultImage: referenceVehicle.defaultImage,
+        minPrice: referenceVehicle.minPrice,
+        maxPrice: referenceVehicle.maxPrice
+      },
+      variants
+    };
+
+    return res.status(200).json({
+      success: true,
+      data: response,
+      message: 'Vehicle and its variants fetched successfully'
+    });
+
+  } catch (error) {
+    console.error('Error fetching vehicle variants:', error);
+    return res.status(500).json({
+      success: false,
+      message: 'Internal server error'
+    });
+  }
+};
 
 export {
   createNewVehicle,
@@ -1139,5 +1196,6 @@ export {
   getTopComparisonVehicles,
   getListVehicles,
   getVehicleById,
+  getVehicleVariants,
   
 };
