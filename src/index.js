@@ -15,6 +15,7 @@ import vehicleRoutes from './Vehicle/route.js'
 import categoryRoutes from './Category/route.js'
 import bannerRoutes from './Banner/route.js';
 import nearByLocationRoutes from './NearByLocation/route.js';
+import faqRoutes from './Faq/route.js';
 import footerRoutes from './Footer/route.js';
 import commentRoutes from './Comment/route.js'
 import tagRoutes from './Tag/route.js'
@@ -112,6 +113,7 @@ app.use('/api/roles', roleRoutes);
 app.use('/api/chat', chatRoutes);
 app.use('/api/banners', bannerRoutes);
 app.use('/api/near-by-location', nearByLocationRoutes);
+app.use('/api/faq', faqRoutes);
 // for footer
 app.use('/api/footer', footerRoutes);
 app.use('/upload-image', upload.array('images', 10), async (req, res) => {
