@@ -5,6 +5,7 @@ import { uploadOnCloudinary } from '../Utils/cloudinary.js';
 import Category from '../Category/model.js';
 import Tag from '../Tag/model.js';
 import Comment from "../Comment/model.js";
+import { shouldCountView } from "../Utils/viewCounter.js";
 
 
 // Update the create blog function
@@ -247,6 +248,7 @@ const browseBlogs = asyncHandler(async (req, res) => {
 // });
 
 const getBlogs = asyncHandler(async (req, res) => {
+  const clientIp = req.headers['x-forwarded-for'] || req.socket.remoteAddress;
   console.log('getBlogs called');
   const { 0: routePath } = req.params;
   const parts = routePath ? routePath.split('/').filter(Boolean) : [];
@@ -472,12 +474,11 @@ console.log('>>>>>>>>>111...........', parts);
       .populate('categories', 'name slug')
       .populate('tags', 'name slug')
       .lean();
-  // First increment the view count
-  await Blog.findOneAndUpdate(
-    { slug: blogSlug }, 
-    { $inc: { viewCount: 1 } }
-  );
     if (blog) {
+      const viewIdentifier = `${blogSlug}:${clientIp}`;
+      if (shouldCountView(viewIdentifier)) {
+        await Blog.findOneAndUpdate({ slug: blogSlug }, { $inc: { viewCount: 1 } });
+      }
       // Fetch approved comments for this blog
       const comments = await Comment.find({ postId: blog._id, status: 'approved' }).sort({ createdAt: -1 }).lean();
       const commentCount = comments.length;
@@ -510,8 +511,6 @@ console.log('>>>>>>>>>111...........', parts);
       blogs.forEach(blog => {
         blog.commentCount = relatedCommentCountMap[blog._id] || 0;
       });
-    // Increment the views for the main vehicle
-      await Blog.findOneAndUpdate({ blogSlug }, { $inc: { viewCount: 1 } });
       return responses.ok(res, 'Blog post fetched successfully', {
         blog,
         comments,
