@@ -205,9 +205,21 @@ const getListVehicles = asyncHandler(async (req, res) => {
   // Create a copy of filters without any filters for cityCounts
   const cityCountsFilters = {}; // Empty filters to include all documents
 
+  // Modify the options.sort to include isFeatured sorting first
+  // Keep existing sort criteria as secondary sorting
+  const existingSort = {...options.sort};
+  options.sort = {
+    isFeatured: -1, // Sort featured items first (-1 means descending, so true comes before false)
+    ...existingSort  // Keep any existing sort criteria as secondary sort
+  };
+
   const [totalVehicles, vehicles] = await Promise.all([
     Vehicle.countDocuments(filters),
-    Vehicle.find(filters, null, options).lean(),
+    Vehicle.find(filters, null, options)
+      .sort(options.sort)  // Apply the sort
+      .skip(options.skip)
+      .limit(options.limit)
+      .lean(),
   ]);
 
   const aggregationPipeline = [
@@ -542,7 +554,7 @@ const toggleFavoriteVehicle = asyncHandler(async (req, res) => {
 
     return response.ok(res, 
       isFavorite ? 'Vehicle removed from favorites' : 'Vehicle added to favorites',
-      { isFavorite: !isFavorite }
+      { isFavorite: !isFavorite,favoriteVehicles: user.favoriteVehicles }
     );
   } catch (error) {
     console.error('Error toggling favorite status:', error);
