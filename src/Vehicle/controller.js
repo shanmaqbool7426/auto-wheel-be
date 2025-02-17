@@ -24,6 +24,39 @@ const createVehicle = asyncHandler(async (req, res) => {
   }
 });
 
+const updateVehicle = asyncHandler(async (req, res) => {
+  try {
+    const { vehicleId } = req.params;
+    
+    // First check if vehicle exists and belongs to the authenticated user
+    const existingVehicle = await Vehicle.findOne({ 
+      _id: vehicleId,
+      seller: req.user._id 
+    });
+
+    if (!existingVehicle) {
+      return response.notFound(res, 'Vehicle not found or you are not authorized to update it');
+    }
+
+    // Update the vehicle with new data
+    const updatedVehicle = await Vehicle.findByIdAndUpdate(
+      vehicleId,
+      { 
+        $set: req.body 
+      },
+      { 
+        new: true,      // Return the updated document
+        runValidators: true  // Run model validators
+      }
+    );
+
+    response.ok(res, "Vehicle Updated Successfully", updatedVehicle);
+  } catch (error) {
+    console.error('Error updating vehicle:', error);
+    response.internalServerError(res, 'Failed to update vehicle');
+  }
+});
+
 //  update vehicle status
 const updateVehicleStatus = asyncHandler(async (req, res) => {
   //not soft deleted
@@ -324,6 +357,31 @@ const getVehicleBySlug = asyncHandler(async (req, res) => {
     if (!vehicleDetail) {
       return response.notFound(res, 'Vehicle not found');
     }
+
+    return response.ok(res, 'Vehicle detail retrieved successfully', vehicleDetail);
+  } catch (error) {
+    console.error('Error retrieving vehicle detail:', error);
+    return response.serverError(res, 'An error occurred while retrieving vehicle details');
+  }
+});
+
+const getVehicleFromSeller = asyncHandler(async (req, res) => {
+  const { vehicleId } = req.params;
+  try {
+    // Find the vehicle by vehicleId and seller
+    const vehicleDetail = await Vehicle.findOne({ 
+      _id:vehicleId,
+      seller: req.user._id 
+    }).populate({
+      path: 'seller',          
+      model: 'User',           
+      select: '-password -loginType -isVerified -isActive -createdAt -updatedAt'
+    });
+
+    if (!vehicleDetail) {
+      return response.notFound(res, 'Vehicle not found');
+    }
+
 
     return response.ok(res, 'Vehicle detail retrieved successfully', vehicleDetail);
   } catch (error) {
@@ -861,4 +919,4 @@ const getTopPerformingPostsBySeller = async (req, res) => {
     });
   }
 };
-export {getTopPerformingPostsBySeller,getOverviewStats,deleteBulkVehicles,getVehiclesForAdmin,updateVehicleStatus, createVehicle,getVehiclesByUserId,toggleFavoriteVehicle,toggleFeaturedVehicle,getFavoriteVehiclesByUserId, getBrowseByVehicles,deleteVehicle, getListVehicles, getVehicleBySlug, getSimilarVehicles, getPopularVehicles, getPopularVehiclesByReviews }
+export {updateVehicle,getVehicleFromSeller,getTopPerformingPostsBySeller,getOverviewStats,deleteBulkVehicles,getVehiclesForAdmin,updateVehicleStatus, createVehicle,getVehiclesByUserId,toggleFavoriteVehicle,toggleFeaturedVehicle,getFavoriteVehiclesByUserId, getBrowseByVehicles,deleteVehicle, getListVehicles, getVehicleBySlug, getSimilarVehicles, getPopularVehicles, getPopularVehiclesByReviews }
