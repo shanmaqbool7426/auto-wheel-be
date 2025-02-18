@@ -23,6 +23,10 @@ import blogRoutes from './Blog/route.js'
 import videoRoutes from './Videos/route.js'
 import newVehicleRoutes from './NewVehicle/route.js'
 import comparisonRoutes from './Comparison/route.js'
+import driveRoutes from "./Drive/route.js";
+import fuelTypeRoutes from './FuelType/route.js';
+import colorRoutes from './Color/route.js';
+import transmissionRoutes from './Transmission/route.js';
 import reviewRoutes from './Review/route.js'
 import userReviewRoutes from './UserReviews/route.js'
 import roleRoutes from './Roles/route.js'
@@ -114,6 +118,10 @@ app.use('/api/chat', chatRoutes);
 app.use('/api/banners', bannerRoutes);
 app.use('/api/near-by-location', nearByLocationRoutes);
 app.use('/api/faq', faqRoutes);
+app.use('/api/drive', driveRoutes);
+app.use('/api/fuel-type', fuelTypeRoutes);
+app.use('/api/color', colorRoutes);
+app.use('/api/transmission', transmissionRoutes);
 // for footer
 app.use('/api/footer', footerRoutes);
 app.use('/upload-image', upload.array('images', 10), async (req, res) => {
