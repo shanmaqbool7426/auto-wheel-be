@@ -1,12 +1,32 @@
-const express = require("express");
+import express from 'express';
+import { 
+  createTransmission, 
+  getAllTransmissions, 
+  getTransmissionById, 
+  updateTransmission, 
+  deleteTransmission,
+  updateTransmissionOrder,
+} from './controller.js';
+
 const router = express.Router();
-const { create, list, read, update, remove, reorder } = require("./controller");
 
-router.post("/", create);
-router.get("/", list);
-router.get("/:slug", read);
-router.put("/:slug", update);
-router.delete("/:slug", remove);
-router.post("/reorder", reorder);
+// Create a new transmission
+router.post('/', createTransmission);
 
-module.exports = router;
+// Get all transmissions
+router.get('/', getAllTransmissions);
+
+
+// Get a specific transmission by ID
+router.get('/:id', getTransmissionById);
+
+// Update a transmission
+router.put('/:id', updateTransmission);
+
+// Delete a transmission
+router.delete('/:id', deleteTransmission);
+
+// Update transmission order
+router.put('/order/:id', updateTransmissionOrder);
+
+export default router;

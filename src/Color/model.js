@@ -1,9 +1,9 @@
 import mongoose from 'mongoose';
 
-const transmissionSchema = new mongoose.Schema({
+const colorSchema = new mongoose.Schema({
   title: {
     type: String,
-    required: [true, 'Transmission title is required'],
+    required: [true, 'Color title is required'],
     trim: true
   },
   type: {
@@ -32,10 +32,10 @@ const transmissionSchema = new mongoose.Schema({
 });
 
 // Update the updatedAt timestamp before saving
-transmissionSchema.pre('save', function(next) {
+colorSchema.pre('save', function(next) {
   this.updatedAt = Date.now();
   next();
 });
 
-const Transmission = mongoose.model('Transmission', transmissionSchema);
-export default Transmission;
+const Color = mongoose.model('Color', colorSchema);
+export default Color;

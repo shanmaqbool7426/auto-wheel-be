@@ -1,156 +1,154 @@
-const Transmission = require("./model");
-const slugify = require("slugify");
+import response from '../Utils/response.js';
+import Transmission from './model.js';
+import asyncHandler from 'express-async-handler';
+import slugify from 'slugify';
 
-exports.create = async (req, res) => {
+// Get next order number helper
+const getNextOrder = async () => {
+  const lastTransmission = await Transmission.findOne().sort({ order: -1 });
+  return lastTransmission ? lastTransmission.order + 1 : 1;
+};
+
+// Create a new transmission
+export const createTransmission = asyncHandler(async (req, res) => {
   try {
-    const { title, vehicleType, order } = req.body;
-    const exists = await Transmission.findOne({ title });
-    if (exists) {
-      return res.status(400).json({ message: "Transmission already exists" });
+    const { title, type } = req.body;
+    
+    // Generate slug from title
+    const slug = slugify(title, { lower: true });
+
+    // Check if slug already exists
+    const existingTransmission = await Transmission.findOne({ slug });
+    if (existingTransmission) {
+      return response.badRequest(res, 'A transmission with this title already exists');
     }
 
-    // If no order provided, set as last
-    const lastOrder = await Transmission.findOne({}).sort({ order: -1 });
-    const nextOrder = order || (lastOrder ? lastOrder.order + 1 : 1);
-
-    const transmission = await new Transmission({
-      title,
-      vehicleType,
-      slug: slugify(title),
-      order: nextOrder
-    }).save();
-
-    res.status(201).json({
-      success: true,
-      message: "Transmission Created Successfully",
-      transmission,
+    const transmission = await Transmission.create({
+      ...req.body,
+      slug,
+      order: req.body.order || await getNextOrder()
     });
+    
+    response.created(res, 'Transmission created successfully', transmission);
   } catch (error) {
-    res.status(500).json({
-      success: false,
-      message: "Error in Creating Transmission",
-      error: error.message,
-    });
+    console.error('Error creating transmission:', error);
+    response.serverError(res, 'Error creating transmission');
   }
-};
+});
 
-exports.list = async (req, res) => {
+// Get all transmissions
+export const getAllTransmissions = asyncHandler(async (req, res) => {
   try {
-    const transmissions = await Transmission.find({})
-      .sort({ order: 1, createdAt: -1 })
-      .exec();
-    res.status(200).json({
-      success: true,
-      message: "All Transmissions List",
-      transmissions,
-    });
+    const transmissions = await Transmission.find().sort({ order: 1, createdAt: -1 });
+    response.ok(res, 'Transmissions retrieved successfully', transmissions);
   } catch (error) {
-    res.status(500).json({
-      success: false,
-      message: "Error in getting Transmissions",
-      error: error.message,
-    });
+    console.error('Error retrieving transmissions:', error);
+    response.serverError(res, 'Error retrieving transmissions');
   }
-};
+});
 
-exports.read = async (req, res) => {
+// Get transmission by ID
+export const getTransmissionById = asyncHandler(async (req, res) => {
   try {
-    const transmission = await Transmission.findOne({ slug: req.params.slug });
+    const transmission = await Transmission.findById(req.params.id);
     if (!transmission) {
-      return res.status(404).json({
-        success: false,
-        message: "Transmission not found",
-      });
+      return response.notFound(res, 'Transmission not found');
     }
-    res.status(200).json({
-      success: true,
-      message: "Transmission fetched Successfully",
-      transmission,
-    });
+    response.ok(res, 'Transmission retrieved successfully', transmission);
   } catch (error) {
-    res.status(500).json({
-      success: false,
-      message: "Error in getting Transmission",
-      error: error.message,
-    });
+    console.error('Error retrieving transmission:', error);
+    response.serverError(res, 'Error retrieving transmission');
   }
-};
+});
 
-exports.update = async (req, res) => {
+// Update transmission
+export const updateTransmission = asyncHandler(async (req, res) => {
   try {
-    const { title, vehicleType, order } = req.body;
-    const transmission = await Transmission.findOneAndUpdate(
-      { slug: req.params.slug },
-      {
-        title,
-        vehicleType,
-        slug: slugify(title),
-        ...(order && { order })
-      },
+    const transmission = await Transmission.findById(req.params.id);
+    if (!transmission) {
+      return response.notFound(res, 'Transmission not found');
+    }
+
+    // If title is being updated, update slug as well
+    if (req.body.title) {
+      req.body.slug = slugify(req.body.title, { lower: true });
+      
+      // Check if new slug already exists (excluding current transmission)
+      const existingTransmission = await Transmission.findOne({
+        slug: req.body.slug,
+        _id: { $ne: req.params.id }
+      });
+      
+      if (existingTransmission) {
+        return response.badRequest(res, 'A transmission with this title already exists');
+      }
+    }
+
+    // Check for duplicate order
+    if (req.body.order && req.body.order !== transmission.order) {
+      const existingTransmission = await Transmission.findOne({ 
+        order: req.body.order,
+        _id: { $ne: transmission._id }
+      });
+      if (existingTransmission) {
+        return response.badRequest(res, 'A transmission with this order number already exists');
+      }
+    }
+
+    const updatedTransmission = await Transmission.findByIdAndUpdate(
+      req.params.id,
+      { ...req.body, updatedAt: Date.now() },
       { new: true }
     );
-    res.status(200).json({
-      success: true,
-      message: "Transmission Updated Successfully",
-      transmission,
-    });
-  } catch (error) {
-    res.status(500).json({
-      success: false,
-      message: "Error in updating Transmission",
-      error: error.message,
-    });
-  }
-};
 
-exports.remove = async (req, res) => {
+    response.ok(res, 'Transmission updated successfully', updatedTransmission);
+  } catch (error) {
+    console.error('Error updating transmission:', error);
+    response.serverError(res, 'Error updating transmission');
+  }
+});
+
+// Delete transmission
+export const deleteTransmission = asyncHandler(async (req, res) => {
   try {
-    const transmission = await Transmission.findOneAndDelete({
-      slug: req.params.slug,
-    });
-    res.status(200).json({
-      success: true,
-      message: "Transmission Deleted Successfully",
-      transmission,
-    });
-  } catch (error) {
-    res.status(500).json({
-      success: false,
-      message: "Error in deleting Transmission",
-      error: error.message,
-    });
-  }
-};
+    const transmission = await Transmission.findById(req.params.id);
+    if (!transmission) {
+      return response.notFound(res, 'Transmission not found');
+    }
 
-// Add new method for reordering
-exports.reorder = async (req, res) => {
+    await Transmission.findByIdAndDelete(req.params.id);
+    response.ok(res, 'Transmission deleted successfully');
+  } catch (error) {
+    console.error('Error deleting transmission:', error);
+    response.serverError(res, 'Error deleting transmission');
+  }
+});
+
+// Update transmission order
+export const updateTransmissionOrder = asyncHandler(async (req, res) => {
   try {
-    const { items } = req.body; // items = [{id: '...', order: 1}, ...]
-    
-    const updates = items.map(item => 
-      Transmission.findByIdAndUpdate(
-        item.id,
-        { order: item.order },
-        { new: true }
-      )
-    );
+    const { newOrder } = req.body;
+    const transmission = await Transmission.findById(req.params.id);
 
-    await Promise.all(updates);
+    if (!transmission) {
+      return response.notFound(res, 'Transmission not found');
+    }
 
-    const transmissions = await Transmission.find({})
-      .sort({ order: 1 })
-      .exec();
-
-    res.status(200).json({
-      success: true,
-      message: "Transmissions Reordered Successfully",
-      transmissions,
+    const existingTransmission = await Transmission.findOne({ 
+      order: newOrder,
+      _id: { $ne: transmission._id }
     });
+
+    if (existingTransmission) {
+      return response.badRequest(res, 'A transmission with this order number already exists');
+    }
+
+    transmission.order = newOrder;
+    await transmission.save();
+
+    response.ok(res, 'Transmission order updated successfully', transmission);
   } catch (error) {
-    res.status(500).json({
-      success: false,
-      message: "Error in reordering transmissions",
-      error: error.message,
-    });
+    console.error('Error updating transmission order:', error);
+    response.serverError(res, 'Error updating transmission order');
   }
-};
+});
