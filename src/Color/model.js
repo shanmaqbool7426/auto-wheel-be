@@ -6,6 +6,11 @@ const colorSchema = new mongoose.Schema({
     required: [true, 'Color title is required'],
     trim: true
   },
+  code: {
+    type: String,
+    required: [true, 'Color code is required'],
+    trim: true
+  },
   type: {
     type: String,
     enum: ['car', 'bike', 'truck'],

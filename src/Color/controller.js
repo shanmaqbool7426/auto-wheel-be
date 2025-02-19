@@ -12,15 +12,25 @@ const getNextOrder = async () => {
 // Create a new color
 export const createColor = asyncHandler(async (req, res) => {
   try {
-    const { title, type } = req.body;
+    const { title, type, code } = req.body;
     
     // Generate slug from title
     const slug = slugify(title, { lower: true });
 
-    // Check if slug already exists
-    const existingColor = await Color.findOne({ slug });
+    // Check if color already exists for the same type
+    const existingColor = await Color.findOne({ 
+      title: { $regex: new RegExp(`^${title}$`, 'i') },
+      type 
+    });
+    
     if (existingColor) {
-      return response.badRequest(res, 'A color with this title already exists');
+      return response.badRequest(res, `This color already exists for ${type}`);
+    }
+
+    // Check if color code already exists for the same type
+    const existingColorCode = await Color.findOne({ code, type });
+    if (existingColorCode) {
+      return response.badRequest(res, `A color with this code already exists for ${type}`);
     }
 
     const color = await Color.create({
@@ -69,38 +79,51 @@ export const updateColor = asyncHandler(async (req, res) => {
       return response.notFound(res, 'Color not found');
     }
 
-    // If title is being updated, update slug as well
-    if (req.body.title) {
-      req.body.slug = slugify(req.body.title, { lower: true });
-      
-      // Check if new slug already exists (excluding current color)
+    const { title, type, code } = req.body;
+
+    // If title or type is being updated, check for duplicates
+    if (title || type) {
+      const searchType = type || color.type;
+      const searchTitle = title || color.title;
+
       const existingColor = await Color.findOne({
-        slug: req.body.slug,
+        title: { $regex: new RegExp(`^${searchTitle}$`, 'i') },
+        type: searchType,
         _id: { $ne: req.params.id }
       });
       
       if (existingColor) {
-        return response.badRequest(res, 'A color with this title already exists');
+        return response.badRequest(res, `This color already exists for ${searchType}`);
       }
     }
 
-    // Check for duplicate order
-    if (req.body.order && req.body.order !== color.order) {
-      const existingColor = await Color.findOne({ 
-        order: req.body.order,
-        _id: { $ne: color._id }
+    // Check if color code is being updated and if it already exists for the same type
+    if (code || type) {
+      const searchType = type || color.type;
+      const searchCode = code || color.code;
+
+      const existingColorCode = await Color.findOne({
+        code: searchCode,
+        type: searchType,
+        _id: { $ne: req.params.id }
       });
-      if (existingColor) {
-        return response.badRequest(res, 'A color with this order number already exists');
+      
+      if (existingColorCode) {
+        return response.badRequest(res, `A color with this code already exists for ${searchType}`);
       }
+    }
+
+    // Update slug if title is changed
+    if (title) {
+      req.body.slug = slugify(title, { lower: true });
     }
 
     const updatedColor = await Color.findByIdAndUpdate(
       req.params.id,
-      { ...req.body, updatedAt: Date.now() },
+      req.body,
       { new: true }
     );
-
+    
     response.ok(res, 'Color updated successfully', updatedColor);
   } catch (error) {
     console.error('Error updating color:', error);
