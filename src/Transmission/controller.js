@@ -14,13 +14,17 @@ export const createTransmission = asyncHandler(async (req, res) => {
   try {
     const { title, type } = req.body;
     
-    // Generate slug from title
-    const slug = slugify(title, { lower: true });
+    // Generate slug from title and type
+    const slug = slugify(`${title}-${type}`, { lower: true });
 
-    // Check if slug already exists
-    const existingTransmission = await Transmission.findOne({ slug });
+    // Check if transmission already exists for the same type
+    const existingTransmission = await Transmission.findOne({ 
+      title: { $regex: new RegExp(`^${title}$`, 'i') },
+      type 
+    });
+    
     if (existingTransmission) {
-      return response.badRequest(res, 'A transmission with this title already exists');
+      return response.badRequest(res, `This transmission already exists for ${type}`);
     }
 
     const transmission = await Transmission.create({
@@ -36,11 +40,43 @@ export const createTransmission = asyncHandler(async (req, res) => {
   }
 });
 
-// Get all transmissions
+// Get all transmissions with pagination and search
 export const getAllTransmissions = asyncHandler(async (req, res) => {
   try {
-    const transmissions = await Transmission.find().sort({ order: 1, createdAt: -1 });
-    response.ok(res, 'Transmissions retrieved successfully', transmissions);
+    const {
+      page = 1,
+      limit = 10,
+      search = ''
+    } = req.query;
+
+    const pageNumber = parseInt(page);
+    const limitNumber = parseInt(limit);
+    const skip = (pageNumber - 1) * limitNumber;
+
+    // Build search query
+    const searchQuery = search
+      ? { title: { $regex: search, $options: 'i' } }
+      : {};
+
+    const totalItems = await Transmission.countDocuments(searchQuery);
+    const totalPages = Math.ceil(totalItems / limitNumber);
+
+    const transmissions = await Transmission.find(searchQuery)
+      .sort({ order: 1, createdAt: -1 })
+      .skip(skip)
+      .limit(limitNumber);
+
+    response.ok(res, 'Transmissions retrieved successfully', {
+      transmissions,
+      pagination: {
+        totalItems,
+        totalPages,
+        currentPage: pageNumber,
+        itemsPerPage: limitNumber,
+        hasNextPage: pageNumber < totalPages,
+        hasPrevPage: pageNumber > 1
+      }
+    });
   } catch (error) {
     console.error('Error retrieving transmissions:', error);
     response.serverError(res, 'Error retrieving transmissions');
@@ -69,19 +105,25 @@ export const updateTransmission = asyncHandler(async (req, res) => {
       return response.notFound(res, 'Transmission not found');
     }
 
-    // If title is being updated, update slug as well
-    if (req.body.title) {
-      req.body.slug = slugify(req.body.title, { lower: true });
-      
-      // Check if new slug already exists (excluding current transmission)
+    const { title, type } = req.body;
+
+    // If title or type is being updated, check for duplicates
+    if (title || type) {
+      const searchType = type || transmission.type;
+      const searchTitle = title || transmission.title;
+
       const existingTransmission = await Transmission.findOne({
-        slug: req.body.slug,
+        title: { $regex: new RegExp(`^${searchTitle}$`, 'i') },
+        type: searchType,
         _id: { $ne: req.params.id }
       });
       
       if (existingTransmission) {
-        return response.badRequest(res, 'A transmission with this title already exists');
+        return response.badRequest(res, `This transmission already exists for ${searchType}`);
       }
+
+      // Update slug if title or type changes
+      req.body.slug = slugify(`${searchTitle}-${searchType}`, { lower: true });
     }
 
     // Check for duplicate order
@@ -150,5 +192,24 @@ export const updateTransmissionOrder = asyncHandler(async (req, res) => {
   } catch (error) {
     console.error('Error updating transmission order:', error);
     response.serverError(res, 'Error updating transmission order');
+  }
+});
+
+// Add new endpoint to get transmissions by type
+export const getTransmissionsByType = asyncHandler(async (req, res) => {
+  try {
+    const { type } = req.params;
+    
+    const transmissions = await Transmission.find({ type })
+      .sort({ order: 1, createdAt: -1 });
+    
+    if (!transmissions.length) {
+      return response.success(res, `No transmissions found for type: ${type}`, []);
+    }
+    
+    response.success(res, 'Transmissions retrieved successfully', transmissions);
+  } catch (error) {
+    console.error('Error fetching transmissions by type:', error);
+    response.serverError(res, 'Error fetching transmissions');
   }
 });

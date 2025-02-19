@@ -6,6 +6,7 @@ import {
   updateDrive, 
   deleteDrive,
   updateDriveOrder,
+  getDrivesByType
 } from './controller.js';
 
 const router = express.Router();
@@ -27,5 +28,8 @@ router.delete('/:id', deleteDrive);
 
 // Update drive order
 router.put('/order/:id', updateDriveOrder);
+
+// Get drives by type
+router.get('/type/:type', getDrivesByType);
 
 export default router;

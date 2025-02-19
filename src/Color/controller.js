@@ -14,8 +14,8 @@ export const createColor = asyncHandler(async (req, res) => {
   try {
     const { title, type, code } = req.body;
     
-    // Generate slug from title
-    const slug = slugify(title, { lower: true });
+    // Generate slug from title and type
+    const slug = slugify(`${title}-${type}`, { lower: true });
 
     // Check if color already exists for the same type
     const existingColor = await Color.findOne({ 
@@ -49,8 +49,38 @@ export const createColor = asyncHandler(async (req, res) => {
 // Get all colors
 export const getAllColors = asyncHandler(async (req, res) => {
   try {
-    const colors = await Color.find().sort({ order: 1, createdAt: -1 });
-    response.ok(res, 'Colors retrieved successfully', colors);
+    const {
+      page = 1,
+      limit = 10,
+      search = ''
+    } = req.query;
+
+    const pageNumber = parseInt(page);
+    const limitNumber = parseInt(limit);
+    const skip = (pageNumber - 1) * limitNumber;
+        // Build search query
+        const searchQuery = search
+        ? { title: { $regex: search, $options: 'i' } }
+        : {};
+
+        const totalItems = await Color.countDocuments(searchQuery);
+        const totalPages = Math.ceil(totalItems / limitNumber);
+        const colors = await Color.find(searchQuery)
+        .sort({ order: 1, createdAt: -1 })
+        .skip(skip)
+        .limit(limitNumber);
+
+    response.ok(res, 'Colors retrieved successfully', {
+      colors,
+      pagination: {
+        totalItems,
+        totalPages,
+        currentPage: pageNumber,
+        itemsPerPage: limitNumber,
+        hasNextPage: pageNumber < totalPages,
+        hasPrevPage: pageNumber > 1
+      }
+    });
   } catch (error) {
     console.error('Error retrieving colors:', error);
     response.serverError(res, 'Error retrieving colors');
@@ -79,7 +109,14 @@ export const updateColor = asyncHandler(async (req, res) => {
       return response.notFound(res, 'Color not found');
     }
 
-    const { title, type, code } = req.body;
+    const { title, type } = req.body;
+
+    // Update slug if title or type is changed
+    if (title || type) {
+      const newTitle = title || color.title;
+      const newType = type || color.type;
+      req.body.slug = slugify(`${newTitle}-${newType}`, { lower: true });
+    }
 
     // If title or type is being updated, check for duplicates
     if (title || type) {
@@ -98,9 +135,9 @@ export const updateColor = asyncHandler(async (req, res) => {
     }
 
     // Check if color code is being updated and if it already exists for the same type
-    if (code || type) {
+    if (req.body.code || type) {
       const searchType = type || color.type;
-      const searchCode = code || color.code;
+      const searchCode = req.body.code || color.code;
 
       const existingColorCode = await Color.findOne({
         code: searchCode,
@@ -111,11 +148,6 @@ export const updateColor = asyncHandler(async (req, res) => {
       if (existingColorCode) {
         return response.badRequest(res, `A color with this code already exists for ${searchType}`);
       }
-    }
-
-    // Update slug if title is changed
-    if (title) {
-      req.body.slug = slugify(title, { lower: true });
     }
 
     const updatedColor = await Color.findByIdAndUpdate(
@@ -173,5 +205,24 @@ export const updateColorOrder = asyncHandler(async (req, res) => {
   } catch (error) {
     console.error('Error updating color order:', error);
     response.serverError(res, 'Error updating color order');
+  }
+});
+
+// Get colors by type
+export const getColorsByType = asyncHandler(async (req, res) => {
+  try {
+    const { type } = req.params;
+    
+    const colors = await Color.find({ type })
+      .sort({ order: 1, createdAt: -1 }); // Sort by order first, then by creation date
+    
+    if (!colors.length) {
+      return response.success(res, `No colors found for type: ${type}`, []);
+    }
+    
+    response.success(res, 'Colors retrieved successfully', colors);
+  } catch (error) {
+    console.error('Error fetching colors by type:', error);
+    response.serverError(res, 'Error fetching colors');
   }
 });

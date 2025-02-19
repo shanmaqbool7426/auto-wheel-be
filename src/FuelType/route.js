@@ -5,7 +5,8 @@ import {
   getFuelTypeById, 
   updateFuelType, 
   deleteFuelType,
-  updateFuelTypeOrder
+  updateFuelTypeOrder,
+  getFuelTypesByType
 } from './controller.js';
 
 const router = express.Router();
@@ -27,5 +28,8 @@ router.delete('/:id', deleteFuelType);
 
 // Update fuel type order
 router.put('/order/:id', updateFuelTypeOrder);
+
+// Get fuel types by type
+router.get('/type/:type', getFuelTypesByType);
 
 export default router;

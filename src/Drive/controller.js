@@ -6,26 +6,25 @@ import slugify from 'slugify';
 // Create
 export const createDrive = asyncHandler(async (req, res) => {
   try {
-    const { title, type, order } = req.body;
-    const slug = slugify(title, { lower: true });
+    const { title, type } = req.body;
+    
+    // Generate slug from title and type
+    const slug = slugify(`${title}-${type}`, { lower: true });
 
-    // Check if drive with same order exists
-    const existingOrder = await Drive.findOne({ order });
-    if (existingOrder) {
-      return response.badRequest(res, 'A drive with this order number already exists');
-    }
-
-    // Check if drive with same slug exists
-    const existingSlug = await Drive.findOne({ slug });
-    if (existingSlug) {
-      return response.badRequest(res, 'A drive with this title already exists');
+    // Check if drive already exists for the same type
+    const existingDrive = await Drive.findOne({ 
+      title: { $regex: new RegExp(`^${title}$`, 'i') },
+      type 
+    });
+    
+    if (existingDrive) {
+      return response.badRequest(res, `This drive already exists for ${type}`);
     }
 
     const drive = await Drive.create({
-      title,
-      type,
+      ...req.body,
       slug,
-      order: order || await getNextOrder()
+      order: req.body.order || await getNextOrder()
     });
 
     response.created(res, 'Drive created successfully', drive);
@@ -41,11 +40,43 @@ const getNextOrder = async () => {
   return lastDrive ? lastDrive.order + 1 : 1;
 };
 
-// Get all
+// Get all drives with pagination and search
 export const getAllDrives = asyncHandler(async (req, res) => {
   try {
-    const drives = await Drive.find().sort({ order: 1, createdAt: -1 });
-    response.ok(res, 'Drives retrieved successfully', drives);
+    const {
+      page = 1,
+      limit = 10,
+      search = ''
+    } = req.query;
+
+    const pageNumber = parseInt(page);
+    const limitNumber = parseInt(limit);
+    const skip = (pageNumber - 1) * limitNumber;
+
+    // Build search query
+    const searchQuery = search
+      ? { title: { $regex: search, $options: 'i' } }
+      : {};
+
+    const totalItems = await Drive.countDocuments(searchQuery);
+    const totalPages = Math.ceil(totalItems / limitNumber);
+
+    const drives = await Drive.find(searchQuery)
+      .sort({ order: 1, createdAt: -1 })
+      .skip(skip)
+      .limit(limitNumber);
+
+    response.ok(res, 'Drives retrieved successfully', {
+      drives,
+      pagination: {
+        totalItems,
+        totalPages,
+        currentPage: pageNumber,
+        itemsPerPage: limitNumber,
+        hasNextPage: pageNumber < totalPages,
+        hasPrevPage: pageNumber > 1
+      }
+    });
   } catch (error) {
     console.error('Error retrieving drives:', error);
     response.serverError(res, 'Error retrieving drives');
@@ -71,42 +102,38 @@ export const getDriveById = asyncHandler(async (req, res) => {
 // Update
 export const updateDrive = asyncHandler(async (req, res) => {
   try {
-    const { title, type, order } = req.body;
     const drive = await Drive.findById(req.params.id);
     
     if (!drive) {
       return response.notFound(res, 'Drive not found');
     }
 
-    if (title) {
-      const slug = slugify(title, { lower: true });
-      const existingSlug = await Drive.findOne({ 
-        slug, 
-        _id: { $ne: drive._id } 
+    const { title, type } = req.body;
+
+    // If title or type is being updated, check for duplicates
+    if (title || type) {
+      const searchType = type || drive.type;
+      const searchTitle = title || drive.title;
+
+      const existingDrive = await Drive.findOne({
+        title: { $regex: new RegExp(`^${searchTitle}$`, 'i') },
+        type: searchType,
+        _id: { $ne: req.params.id }
       });
       
-      if (existingSlug) {
-        return response.badRequest(res, 'A drive with this title already exists');
+      if (existingDrive) {
+        return response.badRequest(res, `This drive already exists for ${searchType}`);
       }
-      drive.slug = slug;
+
+      // Update slug if title or type changes
+      req.body.slug = slugify(`${searchTitle}-${searchType}`, { lower: true });
     }
 
-    if (order && order !== drive.order) {
-      const existingOrder = await Drive.findOne({ 
-        order, 
-        _id: { $ne: drive._id }
-      });
-      
-      if (existingOrder) {
-        return response.badRequest(res, 'A drive with this order number already exists');
-      }
-    }
-
-    drive.title = title || drive.title;
-    drive.type = type || drive.type;
-    drive.order = order || drive.order;
-
-    const updatedDrive = await drive.save();
+    const updatedDrive = await Drive.findByIdAndUpdate(
+      req.params.id,
+      { ...req.body, updatedAt: Date.now() },
+      { new: true }
+    );
     
     response.ok(res, 'Drive updated successfully', updatedDrive);
   } catch (error) {
@@ -159,5 +186,24 @@ export const updateDriveOrder = asyncHandler(async (req, res) => {
   } catch (error) {
     console.error('Error updating drive order:', error);
     response.serverError(res, 'Error updating drive order');
+  }
+});
+
+// Get drives by type
+export const getDrivesByType = asyncHandler(async (req, res) => {
+  try {
+    const { type } = req.params;
+    
+    const drives = await Drive.find({ type })
+      .sort({ order: 1, createdAt: -1 });
+    
+    if (!drives.length) {
+      return response.success(res, `No drives found for type: ${type}`, []);
+    }
+    
+    response.success(res, 'Drives retrieved successfully', drives);
+  } catch (error) {
+    console.error('Error fetching drives by type:', error);
+    response.serverError(res, 'Error fetching drives');
   }
 });

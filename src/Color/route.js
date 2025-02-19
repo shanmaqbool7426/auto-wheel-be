@@ -5,7 +5,8 @@ import {
   getColorById, 
   updateColor, 
   deleteColor,
-  updateColorOrder
+  updateColorOrder,
+  getColorsByType
 } from './controller.js';
 
 const router = express.Router();
@@ -27,5 +28,8 @@ router.delete('/:id', deleteColor);
 
 // Update color order
 router.put('/order/:id', updateColorOrder);
+
+// Get colors by type
+router.get('/type/:type', getColorsByType);
 
 export default router;
