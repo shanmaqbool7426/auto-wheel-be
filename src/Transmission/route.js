@@ -6,6 +6,7 @@ import {
   updateTransmission, 
   deleteTransmission,
   updateTransmissionOrder,
+  getTransmissionsByType
 } from './controller.js';
 
 const router = express.Router();
@@ -28,5 +29,8 @@ router.delete('/:id', deleteTransmission);
 
 // Update transmission order
 router.put('/order/:id', updateTransmissionOrder);
+
+// Get transmissions by type
+router.get('/type/:type', getTransmissionsByType);
 
 export default router;

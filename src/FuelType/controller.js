@@ -14,13 +14,17 @@ export const createFuelType = asyncHandler(async (req, res) => {
   try {
     const { title, type } = req.body;
     
-    // Generate slug from title
-    const slug = slugify(title, { lower: true });
+    // Generate slug from title and type
+    const slug = slugify(`${title}-${type}`, { lower: true });
 
-    // Check if slug already exists
-    const existingFuelType = await FuelType.findOne({ slug });
+    // Check if fuel type already exists for the same type
+    const existingFuelType = await FuelType.findOne({ 
+      title: { $regex: new RegExp(`^${title}$`, 'i') },
+      type 
+    });
+    
     if (existingFuelType) {
-      return response.badRequest(res, 'A fuel type with this title already exists');
+      return response.badRequest(res, `This fuel type already exists for ${type}`);
     }
 
     const fuelType = await FuelType.create({
@@ -36,11 +40,43 @@ export const createFuelType = asyncHandler(async (req, res) => {
   }
 });
 
-// Get all fuel types
+// Get all fuel types with pagination and search
 export const getAllFuelTypes = asyncHandler(async (req, res) => {
   try {
-    const fuelTypes = await FuelType.find().sort({ order: 1, createdAt: -1 });
-    response.ok(res, 'Fuel types retrieved successfully', fuelTypes);
+    const {
+      page = 1,
+      limit = 10,
+      search = ''
+    } = req.query;
+
+    const pageNumber = parseInt(page);
+    const limitNumber = parseInt(limit);
+    const skip = (pageNumber - 1) * limitNumber;
+
+    // Build search query
+    const searchQuery = search
+      ? { title: { $regex: search, $options: 'i' } }
+      : {};
+
+    const totalItems = await FuelType.countDocuments(searchQuery);
+    const totalPages = Math.ceil(totalItems / limitNumber);
+
+    const fuelTypes = await FuelType.find(searchQuery)
+      .sort({ order: 1, createdAt: -1 })
+      .skip(skip)
+      .limit(limitNumber);
+
+    response.ok(res, 'Fuel types retrieved successfully', {
+      fuelTypes,
+      pagination: {
+        totalItems,
+        totalPages,
+        currentPage: pageNumber,
+        itemsPerPage: limitNumber,
+        hasNextPage: pageNumber < totalPages,
+        hasPrevPage: pageNumber > 1
+      }
+    });
   } catch (error) {
     console.error('Error retrieving fuel types:', error);
     response.serverError(res, 'Error retrieving fuel types');
@@ -69,30 +105,25 @@ export const updateFuelType = asyncHandler(async (req, res) => {
       return response.notFound(res, 'Fuel type not found');
     }
 
-    // If title is being updated, update slug as well
-    if (req.body.title) {
-      req.body.slug = slugify(req.body.title, { lower: true });
-      
-      // Check if new slug already exists (excluding current fuel type)
+    const { title, type } = req.body;
+
+    // If title or type is being updated, check for duplicates
+    if (title || type) {
+      const searchType = type || fuelType.type;
+      const searchTitle = title || fuelType.title;
+
       const existingFuelType = await FuelType.findOne({
-        slug: req.body.slug,
+        title: { $regex: new RegExp(`^${searchTitle}$`, 'i') },
+        type: searchType,
         _id: { $ne: req.params.id }
       });
       
       if (existingFuelType) {
-        return response.badRequest(res, 'A fuel type with this title already exists');
+        return response.badRequest(res, `This fuel type already exists for ${searchType}`);
       }
-    }
 
-    // Check for duplicate order
-    if (req.body.order && req.body.order !== fuelType.order) {
-      const existingFuelType = await FuelType.findOne({ 
-        order: req.body.order,
-        _id: { $ne: fuelType._id }
-      });
-      if (existingFuelType) {
-        return response.badRequest(res, 'A fuel type with this order number already exists');
-      }
+      // Update slug if title or type changes
+      req.body.slug = slugify(`${searchTitle}-${searchType}`, { lower: true });
     }
 
     const updatedFuelType = await FuelType.findByIdAndUpdate(
@@ -150,5 +181,24 @@ export const updateFuelTypeOrder = asyncHandler(async (req, res) => {
   } catch (error) {
     console.error('Error updating fuel type order:', error);
     response.serverError(res, 'Error updating fuel type order');
+  }
+});
+
+// Get fuel types by type
+export const getFuelTypesByType = asyncHandler(async (req, res) => {
+  try {
+    const { type } = req.params;
+    
+    const fuelTypes = await FuelType.find({ type })
+      .sort({ order: 1, createdAt: -1 });
+    
+    if (!fuelTypes.length) {
+      return response.success(res, `No fuel types found for type: ${type}`, []);
+    }
+    
+    response.success(res, 'Fuel types retrieved successfully', fuelTypes);
+  } catch (error) {
+    console.error('Error fetching fuel types by type:', error);
+    response.serverError(res, 'Error fetching fuel types');
   }
 });
