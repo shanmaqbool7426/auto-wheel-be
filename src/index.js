@@ -53,7 +53,12 @@ const io = new Server(server, {
     origin: [
       "http://localhost:3000",
       "http://localhost:3001",
+      "http://localhost:3002",
       "https://admin-auto-wheel.vercel.app",
+      "https://auto-wheel.vercel.app",
+      "https://new-auto-wheel.netlify.app",
+      "https://admin-auto-wheel.vercel.app",
+      "https://auto-wheel.vercel.app",
       "https://auto-wheel-be.vercel.app",
       "https://new-auto-wheel.netlify.app",
       "https://8111-2400-adc5-11b-d00-95c3-9ddf-7d12-1d2e.ngrok-free.app",
@@ -83,6 +88,10 @@ app.use(cors({
   origin: [
     "http://localhost:3000",
     "http://localhost:3001",
+    "http://localhost:3002",
+    "https://admin-auto-wheel.vercel.app",
+    "https://auto-wheel-be.vercel.app",
+    "https://new-auto-wheel.netlify.app",
     "https://admin-auto-wheel.vercel.app",
     "https://auto-wheel-be.vercel.app",
     "https://new-auto-wheel.netlify.app",
