@@ -192,16 +192,16 @@ export const updateDriveOrder = asyncHandler(async (req, res) => {
 // Get drives by type
 export const getDrivesByType = asyncHandler(async (req, res) => {
   try {
-    const { type } = req.params;
+    const { type } = req.query;
     
     const drives = await Drive.find({ type })
       .sort({ order: 1, createdAt: -1 });
     
     if (!drives.length) {
-      return response.success(res, `No drives found for type: ${type}`, []);
-    }
+      return response.ok(res, `No drives found for type: ${type}`, []);
+    } 
     
-    response.success(res, 'Drives retrieved successfully', drives);
+    response.ok(res, 'Drives retrieved successfully', drives);
   } catch (error) {
     console.error('Error fetching drives by type:', error);
     response.serverError(res, 'Error fetching drives');

@@ -17,6 +17,9 @@ router.post('/', createFuelType);
 // Get all fuel types
 router.get('/', getAllFuelTypes);
 
+// Get fuel types by type
+router.get('/type', getFuelTypesByType);
+
 // Get a specific fuel type by ID
 router.get('/:id', getFuelTypeById);
 
@@ -29,7 +32,5 @@ router.delete('/:id', deleteFuelType);
 // Update fuel type order
 router.put('/order/:id', updateFuelTypeOrder);
 
-// Get fuel types by type
-router.get('/type/:type', getFuelTypesByType);
 
 export default router;

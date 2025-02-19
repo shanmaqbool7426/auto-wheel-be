@@ -17,6 +17,8 @@ router.post('/', createTransmission);
 // Get all transmissions
 router.get('/', getAllTransmissions);
 
+// Get transmissions by type
+router.get('/type', getTransmissionsByType);
 
 // Get a specific transmission by ID
 router.get('/:id', getTransmissionById);
@@ -30,7 +32,5 @@ router.delete('/:id', deleteTransmission);
 // Update transmission order
 router.put('/order/:id', updateTransmissionOrder);
 
-// Get transmissions by type
-router.get('/type/:type', getTransmissionsByType);
 
 export default router;

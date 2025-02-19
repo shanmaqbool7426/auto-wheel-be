@@ -17,6 +17,9 @@ router.post('/', createColor);
 // Get all colors
 router.get('/', getAllColors);
 
+// Get colors by type
+router.get('/type', getColorsByType);
+
 // Get a specific color by ID
 router.get('/:id', getColorById);
 
@@ -29,7 +32,5 @@ router.delete('/:id', deleteColor);
 // Update color order
 router.put('/order/:id', updateColorOrder);
 
-// Get colors by type
-router.get('/type/:type', getColorsByType);
 
 export default router;

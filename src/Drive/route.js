@@ -17,6 +17,9 @@ router.post('/', createDrive);
 // Get all drives
 router.get('/', getAllDrives);
 
+// Get drives by type
+router.get('/type', getDrivesByType);
+
 // Get a specific drive by ID
 router.get('/:id', getDriveById);
 
@@ -29,7 +32,5 @@ router.delete('/:id', deleteDrive);
 // Update drive order
 router.put('/order/:id', updateDriveOrder);
 
-// Get drives by type
-router.get('/type/:type', getDrivesByType);
 
 export default router;
