@@ -198,16 +198,16 @@ export const updateTransmissionOrder = asyncHandler(async (req, res) => {
 // Add new endpoint to get transmissions by type
 export const getTransmissionsByType = asyncHandler(async (req, res) => {
   try {
-    const { type } = req.params;
+    const { type } = req.query;
     
     const transmissions = await Transmission.find({ type })
       .sort({ order: 1, createdAt: -1 });
     
     if (!transmissions.length) {
-      return response.success(res, `No transmissions found for type: ${type}`, []);
+      return response.ok(res, `No transmissions found for type: ${type}`, []);
     }
     
-    response.success(res, 'Transmissions retrieved successfully', transmissions);
+    response.ok(res, 'Transmissions retrieved successfully', transmissions);
   } catch (error) {
     console.error('Error fetching transmissions by type:', error);
     response.serverError(res, 'Error fetching transmissions');

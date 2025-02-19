@@ -211,16 +211,15 @@ export const updateColorOrder = asyncHandler(async (req, res) => {
 // Get colors by type
 export const getColorsByType = asyncHandler(async (req, res) => {
   try {
-    const { type } = req.params;
+    const { type } = req.query;
     
     const colors = await Color.find({ type })
       .sort({ order: 1, createdAt: -1 }); // Sort by order first, then by creation date
     
     if (!colors.length) {
-      return response.success(res, `No colors found for type: ${type}`, []);
+      return response.ok(res, `No colors found for type: ${type}`, []);
     }
-    
-    response.success(res, 'Colors retrieved successfully', colors);
+    response.ok(res, 'Colors retrieved successfully', colors);
   } catch (error) {
     console.error('Error fetching colors by type:', error);
     response.serverError(res, 'Error fetching colors');

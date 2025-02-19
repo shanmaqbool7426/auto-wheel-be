@@ -187,16 +187,15 @@ export const updateFuelTypeOrder = asyncHandler(async (req, res) => {
 // Get fuel types by type
 export const getFuelTypesByType = asyncHandler(async (req, res) => {
   try {
-    const { type } = req.params;
-    
+    const { type } = req.query;
     const fuelTypes = await FuelType.find({ type })
       .sort({ order: 1, createdAt: -1 });
     
     if (!fuelTypes.length) {
-      return response.success(res, `No fuel types found for type: ${type}`, []);
+      return response.ok(res, `No fuel types found for type: ${type}`, []);
     }
     
-    response.success(res, 'Fuel types retrieved successfully', fuelTypes);
+    response.ok(res, 'Fuel types retrieved successfully', fuelTypes);
   } catch (error) {
     console.error('Error fetching fuel types by type:', error);
     response.serverError(res, 'Error fetching fuel types');
