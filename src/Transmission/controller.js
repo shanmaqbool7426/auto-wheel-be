@@ -46,7 +46,8 @@ export const getAllTransmissions = asyncHandler(async (req, res) => {
     const {
       page = 1,
       limit = 10,
-      search = ''
+      search = '',
+      type = 'all'
     } = req.query;
 
     const pageNumber = parseInt(page);
@@ -54,9 +55,14 @@ export const getAllTransmissions = asyncHandler(async (req, res) => {
     const skip = (pageNumber - 1) * limitNumber;
 
     // Build search query
-    const searchQuery = search
+    let searchQuery = search
       ? { title: { $regex: search, $options: 'i' } }
       : {};
+
+    // Add type filter if not 'all'
+    if (type !== 'all') {
+      searchQuery = { ...searchQuery, type };
+    }
 
     const totalItems = await Transmission.countDocuments(searchQuery);
     const totalPages = Math.ceil(totalItems / limitNumber);
