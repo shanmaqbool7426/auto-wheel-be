@@ -2,6 +2,7 @@ import asyncHandler from 'express-async-handler';
 import { NewVehicle, Car, Bike, Truck } from './model.js';
 import response from '../Utils/response.js';
 import Review from '../Review/model.js';
+import BrowesByBody from '../BrowseByBody/model.js';
 
 // Create a new vehicle
 const createNewVehicle = asyncHandler(async (req, res) => {
@@ -455,16 +456,26 @@ const getSimilarNewVehicles = asyncHandler(async (req, res) => {
 // Get popular vehicles based on views
 const getPopularNewVehicles = asyncHandler(async (req, res) => {
   try {
-    const { type, make } = req.query;
+    const { type, make, bodyType } = req.query;
+
+    // First find the bodyType ID if bodyType is provided
+    let bodyTypeId;
+    if (bodyType) {
+      const body = await BrowesByBody.findOne({
+        title: { $regex: new RegExp('^' + bodyType + '$', 'i') }
+      });
+      bodyTypeId = body?._id?.toString();
+    }
 
     // Build the filter based on query parameters
     const filter = {
-      ...(type && { type }), // Add type to filter if provided
-      ...(make && { make })  // Add make to filter if provided
+      ...(type && { type: { $regex: new RegExp('^' + type + '$', 'i') } }),
+      ...(make && { make: { $regex: new RegExp('^' + make + '$', 'i') } }),
+      ...(bodyTypeId && { bodyType: bodyTypeId })
     };
 
     const popularVehicles = await NewVehicle.aggregate([
-      { $match: filter },  // Match the filter for type and make if provided
+      { $match: filter },
       { $sort: { views: -1 } },  // Sort by views in descending order
       { $limit: 8 },  // Limit the results to 8 vehicles
       {
@@ -539,12 +550,20 @@ const getPopularNewVehicles = asyncHandler(async (req, res) => {
 
 const getTopComparisonVehicles = asyncHandler(async (req, res) => {
   try {
-    const { type, make } = req.query;
+    const { type, make, bodyType } = req.query;
 
+    let bodyTypeId;
+    if (bodyType) {
+      const body = await BrowesByBody.findOne({
+        title: { $regex: new RegExp('^' + bodyType + '$', 'i') }
+      });
+      bodyTypeId = body?._id?.toString();
+    }
     // Build the filter based on query parameters
     const filter = {
       ...(type && { type }), // Add type to filter if provided
-      ...(make && { make })  // Add make to filter if provided
+      ...(make && { make }),  // Add make to filter if provided
+      ...(bodyTypeId && { bodyType: bodyTypeId })  // Add body to filter if provided
     };
 
     // Fetch up to 12 popular vehicles based on the provided filter
@@ -725,13 +744,21 @@ export const getComparison = async (req, res) => {
 // API to Get Upcoming Vehicles (releaseDate in the future)
 const getUpcomingNewVehicles = asyncHandler(async (req, res) => {
   try {
-    const { type, make } = req.query;
+    const { type, make, bodyType } = req.query;
 
+    let bodyTypeId;
+    if (bodyType) {
+      const body = await BrowesByBody.findOne({
+        title: { $regex: new RegExp('^' + bodyType + '$', 'i') }
+      });
+      bodyTypeId = body?._id?.toString();
+    }
     // Build the filter based on query parameters
     const filter = {
       releaseDate: { $gte: new Date() },  // Find vehicles with release dates in the future
       ...(type && { type }),  // Add type to filter if provided
-      ...(make && { make })   // Add make to filter if provided
+      ...(make && { make }),  // Add make to filter if provided
+      ...(bodyTypeId && { bodyType: bodyTypeId })  // Add body to filter if provided
     };
 
 
@@ -878,18 +905,26 @@ const getVehiclesByMake = asyncHandler(async (req, res) => {
 // });
 const getNewlyLaunchedVehicles = asyncHandler(async (req, res) => {
   try {
-    const { type, make } = req.query;
+    const { type, make, bodyType } = req.query;
 
     // Get today's date and the date from one month ago
     const today = new Date();
     const oneMonthAgo = new Date();
     oneMonthAgo.setMonth(today.getMonth() - 1);
 
+    let bodyTypeId;
+    if (bodyType) {
+      const body = await BrowesByBody.findOne({
+        title: { $regex: new RegExp('^' + bodyType + '$', 'i') }
+      });
+      bodyTypeId = body?._id?.toString();
+    }
     // Build the filter based on query parameters
     const filter = {
       releaseDate: { $gte: oneMonthAgo, $lte: today },  // Release date should be within the last month
       ...(type && { type }),  // Add type to filter if provided
-      ...(make && { make })  // Add make to filter if provided
+      ...(make && { make }),  // Add make to filter if provided
+      ...(bodyTypeId && { bodyType: bodyTypeId })  // Add body to filter if provided
     };
 
     const newlyLaunchedVehicles = await NewVehicle.aggregate([
