@@ -1,11 +1,11 @@
 import express from 'express';
-import { sendMessage, getConversation, getConversationList } from './controller.js';
+import { getConversationsList, getMessages, markMessagesAsRead } from './controller.js';
 import { protect } from '../Middleware/auth.js';
 
 const router = express.Router();
 
-router.post('/send', protect, sendMessage);
-router.get('/:conversationId', getConversation);
-router.get('/list/:userId', getConversationList);
+router.get('/conversations', protect, getConversationsList);
+router.get('/messages/:otherUserId',protect,  getMessages);
+router.put('/messages/:otherUserId/read',  markMessagesAsRead);
 
 export default router;

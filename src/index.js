@@ -50,28 +50,9 @@ const server = http.createServer(app);
 // Update Socket.IO configuration with proper CORS settings
 const io = new Server(server, {
   cors: {
-    origin: [
-      "http://localhost:3000",
-      "http://localhost:3001",
-      "http://localhost:3002",
-      "https://admin-auto-wheel.vercel.app",
-      "https://auto-wheel.vercel.app",
-      "https://new-auto-wheel.netlify.app",
-      "https://admin-auto-wheel.vercel.app",
-      "https://auto-wheel.vercel.app",
-      "https://auto-wheel-be.vercel.app",
-      "https://new-auto-wheel.netlify.app",
-      "https://8111-2400-adc5-11b-d00-95c3-9ddf-7d12-1d2e.ngrok-free.app",
-      "https://037a-144-48-132-249.ngrok-free.app"
-    ],
-    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-    allowedHeaders: ["Content-Type", "Authorization"],
-    credentials: true,
-    transports: ['websocket', 'polling']
-  },
-  allowEIO3: true, // Allow Engine.IO version 3
-  pingTimeout: 60000,
-  pingInterval: 25000
+    origin: process.env.FRONTEND_URL || "http://localhost:3000",
+    credentials: true
+  }
 });
 
 app.use(helmet());
@@ -193,72 +174,33 @@ const connectedUsers = new Map();
 const userConversations = new Map();
 
 io.on('connection', (socket) => {
-  console.log('A user connected');
-
   socket.on('authenticate', (userId) => {
-    connectedUsers.set(userId, socket.id);
     socket.userId = userId;
+    socket.join(userId);
   });
 
-  socket.on('get_conversations', async (userId) => {
-      try {
-        const conversations = await getConversationsForUser(userId);
-        socket.emit('conversations_list', conversations);
-      } catch (error) { 
-        socket.emit('error', { message: 'Failed to fetch conversations' });
-    }
-  });
-
-  
   socket.on('send_message', async ({ sender, receiver, content }) => {
-    console.log('Sending message:', { sender, receiver, content });
     try {
       const message = await ChatMessage.create({
-        sender: sender,
-        receiver:receiver,
+        sender,
+        receiver,
         content
       });
 
-      const messageData = {
-        id: message._id,
-        sender: sender,
-        receiver: receiver,
-        content: message.content,
-        createdAt: message.createdAt
-      };
-      console.log('connectedUsers.get(sender)',connectedUsers.get(sender))
-
+      const populatedMessage = await message.populate('sender receiver');
+      
       // Emit to both sender and receiver
-      io.emit('new_message', messageData);
-
-      // Update conversations for both users
-      const updatedConversation = await getUpdatedConversation(sender, receiver, message);
-      io.to(connectedUsers.get(sender)).emit('conversation_update', updatedConversation);
-      io.to(connectedUsers.get(receiver)).emit('conversation_update', updatedConversation);
+      io.to(receiver).emit('new_message', populatedMessage);
+      socket.emit('new_message', populatedMessage);
 
     } catch (error) {
-      console.error('Error sending message:', error);
-      socket.emit('error', { message: 'Failed to send message' });
+      socket.emit('error', 'Failed to send message');
     }
   });
 
-
-  // Add this new event handler in your io.on('connection', ...) block
-socket.on('get_messages', async ({ userId, otherUserId }) => {
-  try {
-    console.log('get_messages')
-    const messages = await getMessagesForConversation(userId, otherUserId);
-    socket.emit('conversation_messages', messages);
-  } catch (error) {
-    console.error('Error fetching messages:', error);
-    socket.emit('error', { message: 'Failed to fetch messages' });
-  }
-});
-
   socket.on('disconnect', () => {
-    console.log('A user disconnected');
     if (socket.userId) {
-      connectedUsers.delete(socket.userId);
+      socket.leave(socket.userId);
     }
   });
 });
