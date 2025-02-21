@@ -52,23 +52,31 @@ export const getAllColors = asyncHandler(async (req, res) => {
     const {
       page = 1,
       limit = 10,
-      search = ''
+      search = '',
+      type = 'all'
     } = req.query;
 
     const pageNumber = parseInt(page);
     const limitNumber = parseInt(limit);
     const skip = (pageNumber - 1) * limitNumber;
-        // Build search query
-        const searchQuery = search
-        ? { title: { $regex: search, $options: 'i' } }
-        : {};
 
-        const totalItems = await Color.countDocuments(searchQuery);
-        const totalPages = Math.ceil(totalItems / limitNumber);
-        const colors = await Color.find(searchQuery)
-        .sort({ order: 1, createdAt: -1 })
-        .skip(skip)
-        .limit(limitNumber);
+    // Build search query
+    let searchQuery = search
+      ? { title: { $regex: search, $options: 'i' } }
+      : {};
+
+    // Add type filter if not 'all'
+    if (type !== 'all') {
+      searchQuery = { ...searchQuery, type };
+    }
+
+    const totalItems = await Color.countDocuments(searchQuery);
+    const totalPages = Math.ceil(totalItems / limitNumber);
+
+    const colors = await Color.find(searchQuery)
+      .sort({ order: 1, createdAt: -1 })
+      .skip(skip)
+      .limit(limitNumber);
 
     response.ok(res, 'Colors retrieved successfully', {
       colors,
