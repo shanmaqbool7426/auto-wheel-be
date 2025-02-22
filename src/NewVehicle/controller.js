@@ -318,12 +318,12 @@ const getNewVehicleBySlug = asyncHandler(async (req, res) => {
         $lookup: {
           from: 'reviews',  // Join with the reviews collection
           localField: '_id',  // Vehicle ID in NewVehicle
-          foreignField: 'vehicle',  // Vehicle reference in Review
+          foreignField: 'vehicleId',  // Vehicle reference in Review
           as: 'reviews',  // Store the joined reviews data
           pipeline: [
             {
               $group: {
-                _id: '$vehicle',
+                _id: '$vehicleId',
                 averageRating: { $avg: { $toDouble: '$overAllRating' } },  // Convert string to double and calculate average
                 reviewCount: { $sum: 1 }  // Count the number of reviews
               }
