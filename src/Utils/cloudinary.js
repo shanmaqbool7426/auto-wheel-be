@@ -1,5 +1,6 @@
 import { v2 as cloudinary } from "cloudinary";
 import fs from "fs";
+import path from "path";
 
 // Configuring Cloudinary
 cloudinary.config({ 
@@ -8,9 +9,26 @@ cloudinary.config({
   api_secret: 'eM-jhJ0tX2nk1R97TPIpQyusB2o' 
 });
 
+// Ensure temp directory exists
+const createTempDirectory = () => {
+  const tempDir = path.join(process.cwd(), 'public', 'temp');
+  if (!fs.existsSync(tempDir)) {
+    fs.mkdirSync(tempDir, { recursive: true });
+  }
+  return tempDir;
+};
+
 const uploadOnCloudinary = async (localFilePath, retries = 9) => {
     try {
         if (!localFilePath) return null;
+        
+        // Ensure temp directory exists before upload
+        createTempDirectory();
+
+        if (!fs.existsSync(localFilePath)) {
+            console.error(`File not found: ${localFilePath}`);
+            return null;
+        }
 
         console.log('localFilePath', localFilePath);
         
@@ -21,8 +39,13 @@ const uploadOnCloudinary = async (localFilePath, retries = 9) => {
 
         console.log('>>> localFilePath', response);
 
-        // Remove the local file after a successful upload
-        fs.unlinkSync(localFilePath);
+        // Remove file after successful upload
+        try {
+            fs.unlinkSync(localFilePath);
+        } catch (unlinkError) {
+            console.log('Error deleting local file:', unlinkError);
+        }
+
         return response;
 
     } catch (error) {
@@ -34,7 +57,11 @@ const uploadOnCloudinary = async (localFilePath, retries = 9) => {
             return uploadOnCloudinary(localFilePath, retries - 1);
         } else {
             console.log('Max retries reached. Upload failed.');
-            fs.unlinkSync(localFilePath);  // Clean up even if the retries fail
+            try {
+                fs.unlinkSync(localFilePath);
+            } catch (unlinkError) {
+                console.log('Error deleting local file:', unlinkError);
+            }
             return null;
         }
     }
