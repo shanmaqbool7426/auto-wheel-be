@@ -5,7 +5,7 @@ import { uploadOnCloudinary } from '../Utils/cloudinary.js';
 import { createSlug } from '../Utils/index.js';
 
 export const createBody = asyncHandler(async (req, res) => {
-  const { title, type, bodyImage } = req.body;
+  const { title, type, bodyImage,description } = req.body;
 
   // Generate slug from title
   const slug = createSlug(title);
@@ -20,7 +20,8 @@ export const createBody = asyncHandler(async (req, res) => {
     title,
     type,
     bodyImage,
-    slug
+    slug,
+    description
   });
 
   await body.save();
@@ -73,12 +74,13 @@ export const getBodyById = asyncHandler(async (req, res) => {
 
 export const updateBody = asyncHandler(async (req, res) => {
   const { id } = req.params;
-  const { title, type, bodyImage } = req.body;
+  const { title, type, bodyImage,description } = req.body;
 
   let updateData = {
     title,
     type,
-    bodyImage
+    bodyImage,
+    description
   };
 
   // Only update slug if title is being changed

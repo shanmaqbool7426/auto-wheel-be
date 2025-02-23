@@ -16,6 +16,7 @@ const BrowesByMakeSchema = new mongoose.Schema(
     companyImage: { type: String },
     name: { type: String, required: true },
     slug: { type: String },
+    description: { type: String },
     type: {
       type: String,
      

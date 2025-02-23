@@ -405,6 +405,7 @@ const getSimilarVehicles = asyncHandler(async (req, res) => {
         { _id: { $ne: currentVehicle._id } },
         {
           $or: [
+            {type: currentVehicle.type},
             { make: currentVehicle.make, model: currentVehicle.model },
             { make: currentVehicle.make },
           ],

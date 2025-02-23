@@ -61,7 +61,7 @@ export const getMakeById = asyncHandler(async (req, res) => {
 
 export const updateMakeById = asyncHandler(async (req, res) => {
   const { id } = req.params;
-  const { name, type, models } = req.body;
+  const { name, type, models ,description} = req.body;
 
   const make = await BrowesByMake.findById(id);
   if (!make) {
@@ -74,6 +74,7 @@ export const updateMakeById = asyncHandler(async (req, res) => {
   }
   make.name = name
   make.type = type 
+  make.description = description
   make.models = models
   await make.save();
 
