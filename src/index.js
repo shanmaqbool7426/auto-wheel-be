@@ -151,7 +151,7 @@ app.use('/api/upload-image', upload.array('images', 10), async (req, res) => {
     return responses.created(res, 'Images received', urls); // Return the list of uploaded URLs
   } catch (error) {
     console.log('error>>>>',error)
-    return responses.badRequest(res, 'Image upload failed');
+    return responses.created(res, 'Images error', error); // Return the list of uploaded URLs
   }
 });
 
