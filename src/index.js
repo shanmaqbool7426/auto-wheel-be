@@ -136,7 +136,7 @@ app.use('/upload-image', upload.array('images', 10), async (req, res) => {
 
     return responses.created(res, 'Images received', urls); // Return the list of uploaded URLs
   } catch (error)    {
-    return responses.badRequest(res, 'Image upload failed');
+    return responses.badRequest(res, 'Image upload failed',error);
   }
 });
 app.use('/api/upload-image', upload.array('images', 10), async (req, res) => {
