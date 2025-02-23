@@ -5,6 +5,7 @@ const BrowesBodySchema = mongoose.Schema(
         bodyImage: { type: String },
         title: { type: String, required: true },
         slug: { type: String, required: true }, 
+        description: { type: String },  
         type: {
             type: String,
             enum: ['car', 'bike', 'truck'],
