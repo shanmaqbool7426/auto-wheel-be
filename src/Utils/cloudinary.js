@@ -1,5 +1,4 @@
 import { v2 as cloudinary } from "cloudinary";
-import fs from "fs";
 
 // Configuring Cloudinary
 cloudinary.config({ 
@@ -8,20 +7,25 @@ cloudinary.config({
   api_secret: 'eM-jhJ0tX2nk1R97TPIpQyusB2o' 
 });
 
-const uploadOnCloudinary = async (localFilePath, retries = 3) => {
+const uploadOnCloudinary = async (fileBuffer, retries = 3) => {
     try {
-        if (!localFilePath) return null;
-        // Direct upload without temp directory
-        const response = await cloudinary.uploader.upload(localFilePath, {
-            resource_type: "auto"
+        if (!fileBuffer) return null;
+        
+        const response = await new Promise((resolve, reject) => {
+            cloudinary.uploader.upload_stream(
+                { resource_type: "auto" },
+                (error, result) => {
+                    if (error) reject(error);
+                    else resolve(result);
+                }
+            ).end(fileBuffer);
         });
+
         return response;
     } catch (error) {
         console.log('Error uploading:', error);
-
         if (retries > 0) {
-            console.log(`Retrying upload... Attempts remaining: ${retries}`);
-            return uploadOnCloudinary(localFilePath, retries - 1);
+            return uploadOnCloudinary(fileBuffer, retries - 1);
         }
         return null;
     }
