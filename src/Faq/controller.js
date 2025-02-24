@@ -10,15 +10,6 @@ export const createFaq = asyncHandler(async (req, res) => {
     return response.badRequest(res, 'Invalid vehicle type. Must be car, bike, or truck');
   }
 
-  // Check if question already exists for this vehicle type
-  const existingFaq = await Faq.findOne({ 
-    question: { $regex: new RegExp(`^${question}$`, 'i') },
-    type
-  });
-
-  if (existingFaq) {
-    return response.conflict(res, `This question already exists for ${type} type`);
-  }
 
   const faq = await Faq.create({
     question,
@@ -65,7 +56,8 @@ export const getFaqs = asyncHandler(async (req, res) => {
   const { 
     type,
     page = 1, 
-    limit = 10
+    limit = 10,
+    search
   } = req.query;
 
   const query = { status: true };
@@ -75,6 +67,20 @@ export const getFaqs = asyncHandler(async (req, res) => {
       return response.badRequest(res, 'Invalid vehicle type. Must be car, bike, or truck');
     }
     query.type = type;
+  }
+
+  // Add search functionality
+  if (search) {
+    const searchWords = search.split(' ').filter(word => word.trim());
+    if (searchWords.length > 0) {
+      // Create a regex pattern that matches all words in any order
+      const searchRegex = searchWords.map(word => 
+        `(?=.*${word.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&')})`
+      ).join('');
+      query.question = { 
+        $regex: new RegExp(searchRegex, 'i')
+      };
+    }
   }
 
   try {
