@@ -477,7 +477,6 @@ const getPopularNewVehicles = asyncHandler(async (req, res) => {
     const popularVehicles = await NewVehicle.aggregate([
       { $match: filter },
       { $sort: { views: -1 } },  // Sort by views in descending order
-      { $limit: 8 },  // Limit the results to 8 vehicles
       {
         $lookup: {
           from: 'reviews',  // Join with the reviews collection
@@ -981,7 +980,7 @@ const getListVehicles = asyncHandler(async (req, res) => {
   const pathSegments = req.params[0].split('/');
   const filters = {};
   const options = {
-    limit: parseInt(req.query.limit, 10) || 10,
+    // limit: parseInt(req.query.limit, 10) || 10,
     sort: {},
   };
 
