@@ -6,7 +6,8 @@ import {
   getTopCompetitors,
   getCompetitorsList,
   getCompetitors,
-  updateCompetitor
+  updateCompetitor,
+  getCompetitorsByVehicleId
 } from './controller.js';
 
 const router = express.Router();
@@ -22,6 +23,9 @@ router.get('/top', getTopCompetitors);
 
 // Get list of all competitors
 router.get('/list', getCompetitors);
+
+//Get competitor by vehicleId
+router.get('/vehicle/:vehicleId', getCompetitorsByVehicleId);
 
 // Get competitor by ID
 router.get('/:competitorId', getCompetitor);
