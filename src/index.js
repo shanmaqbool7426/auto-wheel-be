@@ -143,17 +143,33 @@ app.use('/upload-image', upload.array('images', 10), async (req, res) => {
 });
 app.use('/api/upload-image', upload.array('images', 10), async (req, res) => {
   try {
-    const files = req.files; // This will contain all uploaded images
-    console.log('files',files)
+    const files = req.files;
+    if (!files || files.length === 0) {
+      return responses.badRequest(res, 'No files were uploaded');
+    }
+
     const urls = await Promise.all(files.map(async (file) => {
-      const result = await uploadOnCloudinary(file.path);
-      return result.secure_url; // Return only the secure_url
+      try {
+        // Convert buffer to base64
+        const b64 = Buffer.from(file.buffer).toString('base64');
+        const dataURI = `data:${file.mimetype};base64,${b64}`;
+        
+        // Upload to Cloudinary
+        const result = await uploadOnCloudinary(dataURI);
+        if (!result || !result.secure_url) {
+          throw new Error('Failed to get secure URL from Cloudinary');
+        }
+        return result.secure_url;
+      } catch (uploadError) {
+        console.error(`Error uploading file: ${file.originalname}`, uploadError);
+        throw uploadError;
+      }
     }));
 
-    return responses.created(res, 'Images received', urls); // Return the list of uploaded URLs
+    return responses.created(res, 'Images uploaded successfully', urls);
   } catch (error) {
-    console.log('error>>>>',error)
-    return responses.created(res, 'Images error', error); // Return the list of uploaded URLs
+    console.error('Image upload error:', error);
+    return responses.serverError(res, 'Failed to upload images', error.message);
   }
 });
 

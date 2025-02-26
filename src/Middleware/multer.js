@@ -1,27 +1,26 @@
 import multer from "multer";
-import path from "path";
-import fs from "fs";
 
-// Create upload directory with absolute path
-const uploadDir = path.join(process.cwd(), "public", "temp");
+const storage = multer.memoryStorage();
 
-// Ensure upload directory exists
-if (!fs.existsSync(uploadDir)) {
-    fs.mkdirSync(uploadDir, { recursive: true });
-}
+const fileFilter = (req, file, cb) => {
+    const allowedMimes = [
+        'image/jpeg',
+        'image/jpg',
+        'image/png',
+        'image/gif',
+        'image/webp'
+    ];
 
-const storage = multer.diskStorage({
-    destination: function (req, file, cb) {
-        cb(null, uploadDir);
-    },
-    filename: function (req, file, cb) {
-        const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
-        cb(null, uniqueSuffix + '-' + file.originalname);
+    if (allowedMimes.includes(file.mimetype)) {
+        cb(null, true);
+    } else {
+        cb(new Error('Invalid file type'), false);
     }
-});
+};
 
-export const upload = multer({ 
+export const upload = multer({
     storage,
+    fileFilter,
     limits: {
         fileSize: 5 * 1024 * 1024 // 5MB limit
     }
