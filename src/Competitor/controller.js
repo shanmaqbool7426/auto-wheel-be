@@ -350,3 +350,54 @@ export const getCompetitors = asyncHandler(async (req, res) => {
     response.serverError(res, 'Error retrieving competitors');
   }
 });
+
+// Get competitors data by vehicle ID
+export const getCompetitorsByVehicleId = asyncHandler(async (req, res) => {
+  try {
+    const { vehicleId } = req.params;
+
+    // Find the competitor document where vehicleId matches the vehicle field
+    const competitorSet = await Competitor.findOne({
+      vehicle: vehicleId
+    });
+
+    if (!competitorSet) {
+      return response.notFound(res, 'No competitors found for this vehicle');
+    }
+
+    // Get the competitors data
+    const competitorsData = await NewVehicle.find({
+      _id: { $in: competitorSet.competitors }
+    }).select('make model variant year defaultImage price type slug minPrice maxPrice');
+    
+    // Get reviews for the competitors
+    const reviews = await Review.aggregate([
+      {
+        $match: { 
+          vehicleId: { $in: competitorSet.competitors }
+        }
+      },
+      {
+        $group: {
+          _id: '$vehicleId',
+          averageRating: { $avg: '$overAllRating' },
+          reviewCount: { $sum: 1 }
+        }
+      }
+    ]);
+
+    const reviewsMap = new Map(reviews.map(r => [r._id.toString(), r]));
+
+    // Combine vehicle data with reviews
+    const competitorsWithReviews = competitorsData.map(competitor => ({
+      ...competitor.toObject(),
+      ...getReviewData(competitor._id, reviewsMap)
+    }));
+    console.log(competitorsWithReviews,"competitorsWithReviews");
+    response.ok(res, 'Competitors data retrieved successfully', competitorsWithReviews);
+
+  } catch (error) {
+    console.error('Error retrieving competitors data:', error);
+    response.serverError(res, 'Error retrieving competitors data');
+  }
+});
