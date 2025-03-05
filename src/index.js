@@ -3,6 +3,7 @@ import dotenv from 'dotenv';
 import helmet from 'helmet';
 import http from 'http';
 import { Server } from 'socket.io';
+const upload = multer({ storage: multer.memoryStorage() });
 // const rateLimit = require('express-rate-limit');
 import cors from 'cors';
 // const compression = require('compression');
@@ -36,10 +37,12 @@ import { errorHandler } from "./Middleware/errorHandler.js"
 import { uploadOnCloudinary } from "./Utils/cloudinary.js";
 import morgan from "morgan"
 import responses from "./Utils/response.js";
-import { upload } from "./Middleware/multer.js";
+// import { upload } from "./Middleware/multer.js";
 import ChatMessage from "./Chat/model.js";
 import mongoose from "mongoose";
 import User from "./User/model.js";
+import { uploadToS3 } from './Utils/s3Upload.js';
+import multer from "multer";
 // const { errorHandler, notFound } = require('./middleware/errorMiddleware');
 
 dotenv.config();
@@ -128,51 +131,62 @@ app.use('/api/transmission', transmissionRoutes);
 app.use('/api/competitor', competitorRoutes);
 // for footer
 app.use('/api/footer', footerRoutes);
-app.use('/upload-image', upload.array('images', 10), async (req, res) => {
-  try {
-    const files = req.files; // This will contain all uploaded images
-    const urls = await Promise.all(files.map(async (file) => {
-      const result = await uploadOnCloudinary(file.path);
-      return result.secure_url; // Return only the secure_url
-    }));
+// app.use('/api/upload-image', upload.array('images', 10), async (req, res) => {
+//   try {
+//       const files = req.files;
+//       if (!files || files.length === 0) {
+//           return responses.badRequest(res, 'No files were uploaded');
+//       }
 
-    return responses.created(res, 'Images received', urls); // Return the list of uploaded URLs
-  } catch (error)    {
-    return responses.badRequest(res, 'Image upload failed',error);
-  }
-});
-app.use('/api/upload-image', upload.array('images', 10), async (req, res) => {
-  try {
-    const files = req.files;
-    if (!files || files.length === 0) {
-      return responses.badRequest(res, 'No files were uploaded');
-    }
+//       const urls = await Promise.all(files.map(async (file) => {
+//           try {
+//               const url = await uploadToS3(file.buffer, file.mimetype);
+//               if (!url) {
+//                   throw new Error('Failed to upload to S3');
+//               }
+//               return url;
+//           } catch (uploadError) {
+//               console.error(`Error uploading file: ${file.originalname}`, uploadError);
+//               throw uploadError;
+//           }
+//       }));
 
-    const urls = await Promise.all(files.map(async (file) => {
-      try {
-        // Convert buffer to base64
-        const b64 = Buffer.from(file.buffer).toString('base64');
-        const dataURI = `data:${file.mimetype};base64,${b64}`;
-        
-        // Upload to Cloudinary
-        const result = await uploadOnCloudinary(dataURI);
-        if (!result || !result.secure_url) {
-          throw new Error('Failed to get secure URL from Cloudinary');
-        }
-        return result.secure_url;
-      } catch (uploadError) {
-        console.error(`Error uploading file: ${file.originalname}`, uploadError);
-        throw uploadError;
+//       return responses.created(res, 'Images uploaded successfully', urls);
+//   } catch (error) {
+//       console.error('Image upload error:', error);
+//       return responses.serverError(res, 'Failed to upload images', error.message);
+//   }
+// });
+app.post('/api/upload-image', upload.array('images', 10), async (req, res) => {
+  try {
+      const files = req.files;
+      if (!files || files.length === 0) {
+          return responses.badRequest(res, 'No files were uploaded');
       }
-    }));
 
-    return responses.created(res, 'Images uploaded successfully', urls);
+      const uploadPromises = files.map(file => 
+          uploadToS3(file.buffer, file.originalname)
+      );
+
+      const urls = await Promise.all(uploadPromises);
+
+      // Filter out any failed uploads
+      const successfulUrls = urls.filter(url => url);
+
+      if (successfulUrls.length === 0) {
+          return responses.serverError(res, 'Failed to upload any images');
+      }
+
+      return responses.created(res, 'Images uploaded successfully', successfulUrls);
+
   } catch (error) {
-    console.error('Image upload error:', error);
-    return responses.serverError(res, 'Failed to upload images', error.message);
+      if (error instanceof multer.MulterError) {
+          return responses.badRequest(res, 'File upload error', error.message);
+      }
+      console.error('Image upload error:', error);
+      return responses.serverError(res, 'Failed to upload images', error.message);
   }
 });
-
 
 // Add this function outside the io.on('connection', ...) block
 async function getMessagesForConversation(userId, otherUserId) {
