@@ -1,6 +1,8 @@
 import express from "express"
+import multer from "multer";
+
 import { createBlog, getBlogs,browseBlogs, getBlogById, updateBlog, deleteBlog, bulkDeleteBlogs, searchBlogs, duplicateBlog, duplicateBlogs, getStatusCounts, getTopPerformingPosts, getLatestPosts } from "./controller.js"
-import {upload} from "../Middleware/multer.js"
+const upload = multer({ storage: multer.memoryStorage() });
 
 const router = express.Router();
 

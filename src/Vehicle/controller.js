@@ -1,7 +1,6 @@
 import asyncHandler from 'express-async-handler';
 import Vehicle from './model.js';
 import response from "../Utils/response.js";
-import { uploadOnCloudinary } from '../Utils/cloudinary.js';
 import Review from '../Review/model.js';
 import User from '../User/model.js';
 import mongoose, { mongo } from 'mongoose';

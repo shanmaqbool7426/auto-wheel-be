@@ -34,7 +34,6 @@ import userReviewRoutes from './UserReviews/route.js'
 import roleRoutes from './Roles/route.js'
 import locationRoutes from './Location/route.js'
 import { errorHandler } from "./Middleware/errorHandler.js"
-import { uploadOnCloudinary } from "./Utils/cloudinary.js";
 import morgan from "morgan"
 import responses from "./Utils/response.js";
 // import { upload } from "./Middleware/multer.js";

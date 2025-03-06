@@ -97,7 +97,7 @@ export const getTransmissionById = asyncHandler(async (req, res) => {
       return response.notFound(res, 'Transmission not found');
     }
     response.ok(res, 'Transmission retrieved successfully', transmission);
-  } catch (error) {
+  } catch (error) { 
     console.error('Error retrieving transmission:', error);
     response.serverError(res, 'Error retrieving transmission');
   }
@@ -106,52 +106,80 @@ export const getTransmissionById = asyncHandler(async (req, res) => {
 // Update transmission
 export const updateTransmission = asyncHandler(async (req, res) => {
   try {
-    const transmission = await Transmission.findById(req.params.id);
+    const { id } = req.params;
+    const { title, type, order } = req.body;
+
+    // Find existing transmission
+    const transmission = await Transmission.findById(id);
     if (!transmission) {
       return response.notFound(res, 'Transmission not found');
     }
 
-    const { title, type } = req.body;
+    // Prepare update object
+    const updateData = { ...req.body };
 
-    // If title or type is being updated, check for duplicates
+    // Handle title and type updates
     if (title || type) {
       const searchType = type || transmission.type;
       const searchTitle = title || transmission.title;
 
-      const existingTransmission = await Transmission.findOne({
+      // Check for duplicates excluding current transmission
+      const duplicateExists = await Transmission.findOne({
         title: { $regex: new RegExp(`^${searchTitle}$`, 'i') },
         type: searchType,
-        _id: { $ne: req.params.id }
+        _id: { $ne: id }
       });
-      
-      if (existingTransmission) {
-        return response.badRequest(res, `This transmission already exists for ${searchType}`);
+
+      if (duplicateExists) {
+        return response.badRequest(
+          res, 
+          `A transmission with title "${searchTitle}" already exists for type "${searchType}"`
+        );
       }
 
-      // Update slug if title or type changes
-      req.body.slug = slugify(`${searchTitle}-${searchType}`, { lower: true });
+      // Update slug only if title or type changes
+      updateData.slug = slugify(`${searchTitle}-${searchType}`, { lower: true });
     }
 
-    // Check for duplicate order
-    if (req.body.order && req.body.order !== transmission.order) {
-      const existingTransmission = await Transmission.findOne({ 
-        order: req.body.order,
-        _id: { $ne: transmission._id }
+    // Handle order update
+    if (order && order !== transmission.order) {
+      const duplicateOrder = await Transmission.findOne({
+        order,
+        _id: { $ne: id }
       });
-      if (existingTransmission) {
-        return response.badRequest(res, 'A transmission with this order number already exists');
+
+      if (duplicateOrder) {
+        return response.badRequest(
+          res, 
+          `Order number ${order} is already assigned to another transmission`
+        );
       }
     }
 
+    // Update transmission with timestamp
     const updatedTransmission = await Transmission.findByIdAndUpdate(
-      req.params.id,
-      { ...req.body, updatedAt: Date.now() },
-      { new: true }
+      id,
+      { 
+        ...updateData,
+        updatedAt: Date.now() 
+      },
+      { 
+        new: true,
+        runValidators: true 
+      }
     );
 
+    if (!updatedTransmission) {
+      return response.notFound(res, 'Transmission not found');
+    }
+
     response.ok(res, 'Transmission updated successfully', updatedTransmission);
+
   } catch (error) {
     console.error('Error updating transmission:', error);
+    if (error.name === 'ValidationError') {
+      return response.badRequest(res, 'Invalid data provided', error.message);
+    }
     response.serverError(res, 'Error updating transmission');
   }
 });

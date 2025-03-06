@@ -1,7 +1,8 @@
 import Blog from "./model.js";
 import asyncHandler from "express-async-handler";
 import responses from "../Utils/response.js";
-import { uploadOnCloudinary } from '../Utils/cloudinary.js';
+import { uploadToS3 } from '../Utils/s3Upload.js';
+import multer from "multer";
 import Category from '../Category/model.js';
 import Tag from '../Tag/model.js';
 import Comment from "../Comment/model.js";
@@ -24,7 +25,7 @@ const createBlog = asyncHandler(async (req, res) => {
     slug
   } = req.body;
 
-  const bodyImageURL = await uploadOnCloudinary(req.file?.path);
+  const bodyImageURL = await  uploadToS3(req.file.buffer, req.file.originalname)
   
   if (!title || !content || !author || !categories) {
     return responses.badRequest(res, 'Title, content, image URL, author, and categories are required');
@@ -45,7 +46,7 @@ const createBlog = asyncHandler(async (req, res) => {
   const blog = new Blog({
     title,
     content,
-    imageUrl: bodyImageURL.url,
+    imageUrl: bodyImageURL,
     author,
     categories: categoryIds,
     tags: tagIds,

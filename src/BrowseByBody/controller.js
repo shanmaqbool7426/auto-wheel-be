@@ -1,7 +1,6 @@
 import asyncHandler from 'express-async-handler';
 import BrowesByBody from './model.js';
 import responses from "../Utils/response.js"
-import { uploadOnCloudinary } from '../Utils/cloudinary.js';
 import { createSlug } from '../Utils/index.js';
 
 export const createBody = asyncHandler(async (req, res) => {

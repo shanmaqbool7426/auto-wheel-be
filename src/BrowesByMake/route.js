@@ -13,7 +13,8 @@ import {
   deleteModel,
   deleteVariant
 } from './controller.js';
-import { upload } from "../Middleware/multer.js";
+import multer from 'multer';
+const upload = multer({ storage: multer.memoryStorage() });
 
 const router = express.Router();
 

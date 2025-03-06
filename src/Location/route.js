@@ -5,7 +5,8 @@ import {
   updateLocation,
   deleteLocation,
   getLocationHierarchy,
-  getChildrenLocations
+  getChildrenLocations,
+  getProvinces
 } from './controller.js';
 
 const router = express.Router();
@@ -19,5 +20,6 @@ router.get('/children/:parentId', getChildrenLocations);
 router.post('/',  createLocation);
 router.put('/:id',  updateLocation);
 router.delete('/:id', deleteLocation);
+router.get('/provinces', getProvinces);
 
 export default router;

@@ -1,24 +1,28 @@
 import asyncHandler from 'express-async-handler';
-import BrowesByMake from './model.js'; 
+import BrowesByMake from './model.js';
 import responses from "../Utils/response.js";
-import { uploadOnCloudinary } from '../Utils/cloudinary.js';
 import mongoose from 'mongoose';
+import { uploadToS3 } from '../Utils/s3Upload.js';
 
 export const createMake = asyncHandler(async (req, res) => {
   const { name, type, description } = req.body;
-  
+
   let companyImageURL = null;
-  
+
+  console.log(">>>>>> payload", req.file)
   // Handle image upload if file exists
   if (req.file) {
-    companyImageURL = await uploadOnCloudinary(req.file.path);
+    // uploadToS3(file.buffer, file.originalname)
+
+    companyImageURL = await uploadToS3(req.file.buffer, req.file.originalname);
+    console.log(">>>>>> companyImageURL", companyImageURL);
     if (!companyImageURL) {
       return responses.badRequest(res, 'Error uploading image');
     }
   }
 
   const make = new BrowesByMake({
-    companyImage: companyImageURL?.url || null,
+    companyImage: companyImageURL || null,
     name,
     type,
     description,
@@ -37,7 +41,7 @@ export const getAllMakes = asyncHandler(async (req, res) => {
     const { type } = req.query;
     // Only apply type filter if type is valid (not undefined, null, or "undefined")
     const filter = type && type !== 'undefined' ? { type } : {};
-    
+
     const makes = await BrowesByMake.find(filter);
     return responses.ok(res, 'All make entries retrieved successfully', makes);
   } catch (error) {
@@ -61,7 +65,7 @@ export const getMakeById = asyncHandler(async (req, res) => {
 
 export const updateMakeById = asyncHandler(async (req, res) => {
   const { id } = req.params;
-  const { name, type, models ,description} = req.body;
+  const { name, type, models, description } = req.body;
 
   const make = await BrowesByMake.findById(id);
   if (!make) {
@@ -69,11 +73,12 @@ export const updateMakeById = asyncHandler(async (req, res) => {
   }
 
   if (req.file) {
-    const companyImageURL = await uploadOnCloudinary(req.file.path);
-    make.companyImage = companyImageURL.url || make.companyImage;
+    const companyImageURL = await uploadToS3(req.file.buffer, req.file.originalname)
+    console.log("companyImageURL",companyImageURL)
+    make.companyImage = companyImageURL
   }
   make.name = name
-  make.type = type 
+  make.type = type
   make.description = description
   make.models = models
   await make.save();
@@ -103,9 +108,9 @@ export const deleteMakeById = asyncHandler(async (req, res) => {
 export const addModel = asyncHandler(async (req, res) => {
   const { makeId } = req.params;
   const { name } = req.body;
-console.log('makeIdmakeId',makeId)
+  console.log('makeIdmakeId', makeId)
   const make = await BrowesByMake.findById(makeId);
-  console.log(">>> make",make)
+  console.log(">>> make", make)
   if (!make) {
     return responses.notFound(res, 'Make not found');
   }
@@ -123,8 +128,8 @@ console.log('makeIdmakeId',makeId)
 });
 
 export const addVariant = asyncHandler(async (req, res) => {
- 
-  const { name,makeId, modelId } = req.body;
+
+  const { name, makeId, modelId } = req.body;
 
   try {
     // Validate ObjectIds
@@ -149,12 +154,12 @@ export const addVariant = asyncHandler(async (req, res) => {
     }
 
     // Create the new variant
-   
+
     // Initialize variants array if it doesn't exist
     if (!make.models[modelIndex].variants) {
       make.models[modelIndex].variants = [];
     }
-    
+
     // Add the new variant
     make.models[modelIndex].variants.push(name);
     // Save the updated document
@@ -173,16 +178,16 @@ export const updateModel = asyncHandler(async (req, res) => {
 
 
   const updatedMake = await BrowesByMake.findOneAndUpdate(
-    { 
+    {
       _id: makeId,
       "models._id": modelId  // Match the specific model by its _id
     },
-    { 
+    {
       $set: {
         "models.$.name": name  // Update only the name of the matched model
       }
     },
-    { 
+    {
       new: true,  // Return the updated document
       runValidators: true  // Run schema validators
     }
