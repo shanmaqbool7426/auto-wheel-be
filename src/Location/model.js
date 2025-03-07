@@ -8,16 +8,36 @@ const locationSchema = new mongoose.Schema({
   },
   type: {
     type: String,
-    required: true,
-    enum: ['PROVINCE', 'CITY', 'SUBURB']
+    enum: ['country', 'province', 'city', 'suburb'],
+    required: true
   },
-  parent: {
+  parentId: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Location',
     default: null
+  },
+  parentType: {
+    type: String,
+    enum: ['country', 'province', 'city', 'suburb'],
+    default: null
+  },
+  slug: {
+    type: String,
+    unique: true
+  },
+  isActive: {
+    type: Boolean,
+    default: true
   }
 }, {
   timestamps: true
+});
+
+locationSchema.pre('save', function(next) {
+  if (this.isModified('name')) {
+    this.slug = this.name.toLowerCase().replace(/[^a-z0-9]+/g, '-');
+  }
+  next();
 });
 
 const Location = mongoose.model('Location', locationSchema);

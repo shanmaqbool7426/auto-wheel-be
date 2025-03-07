@@ -1214,6 +1214,46 @@ const getVehicleById = asyncHandler(async (req, res) => {
   }
 };
 
+const getNewVehicleDetails = async (req, res) => {
+  try {
+    const { make, model, variant } = req.query;
+    console.log("...........",make, model, variant);
+    // If we have all parameters, search with them
+    if (make && model && variant) {
+      const vehicleDetails = await NewVehicle.findOne({
+        make,
+        model,
+        variant
+      });
+      
+      return res.status(200).json({
+        success: true,
+        data: vehicleDetails
+      });
+    }
+
+    // If we only have variant ID from params
+    if (req.params.id) {
+      const vehicleDetails = await NewVehicle.findById(req.params.id);
+      return res.status(200).json({
+        success: true,
+        data: vehicleDetails
+      });
+    }
+
+    return res.status(400).json({
+      success: false,
+      message: "Invalid request parameters"
+    });
+
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      message: error.message
+    });
+  }
+};
+
 export {
   createNewVehicle,
   getListNewVehicles,
@@ -1231,5 +1271,6 @@ export {
   getListVehicles,
   getVehicleById,
   getVehicleVariants,
+  getNewVehicleDetails,
   
 };

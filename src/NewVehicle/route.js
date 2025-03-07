@@ -16,7 +16,8 @@ import {
   getListVehicles,
   getVehicleById,
   bulkDeleteVehicles,
-  getVehicleVariants
+  getVehicleVariants,
+  getNewVehicleDetails
 } from "./controller.js";  // Import new vehicle controller
 
 const router = express.Router();
@@ -29,6 +30,7 @@ router.get('/get-vehicle-by-id', getVehicleById);
 
 // List all new vehicles with filters
 router.get('/', getListNewVehicles);
+router.get('/get-newVehicle-details', getNewVehicleDetails);
 
 router.get('/get-popular-by-reviews-vehicles', getPopularVehiclesByReviews);
 
