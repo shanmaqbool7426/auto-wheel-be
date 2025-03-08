@@ -315,7 +315,8 @@ const getVideoById = asyncHandler(async (req, res) => {
 
 
 const updateVideo = asyncHandler(async (req, res) => {
-  const { title, url, thumbnail, description } = req.body;
+  const { title, thumbnail, description } = req.body;
+  const url = req.body.url.replace('watch?v=', 'embed/');
 
   const video = await Video.findById(req.params.id);
 
