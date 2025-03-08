@@ -13,7 +13,7 @@ const createVideo = asyncHandler(async (req, res) => {
   const video = new Video({ title, url, thumbnail, description, category,type });
   await video.save();
 
-  responses.created(res, 'Video created successfully', video);
+  responses.created(res, 'Video created successfully.', video);
 });
 
 
