@@ -4,10 +4,11 @@ import responses from "../Utils/response.js";
 
 
 const createVideo = asyncHandler(async (req, res) => {
-  const { title, url, thumbnail, category, description ,type} = req.body;
-  if (!title || !url || !thumbnail || !description || !category || !type) {
+  const { title,  thumbnail, category, description ,type} = req.body;
+  if (!title || !thumbnail || !description || !category || !type) {
     return responses.badRequest(res, 'All fields are required');
   }
+  const url = req.body.url.replace('watch?v=', 'embed/');
 
   const video = new Video({ title, url, thumbnail, description, category,type });
   await video.save();
