@@ -32,6 +32,6 @@ router.delete('/:makeId/models/:modelId', deleteModel);
 // Variant routes
 router.post('/:makeId/models/:modelId/variants', addVariant);
 router.put('/:makeId/models/:modelId/variants', updateVariant);
-router.delete('/:makeId/models/:modelId/variants/:variantId', deleteVariant);
+router.delete('/:makeId/models/:modelId/variants/:variant', deleteVariant);
 
 export default router;

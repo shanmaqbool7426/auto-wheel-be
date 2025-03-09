@@ -20,6 +20,7 @@ const createNewVehicle = asyncHandler(async (req, res) => {
       bodyType: req.body.bodyType,
       minPrice: req.body.minPrice,
       maxPrice: req.body.maxPrice,
+      price: req.body.price,
       colorsAvailable: req.body.colorsAvailable || [],
       releaseDate: req.body.releaseDate,
       description: req.body.description,

@@ -269,7 +269,7 @@ export const deleteModel = asyncHandler(async (req, res) => {
 
 // Delete Variant
 export const deleteVariant = asyncHandler(async (req, res) => {
-  const { makeId, modelId, variantId } = req.params;
+  const { makeId, modelId, variant} = req.params;
 
   const make = await BrowesByMake.findById(makeId);
   if (!make) {
@@ -281,7 +281,7 @@ export const deleteVariant = asyncHandler(async (req, res) => {
     return responses.notFound(res, 'Model not found');
   }
 
-  model.variants = model.variants.filter(variant => variant._id.toString() !== variantId);
+  model.variants = model.variants.filter(variantData => variantData !== variant);
   await make.save();
 
   return responses.ok(res, 'Variant deleted successfully');
