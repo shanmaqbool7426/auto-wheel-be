@@ -10,9 +10,12 @@ AWS.config.update({
 const s3 = new AWS.S3();
 
 export const uploadToS3 = async (buffer, fileName) => {
+  // Replace spaces with dashes in the filename
+  const sanitizedFileName = fileName.replace(/\s+/g, '-');
+  
   const uploadParams = {
     Bucket: process.env.AWS_BUCKET_NAME,
-    Key: `uploads/${Date.now()}_${fileName}`,
+    Key: `uploads/${Date.now()}_${sanitizedFileName}`,
     Body: buffer,
   };
   

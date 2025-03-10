@@ -151,6 +151,7 @@ const bikeSchema = new mongoose.Schema({
         type: String,  // Transmission type (e.g., "5-speed")
         required: true
       },
+
       fuelCapacity: {
         type: Number,  // Fuel tank capacity (e.g., 13L)
         required: true
@@ -221,6 +222,9 @@ const carSchema = new mongoose.Schema({
         seatingCapacity: { type: Number },// e.g., 5
         doors: { type: Number }           // e.g., 4
       },
+      drive: {
+        type: String,
+      },
       mileage: {
         city: { type: String },  // e.g., "12 Km/l"
         highway: { type: String }  // e.g., "15 Km/l"
@@ -289,6 +293,10 @@ const carSchema = new mongoose.Schema({
       entertainment: {
         tachometer: { type: Boolean, default: false },
         multiInfo: { type: Boolean, default: false },
+        rearSpeakers: { type: Boolean, default: false },
+        navigation: { type: Boolean, default: false },
+        amfmRadio: { type: Boolean, default: false },
+        cassettePlayer: { type: Boolean, default: false },
         cdDvdPlayer: { type: Boolean, default: false },
         usbAndAux: { type: Boolean, default: false },
         displaySize: { type: String },  // e.g., "9″"

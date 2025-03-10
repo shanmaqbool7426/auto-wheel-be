@@ -3,6 +3,7 @@ import { NewVehicle, Car, Bike, Truck } from './model.js';
 import response from '../Utils/response.js';
 import Review from '../Review/model.js';
 import BrowesByBody from '../BrowseByBody/model.js';
+import { setDriver } from 'mongoose';
 
 // Create a new vehicle
 const createNewVehicle = asyncHandler(async (req, res) => {
@@ -30,6 +31,7 @@ const createNewVehicle = asyncHandler(async (req, res) => {
       pros: req.body.pros,
       cons: req.body.cons,
       faqs: req.body.faqs,
+      drive: req.body.drive,
       Info: {
         make: req.body.make,
         model: req.body.model,
@@ -125,6 +127,7 @@ const updateNewVehicle = asyncHandler(async (req, res) => {
       variant: req.body.variant,
       year: req.body.year,
       bodyType: req.body.bodyType,
+      drive: req.body.drive,
       minPrice: req.body.minPrice,
       maxPrice: req.body.maxPrice,
       colorsAvailable: req.body.colorsAvailable || [],
