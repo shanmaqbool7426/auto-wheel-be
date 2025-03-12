@@ -105,12 +105,12 @@ export const updateBanner = asyncHandler(async (req, res) => {
   
       // Update banner fields
       banner.title = title || banner.title;
-      banner.description = description || banner.description;
+      banner.description = description
       banner.image = image || banner.image;
       banner.link = link || banner.link;
       banner.order = order || banner.order;
       banner.status = status !== undefined ? status : banner.status;
-  
+  console.log("banner......",banner)
       const updatedBanner = await banner.save();
       
       response.ok(res, 'Banner updated successfully', updatedBanner);

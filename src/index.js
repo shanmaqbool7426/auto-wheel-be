@@ -187,6 +187,27 @@ app.post('/api/upload-image', upload.array('images', 10), async (req, res) => {
   }
 });
 
+app.post('/api/upload-image-single', upload.single('image'), async (req, res) => {
+  try {
+      const file = req.file;
+      if (!file) {
+          return responses.badRequest(res, 'No file was uploaded');
+      }
+
+      const url = await uploadToS3(file.buffer, file.originalname);
+      return responses.created(res, 'Image uploaded successfully', url);
+
+  } catch (error) {
+      if (error instanceof multer.MulterError) {
+          return responses.badRequest(res, 'File upload error', error.message);
+      }
+      console.error('Image upload error:', error);
+      return responses.serverError(res, 'Failed to upload images', error.message);
+  }
+});
+  
+
+
 // Add this function outside the io.on('connection', ...) block
 async function getMessagesForConversation(userId, otherUserId) {
   try {

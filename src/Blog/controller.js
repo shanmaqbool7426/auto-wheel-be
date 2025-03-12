@@ -7,11 +7,13 @@ import Category from '../Category/model.js';
 import Tag from '../Tag/model.js';
 import Comment from "../Comment/model.js";
 import { shouldCountView } from "../Utils/viewCounter.js";
+import { initScheduler } from '../Utils/scheduler.js';
+
+// Initialize the scheduler
 
 
 // Update the create blog function
 const createBlog = asyncHandler(async (req, res) => {
-  
   const { 
     title, 
     content, 
@@ -21,11 +23,11 @@ const createBlog = asyncHandler(async (req, res) => {
     isSticky, 
     visibility, 
     publishDate,
-    scheduledAt, // New field
+    scheduledAt,
     slug
   } = req.body;
 
-  const bodyImageURL = await  uploadToS3(req.file.buffer, req.file.originalname)
+  const bodyImageURL = await uploadToS3(req.file.buffer, req.file.originalname);
   
   if (!title || !content || !author || !categories) {
     return responses.badRequest(res, 'Title, content, image URL, author, and categories are required');
@@ -36,12 +38,27 @@ const createBlog = asyncHandler(async (req, res) => {
     return responses.badRequest(res, 'Scheduled posts require a scheduledAt date');
   }
 
-  if (scheduledAt && new Date(scheduledAt) <= new Date()) {
+  const scheduledDate = scheduledAt ? new Date(scheduledAt) : null;
+  const now = new Date();
+
+  if (scheduledDate && scheduledDate <= now) {
     return responses.badRequest(res, 'Scheduled date must be in the future');
   }
 
   const categoryIds = JSON.parse(categories);
   const tagIds = tags ? JSON.parse(tags) : [];
+  
+  // Determine publish date based on visibility and scheduling
+  let finalPublishDate = null;
+  let finalVisibility = visibility;
+
+  if (visibility === 'Public') {
+    finalPublishDate = publishDate || now;
+  } else if (visibility === 'Scheduled') {
+    // Keep publishDate null for scheduled posts
+    // The scheduler will set it when publishing
+    finalVisibility = 'Scheduled';
+  }
   
   const blog = new Blog({
     title,
@@ -51,14 +68,39 @@ const createBlog = asyncHandler(async (req, res) => {
     categories: categoryIds,
     tags: tagIds,
     isSticky: isSticky || false,
-    visibility,
-    scheduledAt: scheduledAt ? new Date(scheduledAt) : null,
-    publishDate: (visibility === 'Public') ? (publishDate || Date.now()) : null,
+    visibility: finalVisibility,
+    scheduledAt: scheduledDate,
+    publishDate: finalPublishDate,
   });
 
   await blog.save();
   responses.created(res, 'Blog post created successfully', blog);
 });
+
+
+// Add a function to manually publish scheduled posts (optional)
+const publishScheduledPost = asyncHandler(async (req, res) => {
+  const { id } = req.params;
+  
+  const blog = await Blog.findById(id);
+  
+  if (!blog) {
+    return responses.notFound(res, 'Blog post not found');
+  }
+  
+  if (blog.visibility !== 'Scheduled') {
+    return responses.badRequest(res, 'Only scheduled posts can be published');
+  }
+  
+  blog.visibility = 'Public';
+  blog.publishDate = new Date();
+  blog.scheduledAt = null;
+  
+  await blog.save();
+  
+  responses.ok(res, 'Blog post published successfully', blog);
+});
+
 
 const browseBlogs = asyncHandler(async (req, res) => {
   const { page = 1, limit = 5 } = req.query;
@@ -551,8 +593,8 @@ const updateBlog = asyncHandler(async (req, res) => {
 
   blog.title = title || blog.title;
   blog.content = content || blog.content;
-  // blog.imageUrl = imageUrl || blog.imageUrl;
-  blog.imageUrl = blog.imageUrl;
+  blog.imageUrl = imageUrl || blog.imageUrl;
+  // blog.imageUrl = blog.imageUrl;
   blog.author = author || blog.author;
   blog.categories = categoryIds || blog.categories;
   blog.tags = tagIds || blog.tags;
@@ -938,6 +980,8 @@ const getLatestPosts = asyncHandler(async (req, res) => {
 
   responses.ok(res, 'Latest posts fetched successfully', latestPosts);
 });
+
+initScheduler();
 
 export {
   createBlog,
