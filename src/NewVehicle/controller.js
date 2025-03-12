@@ -10,6 +10,7 @@ const createNewVehicle = asyncHandler(async (req, res) => {
   try {
     const { type } = req.body;
     let newVehicle;
+    {console.log(">>>>>>>......",req.body.bikeSpecs)}
 
     // Base vehicle data that's common to all types
     const baseVehicleData = {
@@ -50,6 +51,7 @@ const createNewVehicle = asyncHandler(async (req, res) => {
       // Create new Car instance
       newVehicle = new Car(carData);
     } 
+
     else if (type === 'bike') {
       // Extract bike-specific data
       const bikeData = {
@@ -59,6 +61,7 @@ const createNewVehicle = asyncHandler(async (req, res) => {
       };
 
       // Create new Bike instance
+      console.log("bikeData",bikeData);
       newVehicle = new Bike(bikeData);
     } 
     else if (type === 'truck') {
@@ -161,6 +164,7 @@ const updateNewVehicle = asyncHandler(async (req, res) => {
         brochureLink: req.body.brochureLink
       };
       updatedVehicle = await Bike.findByIdAndUpdate(id, bikeData, { new: true });
+      console.log(">>>>>>>>>>",updatedVehicle)
     } else if (type === 'truck') {
       const truckData = {
         ...baseVehicleData,
