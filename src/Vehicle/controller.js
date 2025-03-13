@@ -281,6 +281,22 @@ const getListVehicles = asyncHandler(async (req, res) => {
           { $match: filters },
           { $group: { _id: '$year', count: { $sum: 1 } } },
         ],
+        conditionCounts: [
+          { 
+            $match: filters 
+          },
+          { 
+            $group: { 
+              _id: '$condition',
+              count: { $sum: 1 } 
+            } 
+          },
+          {
+            $match: {
+              _id: { $ne: null }
+            }
+          }
+        ],
         bodyTypeCounts: [
           { $match: filters },
           { $group: { _id: '$specifications.bodyType', count: { $sum: 1 } } },
@@ -313,6 +329,7 @@ const getListVehicles = asyncHandler(async (req, res) => {
 
   const counts = {
     typeCounts: aggregationResult.typeCounts || [],
+    conditionCounts: aggregationResult.conditionCounts || [],
     cityCounts: aggregationResult.cityCounts || [],
     makeCounts: aggregationResult.makeCounts || [],
     modelCounts: aggregationResult.modelCounts || [],
