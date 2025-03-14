@@ -116,7 +116,9 @@ const vehicleSchema = new mongoose.Schema({
     engineCapacity: { type: Number },
     payloadCapacity: { type: Number },
     engineType: { type: String },
-    assembly: { type: String },
+    assembly: { 
+      type: String,
+    },
   },
   features: {
     type: [String],

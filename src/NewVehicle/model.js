@@ -147,6 +147,7 @@ const bikeSchema = new mongoose.Schema({
       required: true
     }
   },
+ 
   transmission: {
     type: String,  // Transmission type (e.g., "5-speed")
     required: true
@@ -224,7 +225,14 @@ const bikeSchema = new mongoose.Schema({
       required: true
     }
   },
-  colorsAvailable: { type: [String] }
+  brochureLink: {
+    type: String,
+    default: 'https://example.com/brochure.pdf'
+  },
+  colorsAvailable: {
+    type: [String],
+    default: []
+  }
 })
 const carSchema = new mongoose.Schema({
   dimensions: {
@@ -258,7 +266,11 @@ const carSchema = new mongoose.Schema({
     batteryType: { type: String },  // Electrical (Optional)
     batteryCapacity: { type: String },  // e.g., "45 Ah"
     chargingTime: { type: String },  // Electrical (Optional)
-    range: { type: String }  // Electrical (Optional)
+    range: { type: String }, // Electrical (Optional)
+    assembly: { 
+      type: String,
+      enum: ['Local', 'Imported'],
+    },
   },
   transmission: {
     type: { type: String, default: 'Automatic' },  // e.g., "Automatic"
@@ -304,7 +316,6 @@ const carSchema = new mongoose.Schema({
     fogLights: { type: Boolean, default: false },
     sunRoof: { type: Boolean, default: false },
     moonRoof: { type: Boolean, default: false },
-    colorsAvailable: { type: [String] }  // Available colors for the vehicle
   },
   entertainment: {
     tachometer: { type: Boolean, default: false },
@@ -365,6 +376,10 @@ const truckSchema = new mongoose.Schema({
     wheelBase: { type: String },         // Important for turning radius
     groundClearance: { type: String },   // Important for off-road/loading
     kerbWeight: { type: String },        // Important for weight regulations
+  },
+  brochureLink: {
+    type: String,
+    default: 'https://example.com/brochure.pdf'
   },
 
   engine: {

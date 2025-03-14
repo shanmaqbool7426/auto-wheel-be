@@ -57,7 +57,8 @@ const createNewVehicle = asyncHandler(async (req, res) => {
       const bikeData = {
         ...baseVehicleData,
         ...req.body.bikeSpecs,
-        brochureLink: req.body.brochureLink
+        brochureLink: req.body.brochureLink,
+        colorsAvailable:req.body.colorsAvailable
       };
 
       // Create new Bike instance
@@ -122,6 +123,7 @@ const updateNewVehicle = asyncHandler(async (req, res) => {
   const { type } = req.body; // Extract the type from request body
 
   try {
+    console.log("req.body.colorsAvailable",req.body.colorsAvailable)
     let updatedVehicle;
     const baseVehicleData = {
       type: req.body.type,
@@ -132,6 +134,7 @@ const updateNewVehicle = asyncHandler(async (req, res) => {
       bodyType: req.body.bodyType,
       drive: req.body.drive,
       minPrice: req.body.minPrice,
+      brochureLink: req.body.brochureLink,
       maxPrice: req.body.maxPrice,
       colorsAvailable: req.body.colorsAvailable || [],
       releaseDate: req.body.releaseDate,
@@ -155,21 +158,27 @@ const updateNewVehicle = asyncHandler(async (req, res) => {
         ...baseVehicleData,
         ...req.body.carSpecs,
         brochureLink: req.body.brochureLink
+
       };
       updatedVehicle = await Car.findByIdAndUpdate(id, carData, { new: true });
     } else if (type === 'bike') {
       const bikeData = {
         ...baseVehicleData,
         ...req.body.bikeSpecs,
-        brochureLink: req.body.brochureLink
+        brochureLink: req.body.brochureLink,
+        colorsAvailable:req.body.colorsAvailable
+
+
       };
       updatedVehicle = await Bike.findByIdAndUpdate(id, bikeData, { new: true });
-      console.log(">>>>>>>>>>",updatedVehicle)
+      console.log(">>>>>>>>>>bikeData..",updatedVehicle)
     } else if (type === 'truck') {
       const truckData = {
         ...baseVehicleData,
         ...req.body.truckSpecs,
-        brochureLink: req.body.brochureLink
+        brochureLink: req.body.brochureLink,
+        colorsAvailable:req.body.colorsAvailable
+
       };
       updatedVehicle = await Truck.findByIdAndUpdate(id, truckData, { new: true });
     } else {
