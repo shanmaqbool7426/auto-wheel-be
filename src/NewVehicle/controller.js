@@ -850,6 +850,7 @@ const getVehiclesByMake = asyncHandler(async (req, res) => {
           type: 1,
           views: 1,
           defaultImage: 1,
+          releaseDate: 1,
           createdAt: 1,
           maxPrice: 1,
           minPrice: 1,

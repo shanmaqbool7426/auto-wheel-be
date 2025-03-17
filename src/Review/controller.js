@@ -180,7 +180,7 @@ const getAllReviewsbyVehicle = asyncHandler(async (req, res) => {
 // });
 
 const getAllReviews = asyncHandler(async (req, res) => {
-  const { filterType } = req.query;
+  const { filterType, type } = req.query;
 
   const validFilters = ['safety', 'mileage', 'performance', 'comfort', 'maintenance'];
 
@@ -190,7 +190,7 @@ const getAllReviews = asyncHandler(async (req, res) => {
   }
 
   // Initialize filter
-  let filter = { overAllRating: { $gte: 0 } }; // Ensure valid ratings
+  let filter = { overAllRating: { $gte: 0 }, type: type }; // Ensure valid ratings
 
   if (filterType && filterType !== 'all') {
     filter[`ratings.${filterType}`] = { $exists: true };
