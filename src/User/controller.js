@@ -528,7 +528,7 @@ const getDealers = asyncHandler(async (req, res) => {
 
   const dealers = await User.find(query)
     .sort(sortOption)
-    .select('fullName rating phone location reviewCount adsCount')
+    .select('fullName rating phone location reviewCount adsCount profileImage locationAddress')
     .skip((page - 1) * limit) // Skip the records for pagination
     .limit(Number(limit)); // Limit the number of records returned
 
