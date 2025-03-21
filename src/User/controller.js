@@ -166,15 +166,14 @@ const socialLogin = asyncHandler(async (req, res) => {
 });
 
 const updateUserProfile = asyncHandler(async (req, res) => {
-  const { firstName, lastName, phoneNumber, email, showEmail, whatsAppOnThisNumber } = req.body;
+  const { fullName, phoneNumber, email, showEmail, whatsAppOnThisNumber } = req.body;
 
   const user = await User.findById(req.user._id);
   if (!user) {
     return responses.notFound(res, 'User not found');
   }
 
-  user.firstName = firstName || user.firstName;
-  user.lastName = lastName || user.lastName;
+  user.fullName = fullName || user.fullName;
   // user.email = email || user.email; // Ensure email is updated if provided
   user.phone = phoneNumber || user.phone; // Update phone number
   user.showEmail = showEmail !== undefined ? showEmail : user.showEmail; // Update showEmail if provided
@@ -185,7 +184,7 @@ const updateUserProfile = asyncHandler(async (req, res) => {
 });
 
 const updateUserProfileByUserByEmail = asyncHandler(async (req, res) => {
-  const { firstName, lastName, phoneNumber, email, showEmail, whatsAppOnThisNumber,role } = req.body;
+  const { fullName, phoneNumber, email, showEmail, whatsAppOnThisNumber,role } = req.body;
 
   const user = await User.findOne({email}).populate();
   if (!user) {
@@ -193,9 +192,8 @@ const updateUserProfileByUserByEmail = asyncHandler(async (req, res) => {
   }
 
   console.log('>>>>>> firstName',firstName,lastName)
-  user.firstName = firstName || user.firstName;
+  user.fullName = fullName || user.fullName;
   user.role = role || user.role;
-  user.lastName = lastName || user.lastName;
   // user.email = email || user.email; // Ensure email is updated if provided
   user.phone = phoneNumber || user.phone; // Update phone number
   user.showEmail = showEmail !== undefined ? showEmail : user.showEmail; // Update showEmail if provided
@@ -513,27 +511,44 @@ const getReports = asyncHandler(async (req, res) => {
 
 
 const getDealers = asyncHandler(async (req, res) => {
-  const { location, sort, page = 1, limit = 10, type } = req.query; // Added type parameter
+  const { location, sort, page = 1, limit = 10, type } = req.query;
   let query = { accountType: 'Dealer' };
 
-  if (location) query.location = { $regex: location, $options: 'i' };
-  if (type && type.toLowerCase() !== 'all') query.type = type.toLowerCase(); // Add type to the query if provided
+  if (location) query.locationAddress = { $regex: location, $options: 'i' };
+  if (type && type.toLowerCase() !== 'all') query.type = type.toLowerCase();
 
   let sortOption = {};
-  if (sort === 'rating') {
-    sortOption = { rating: -1 };
-  } else if (sort === 'ads') {
-    sortOption = { adsCount: -1 };
+  switch (sort) {
+    case 'rating_desc':
+      sortOption = { rating: -1 };
+      break;
+    case 'rating_asc':
+      sortOption = { rating: 1 };
+      break;
+    case 'ads_desc':
+      sortOption = { adsCount: -1 };
+      break;
+    case 'ads_asc':
+      sortOption = { adsCount: 1 };
+      break;
+    case 'date_asc':
+      sortOption = { createdAt: 1 };
+      break;
+    case 'date_desc':
+      sortOption = { createdAt: -1 };
+      break;
+    default:
+      sortOption = { createdAt: -1 }; // newest first
   }
 
   const dealers = await User.find(query)
     .sort(sortOption)
     .select('fullName rating phone location reviewCount adsCount profileImage locationAddress')
-    .skip((page - 1) * limit) // Skip the records for pagination
-    .limit(Number(limit)); // Limit the number of records returned
+    .skip((page - 1) * limit)
+    .limit(Number(limit));
 
-  const totalDealers = await User.countDocuments(query); // Get total count for pagination
-  const totalPages = Math.ceil(totalDealers / limit); // Calculate total pages
+  const totalDealers = await User.countDocuments(query);
+  const totalPages = Math.ceil(totalDealers / limit);
 
   return responses.ok(res, 'Dealers fetched successfully', {
     dealers,
