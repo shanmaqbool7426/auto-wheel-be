@@ -512,24 +512,57 @@ const getVehiclesByUserId = asyncHandler(async (req, res) => {
     const { userId } = req.params;
     const { search, type, status, sort, page = 1, limit = 10 } = req.query;
 
-    const query = { seller: userId };
+    const query = { seller: userId, status: { $ne: "deleted" } };  // Exclude deleted vehicles by default
+
+    // If status is explicitly provided in the query, add it as an additional condition
+    if (status) {
+      console.log("status>>>>>>>", status.toLowerCase());
+      // Instead of replacing the status condition, use $in to match the provided status
+      // while still excluding "deleted" status
+      query.status = { 
+        $in: [status.toLowerCase()], 
+        $ne: "deleted" 
+      };
+    }
 
     // Add search filter if provided
     if (search) {
-      query.$or = [
-        { title: { $regex: search, $options: 'i' } },
-        { description: { $regex: search, $options: 'i' } }
-      ];
+      // Trim the search term to remove leading/trailing spaces
+      const trimmedSearch = search.trim();
+      
+      if (trimmedSearch) {
+        // Split the search term into words
+        const searchWords = trimmedSearch.split(/\s+/);
+        
+        // Create a more flexible search pattern
+        // This will match documents where any field contains all the search words
+        const searchConditions = [];
+        
+        // For each search word, create conditions to match in any field
+        searchWords.forEach(word => {
+          if (word) {
+            searchConditions.push({
+              $or: [
+                { make: { $regex: word, $options: 'i' } },
+                { model: { $regex: word, $options: 'i' } },
+                { 'Info.make': { $regex: word, $options: 'i' } },
+                { 'Info.model': { $regex: word, $options: 'i' } },
+                { 'Info.variant': { $regex: word, $options: 'i' } }
+              ]
+            });
+          }
+        });
+        
+        // Add the search conditions to the query
+        if (searchConditions.length > 0) {
+          query.$and = searchConditions;
+        }
+      }
     }
 
     // Add type filter if provided
     if (type) {
       query.type = type;
-    }
-
-    // Add status filter if provided
-    if (status) {
-      query.status = status;
     }
 
     // Set up sorting
@@ -661,11 +694,19 @@ const toggleFeaturedVehicle = asyncHandler(async (req, res) => {
     const { vehicleId } = req.params;
     const { duration } = req.body; // Duration in days
 
+    // Find the vehicle first to get the seller ID
+    const vehicle = await Vehicle.findById(vehicleId);
+    
+    if (!vehicle) {
+      return response.notFound(res, 'Vehicle not found');
+    }
+    
     const now = new Date();
     const endDate = new Date(now);
     endDate.setDate(endDate.getDate() + parseInt(duration));
 
-    const vehicle = await Vehicle.findByIdAndUpdate(
+    // Update the vehicle to featured status
+    const updatedVehicle = await Vehicle.findByIdAndUpdate(
       vehicleId,
       {
         isFeatured: true,
@@ -675,12 +716,16 @@ const toggleFeaturedVehicle = asyncHandler(async (req, res) => {
       },
       { new: true, runValidators: true }
     );
-
-    if (!vehicle) {
-      return response.notFound(res, 'Vehicle not found');
+    
+    // Update the user's counts
+    const user = await User.findById(vehicle.seller);
+    if (user) {
+      user.featureAddsCount = (user.featureAddsCount || 0) + 1;
+      user.adsCount = Math.max(0, (user.adsCount || 0) - 1); // Ensure adsCount doesn't go below 0
+      await user.save();
     }
 
-    return response.ok(res, 'Vehicle featured successfully', vehicle);
+    return response.ok(res, 'Vehicle featured successfully', updatedVehicle);
   } catch (error) {
     console.error('Error toggling featured status:', error);
     return response.serverError(res, 'An error occurred while updating the vehicle: ' + error.message);
@@ -793,7 +838,8 @@ cron.schedule('0 0 * * *', () => {
 
 
 const getOverviewStats = asyncHandler(async (req, res) => {
-  const { userId } = req.params;
+  console.log(">>>>>..",req.user)
+const userId=req.user._id
   const { month, year } = req.query;
   try {
     // Get start and end date for the selected month
@@ -877,7 +923,7 @@ const getTopPerformingPostsBySeller = async (req, res) => {
     const skip = (page - 1) * limit;
     
     // Get the seller ID from the authenticated user
-    const { userId } = req.params;
+    const userId=req.user._id;
 
     const posts = await Vehicle.find(
       { 
@@ -909,7 +955,7 @@ const getTopPerformingPostsBySeller = async (req, res) => {
     const formattedPosts = posts.map(post => ({
       id:post._id,
       slug:post.slug,
-      post: `${post.make} ${post.Info.model} ${post.year}`,
+      post: `${post.make} ${post.model} ${post.year}`,
       created: post.createdAt,
       views: post.views,
       clicks: post.views

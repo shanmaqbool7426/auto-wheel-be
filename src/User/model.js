@@ -39,19 +39,21 @@ const userSchema = mongoose.Schema(
       type: mongoose.Schema.Types.ObjectId,
       ref: 'User'
     }],
-    type: { type: String, default: "Dealer" },
+    vehicleType: { type: String, default: "Dealer" },
     following: [{
       type: mongoose.Schema.Types.ObjectId,
       ref: 'User'
     }],
     resetPasswordToken: { type: String },
     adsCount:{ type: Number ,default:0} ,
+    featureAddsCount :{ type: Number ,default:0} ,
     reviewCount:{ type: Number ,default:0},
     resetPasswordExpires: { type: Date },
     favoriteVehicles: [{
       type: mongoose.Schema.Types.ObjectId,
       ref: 'Vehicle',
     }],
+    
     reports: [{ vehicle: { type: mongoose.Schema.Types.ObjectId, ref: "Vehicle" }, reason: { type: String } }],
 
     profileImage: { type: String,default:""  },

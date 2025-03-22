@@ -174,7 +174,7 @@ const updateUserProfile = asyncHandler(async (req, res) => {
   }
 
   user.fullName = fullName || user.fullName;
-  // user.email = email || user.email; // Ensure email is updated if provided
+  user.email = email || user.email; // Ensure email is updated if provided
   user.phone = phoneNumber || user.phone; // Update phone number
   user.showEmail = showEmail !== undefined ? showEmail : user.showEmail; // Update showEmail if provided
   user.hasWhatsApp = whatsAppOnThisNumber !== undefined ? whatsAppOnThisNumber : user.whatsAppOnThisNumber; // Update WhatsApp status
@@ -204,7 +204,7 @@ console.log('userData',userData)
   return responses.ok(res, 'User profile updated successfully', userData); // Return success response
 });
 const updateDealerInfo = asyncHandler(async (req, res) => {
-  const { dealerName, licenseNumber, location, workingHours } = req.body;
+  const { dealerName, licenseNumber, location, workingHours,vehicleType } = req.body;
 
   try {
     const user = await User.findById(req.user._id);
@@ -214,6 +214,7 @@ const updateDealerInfo = asyncHandler(async (req, res) => {
 
     // Update basic dealer information
     user.dealerName = dealerName || user.dealerName;
+    user.vehicleType=vehicleType || user.vehicleType;
     user.licenseNumber = licenseNumber || user.licenseNumber;
     user.locationAddress = location || user.locationAddress;
 
@@ -511,11 +512,11 @@ const getReports = asyncHandler(async (req, res) => {
 
 
 const getDealers = asyncHandler(async (req, res) => {
-  const { location, sort, page = 1, limit = 10, type } = req.query;
+  const { location, sort, page = 1, limit = 10, vehicleType } = req.query;
   let query = { accountType: 'Dealer' };
 
   if (location) query.locationAddress = { $regex: location, $options: 'i' };
-  if (type && type.toLowerCase() !== 'all') query.type = type.toLowerCase();
+  if (vehicleType && vehicleType.toLowerCase() !== 'all') query.vehicleType = vehicleType.toLowerCase();
 
   let sortOption = {};
   switch (sort) {
